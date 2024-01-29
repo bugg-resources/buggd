@@ -5,8 +5,7 @@ EXT_MIC_EN = 12
 class Soundcard:
     """ Provides controls for the soundcard """
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(EXT_MIC_EN, GPIO.OUT)
 
