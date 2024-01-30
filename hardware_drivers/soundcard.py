@@ -43,8 +43,8 @@ class Soundcard:
 
     def set_gain(self, gain):
         """ Set the gain of the soundcard """
-        if gain < 0 or gain > 31:
-            raise ValueError("Gain must be between 0 and 31")
+        if gain < 0 or gain > 20:
+            raise ValueError("Gain must be between 0 and 20")
 
         self.gain = gain
         self.write_state()
@@ -62,3 +62,4 @@ class Soundcard:
                 self.phantom_mode = 4
             case _:
                 raise ValueError("Invalid phantom mode")
+        self.write_state()
