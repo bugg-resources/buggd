@@ -9,7 +9,7 @@ def handle_power_command(args):
     elif args.parameter == 'off':
         sc.disable()
 
-def handle_phantom_command(args):
+def handle_set_command(args):
     pass
 
 def main():
@@ -21,10 +21,11 @@ def main():
     power_parser.add_argument('parameter', choices=['on', 'off'], help='Power on or off')
     power_parser.set_defaults(func=handle_power_command)
 
-    # Phantom command
-    phantom_parser = subparsers.add_parser('phantom', help='Control phantom power')
-    phantom_parser.add_argument('parameter', choices=['P48', 'PIP', '3V3'], help='Phantom power mode')
-    phantom_parser.set_defaults(func=handle_phantom_command)
+    # Set command
+    set_parser = subparsers.add_parser('set', help='Control gain and phantom power')
+    set_parser.add_argument('gain', type=int, choices=range(0, 61), help='Set gain: 0-60dB in 3dB steps')
+    set_parser.add_argument('phantom', required=True, choices=['NONE','P48', 'PIP', '3V3'], help='Set power mode')
+    set_parser.set_defaults(func=handle_set_command)
 
     args = parser.parse_args()
 
