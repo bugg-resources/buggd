@@ -5,10 +5,12 @@ EXT_MIC_EN = 12
 
 class Soundcard:
     """ Provides controls for the soundcard """
-    PHANTOM_OFF = 0
-    PHANTOM_PIP = 1
-    PHANTOM_3V3 = 2
-    PHANTOM_P48 = 4
+
+    # Phantom power modes
+    NONE = "NONE"
+    PIP = "PIP"     # Plug In Power
+    P3V3 = "P3V3"   # 3.3V on M12 pin 4
+    P48 = "P48"     # 48V
 
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
@@ -16,9 +18,9 @@ class Soundcard:
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
         self.gain = 0
-        self.gain_mode = 0
-        self.gpo_mode = 0
-        self.phantom_mode = self.PHANTOM_OFF
+        self.zc_gain = 1    # Enable zero-crossing gain control by default
+        self.zc_gpo = 1     # Enable zero-crossing phantom switching by default
+        self.phantom_mode = self.NONE
 
     def enable(self):
         """ Turn on the soundcard power rails"""
@@ -32,8 +34,8 @@ class Soundcard:
         """ Write the current state to the soundcard """
         tx = [0, 0]
         tx[0] |= self.gain
-        tx[1] |= self.gpo_mode << 5
-        tx[1] |= self.gain_mode << 4
+        tx[1] |= self.zc_gpo << 5
+        tx[1] |= self.zc_gain << 4
         tx[1] |= self.phantom_mode
 
         self.spi.xfer(tx)
@@ -45,3 +47,17 @@ class Soundcard:
 
         self.gain = gain
         self.write_state()
+
+    def set_phantom(self, mode):
+        """ Set the phantom power mode """
+        match mode:
+            case self.NONE:
+                self.phantom_mode = 0
+            case self.PIP:
+                self.phantom_mode = 1
+            case self.P3V3:
+                self.phantom_mode = 2
+            case self.P48:
+                self.phantom_mode = 4
+            case _:
+                raise ValueError("Invalid phantom mode")
