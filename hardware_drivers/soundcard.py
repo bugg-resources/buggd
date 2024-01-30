@@ -14,6 +14,7 @@ class Soundcard:
 
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False) # Squash warning if the pin is already in use
         GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
