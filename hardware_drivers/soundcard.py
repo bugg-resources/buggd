@@ -18,6 +18,8 @@ class Soundcard:
         GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
+        self.spi.max_speed_hz = 5_000_000
+
         self.gain = 0
         self.zc_gain = 1    # Enable zero-crossing gain control by default
         self.zc_gpo = 1     # Enable zero-crossing phantom switching by default
