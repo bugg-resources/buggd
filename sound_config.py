@@ -35,7 +35,8 @@ def main():
 
     # Set command
     set_parser = subparsers.add_parser('set', help='Control gain and phantom power')
-    set_parser.add_argument('--gain', '-g', required=True, type=int, choices=range(0, 32), metavar='[0-21]', help='Set gain: 3dB steps, 0-60dB')
+    # set_parser.add_argument('--gain', '-g', required=True, type=int, choices=range(0, 21), metavar='[0-21]', help='Set gain: 3dB steps, 0-60dB')
+    set_parser.add_argument('--gain', '-g', required=True, type=int, choices=range(0, 21), help='Set gain: 3dB steps, 0-60dB')
     set_parser.add_argument('--phantom', '-p', required=True, choices=['none','P48', 'PIP', '3V3'], help='set power mode')
     set_parser.set_defaults(func=handle_set_command)
 
