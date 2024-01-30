@@ -21,7 +21,7 @@ class Soundcard:
         self.gain = 0
         self.zc_gain = 1    # Enable zero-crossing gain control by default
         self.zc_gpo = 1     # Enable zero-crossing phantom switching by default
-        self.phantom_mode = self.NONE
+        self.phantom_mode = 0
 
     def enable(self):
         """ Turn on the soundcard power rails"""
