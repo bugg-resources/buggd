@@ -1,11 +1,9 @@
+PWR_LED_ON = (0, 0)
 from pcf8574 import PCF8574
 from time import sleep
 
 PCF8574_I2C_ADD = 0x23
 PCF8574_I2C_BUS = 1
-LED_ALL_ON = (1, 1, 1)
-LED_ALL_OFF = (0, 0, 0)
-PWR_LED_ON = (0, 0)
 
 led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
 
