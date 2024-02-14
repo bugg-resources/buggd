@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time 
 
-en_pin=8
+en_pin=7
 power_on_n_pin = 5
 
 GPIO.setmode(GPIO.BCM)
