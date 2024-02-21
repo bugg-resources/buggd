@@ -1,11 +1,14 @@
+#!/bin/bash -e
+
 # Cycle the SHDNZ input to the PCMD3180 chip to reset it
-echo "7" > /sys/class/gpio/export
-echo "out" > /sys/class/gpio/gpio7/direction
-echo "0" > /sys/class/gpio/gpio7/value
+echo "0" > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio0/direction
+echo "0" > /sys/class/gpio/gpio0/value
 sleep 0.1
-echo "1" > /sys/class/gpio/gpio7/value
-echo "7" > /sys/class/gpio/unexport
+echo "1" > /sys/class/gpio/gpio0/value
+echo "0" > /sys/class/gpio/unexport
 sleep 0.5
+
 # Send the I2C setup commands
 i2cset -y 1 0x4c 0x02 0x81
 i2cset -y 1 0x4c 0x3C 0x40
