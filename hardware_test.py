@@ -17,11 +17,17 @@ def disable_systemd_service(service_name):
     except subprocess.CalledProcessError as e:
         print(f"Failed to disable service {service_name}: {e}")
 
+def list_audio_devices():
+    try:
+        result = subprocess.run(['arecord', '-l'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing arecord: {e.stderr}")
 
 def main():
     """ Start the hardware test, write to journal """
     journal.send("Start hardware test", SYSLOG_IDENTIFIER=SYSLOG_ID, PRIORITY=journal.LOG_INFO)
-    journal.send("Doing a thing...", SYSLOG_IDENTIFIER=SYSLOG_ID, PRIORITY=journal.LOG_INFO)
+    journal.send("Audio devices: {}".format(list_audio_devices()), SYSLOG_IDENTIFIER=SYSLOG_ID, PRIORITY=journal.LOG_INFO)
     journal.send("End hardware test", SYSLOG_IDENTIFIER=SYSLOG_ID, PRIORITY=journal.LOG_INFO)
 
     journal.send("Disabling bugg-test.service", SYSLOG_IDENTIFIER=SYSLOG_ID, PRIORITY=journal.LOG_INFO)
