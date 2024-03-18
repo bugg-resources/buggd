@@ -76,7 +76,8 @@ class I2SMic(SensorBase):
 
 
     def setup(self):
-        #TODO: decide if I2S microphone needs gain - config some way to do so here if so (alsamixer doesn't work)
+        #TODO: Currently the internal I2S mic is set to max volume in the pcmd3180_i2c_init.sh script.
+        # This seems to be a good default, but we may want to add a volume setting to the config file in the future.
         return True
 
 
