@@ -10,12 +10,3 @@ config.json
 test.*
 *.pyc
 *.dtbo
-
-hardware_drivers/Raspberry-Pi-Installer-Scripts
-
-continuous_monitoring_data/
-audio/
-tmp_data/
-tmp_dir/
-
-fs_expanded
