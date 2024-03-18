@@ -1,5 +1,9 @@
 ![cc-by-nc-sa-shield](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)
 
+# CAUTION: This document needs re-writing to reflect the bifurcation of bugg-cm4-firmware into bugg-recording and the new bugg-os project. 
+
+This document needs heavy editing - some of what follows below has been deprecated or is misleading as things currently stand, but as of March 2024 I haven't edited any of it yet, as there are some important details relevant for completing the firmware development. 
+
 # bugg-cm4-firmware
 
 [Bugg](https://www.bugg.xyz/) is a research project developing technologies for fully autonomous eco-acoustic monitoring. 
@@ -98,7 +102,7 @@ To begin, the Pi OS Lite image does not have the required packages to connect to
 	* Add startup commands to ``/etc/profile``:
 		* ``cd /home/pi/bugg-cm4-firmware``
 		* ``sudo -E python3 -u python_record.py  &`` or to log from the device over serial ``(sudo -E python3 -u python_record.py 2>&1 | tee /dev/serial0) &``
-* Enable I2S interface for microphone
+* DEPRECATED Enable I2S interface for microphone
 	* ``sudo pip3 install --upgrade adafruit-python-shell``
 	* ``cd ~/bugg-cm4-firmware/hardware_drivers``
 	* ``sudo python3 i2smic_with_cm4.py``
