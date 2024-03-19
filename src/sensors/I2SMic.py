@@ -21,7 +21,14 @@ class I2SMic(SensorBase):
         # Initialise the PCMD3180 chip through I2C
         logging.info('Initialising PCMD3180 PDM->I2S chip over I2C')
         call_cmd_line('sudo killall arecord')
-        call_cmd_line('sudo /home/pi/bugg-cm4-firmware/hardware_drivers/pcmd3180_i2c_init.sh', print_output=True)
+
+        # Get the directory of the current Python script
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+
+        # Construct the path to the Bash script relative to the Python script
+        pcmd3180_sh = os.path.join(current_dir, '../hardware_drivers/pcmd3180_i2c_init.sh')
+
+        call_cmd_line(pcmd3180_sh, print_output=True)
 
         # Initialise the sensor config, double checking the types of values. This
         # code uses the variables named and described in the config static to set
