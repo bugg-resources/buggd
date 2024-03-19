@@ -47,7 +47,7 @@ def call_cmd_line(args, use_shell=True, print_output=False, run_in_bg=False):
     """
     Use command line calls - wrapper around subprocess.Popen
     """
-
+    logging.info('cwd {}'.format(os.getcwd()))
     p = subprocess.Popen(args, stdout=subprocess.PIPE, shell=use_shell, encoding='utf8')
     if run_in_bg: return
 
