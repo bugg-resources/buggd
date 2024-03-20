@@ -1,3 +1,5 @@
+""" Provides power, phantom power, and gain controls for the soundcard """
+
 import RPi.GPIO as GPIO
 import spidev
 
