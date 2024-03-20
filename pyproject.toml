@@ -1,1 +1,27 @@
-# TODO - create this file to build project and establish scripts (similar to older entry_points method)
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bugg_recording"
+version = "0.1.0"
+description = "Bugg userspace recording firmware, including the buggd daemon and various configuration tools."
+authors = [
+    { name = "Jeff Gough", email = "j@monad.is" },
+    { name = "Sarab Sethi", email = "sarab.sethi@imperial.ac.uk" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+dependencies = [
+    "six",
+    "google-cloud-storage",
+    "RPi.GPIO",
+    "pcf8574",
+    "spidev",
+    "systemd-python",
+]
+
+[project.entry-points.consolescripts]
+buggd = "apps.buggd.main:main"
+modemctl = "apps.modemctl.main:main"
+soundcardctl = "apps.soundcardctl.main:main"
