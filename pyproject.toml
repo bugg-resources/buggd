@@ -21,7 +21,7 @@ dependencies = [
     "systemd-python",
 ]
 
-[project.entry-points.console-scripts]
+[project.entry-points."console-scripts"]
 buggd = "bugg_recording.apps.buggd.main:main"
 modemctl = "bugg_recording.apps.modemctl.main:main"
 soundcardctl = "bugg_recording.apps.soundcardctl.main:main"
