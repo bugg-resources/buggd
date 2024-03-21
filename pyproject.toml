@@ -19,6 +19,7 @@ dependencies = [
     "pcf8574",
     "spidev",
     "systemd-python",
+    "filelock"
 ]
 
 [project.scripts]
