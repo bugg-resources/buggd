@@ -19,7 +19,8 @@ dependencies = [
     "pcf8574",
     "spidev",
     "systemd-python",
-    "filelock"
+    "filelock",
+    "pyusb",
 ]
 
 [project.scripts]
