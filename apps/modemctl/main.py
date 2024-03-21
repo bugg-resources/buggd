@@ -5,7 +5,7 @@ It's mainly intended for use during debugging.
 """
 
 import logging
-from bugg_recording.hardware.modem import Modem
+from bugg_recording.drivers.modem import Modem
 # en_pin=7
 # power_on_n_pin = 5
 
