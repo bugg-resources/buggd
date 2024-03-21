@@ -5,6 +5,7 @@ It's mainly intended for use during debugging.
 """
 
 import logging
+import sys
 from ...drivers.modem import Modem
 # en_pin=7
 # power_on_n_pin = 5
