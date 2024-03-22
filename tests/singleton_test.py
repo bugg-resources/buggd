@@ -4,9 +4,8 @@ import sys
 import time
 
 def main():
-    singleton_instance = Singleton()
     try:
-        singleton_instance.acquire_lock()
+        singleton_instance = Singleton()
         # Simulate application work
         print("Main application is running. Press Ctrl+C to exit.")
         try:
@@ -18,6 +17,7 @@ def main():
         print(e)
         sys.exit(1)
     finally:
+        # Ensure the lock is released when the application is closing.
         singleton_instance.release_lock()
 
 if __name__ == "__main__":

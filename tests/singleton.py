@@ -1,15 +1,13 @@
 # singleton.py
 from filelock import Timeout, FileLock
-import os
 
 class Singleton:
     _lock_path = "/tmp/singleton_app.lock"
 
     def __init__(self):
         self.lock = FileLock(f"{Singleton._lock_path}")
-
-    def acquire_lock(self):
         try:
+            # Attempt to acquire the lock immediately upon instance creation.
             self.lock.acquire(timeout=1)
             print("Singleton lock acquired, instance is running.")
         except Timeout:
