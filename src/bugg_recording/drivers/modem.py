@@ -5,9 +5,10 @@ import time
 from enum import Enum, auto
 import usb.core
 import usb.util
-from lock import Lock
+from .lock import Lock
 
-logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 P3V7_EN = 7
 POWER_ON_N = 5
@@ -38,12 +39,13 @@ class Modem:
         try:
             self.lock = Lock(lock_file_path)
         except RuntimeError as e:
-            logging.critical(e)
+            logger.critical(e)
             self.result = False
             raise
         self.state = ModemState.UNKNOWN
 
         GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False) # Squash warning if the pin is already in use
 
         if self.is_enumerated():
             self.configure_gpio()   # GPIO pins must be HIGH-Z until modem is booted
@@ -51,7 +53,7 @@ class Modem:
         GPIO.setup(P3V7_EN, GPIO.OUT)
         GPIO.setup(POWER_ON_N, GPIO.OUT, initial=GPIO.LOW)
 
-        logging.info("Modem driver initialized successfully.")
+        logger.info("Modem driver initialized successfully.")
 
     def configure_gpio(self):
         """
@@ -80,6 +82,8 @@ class Modem:
         """
         if GPIO.gpio_function(P3V7_EN) == GPIO.OUT and GPIO.input(P3V7_EN) == GPIO.HIGH:
             return True
+        else:
+            return False
 
     def get_state(self):
         """ Get the state of the modem """
@@ -94,18 +98,18 @@ class Modem:
         time.sleep(1)
         GPIO.output(POWER_ON_N, GPIO.LOW)
 
-        logging.info("POWER_ON_N asserted, waiting for modem to boot up...")
+        logger.info("POWER_ON_N asserted, waiting for modem to boot up...")
         # Wait for the modem to boot up
         time.sleep(2)
         max_tries = 10
         while(max_tries > 0):
-            logging.info("Checking if modem is enumerated...")
+            logger.info("Checking if modem is enumerated...")
             if self.is_enumerated():
                 return True
             time.sleep(2)
             max_tries -= 1
         
-        logging.error("Timed out waiting for modem to boot up.")
+        logger.error("Timed out waiting for modem to boot up.")
         return False
 
     def power_off(self):

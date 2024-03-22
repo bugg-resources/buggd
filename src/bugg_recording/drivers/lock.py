@@ -1,8 +1,10 @@
-""" """
+""" This module provides a locking mechanism to ensure that only one instance of a driver is running at a time."""
+
 import logging
 from filelock import FileLock, Timeout
 
-logging.getLogger().setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class Lock:
     """
@@ -18,15 +20,15 @@ class Lock:
         try:
             # Attempt to acquire the lock
             self.lock.acquire(timeout=2)
-            logging.debug("Lock acquired on %s", self.lock_path)
+            logger.debug("Lock acquired on %s", self.lock_path)
         except Timeout as e:
-            raise RuntimeError(f"Could not acquire lock on {lock_file} - Another instance is already running.") from e
+            raise RuntimeError(f"Could not acquire lock on {lock_file} - Another instance is already in use.") from e
 
     def release_lock(self):
         """ Release the lock file """
         if self.lock.is_locked:
             self.lock.release()
-            logging.debug("Released lock on %s", self.lock_path)
+            logger.debug("Released lock on %s", self.lock_path)
 
     def __del__(self):
         """ Release the lock file when the object is deleted"""
