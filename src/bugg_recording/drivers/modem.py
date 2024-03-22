@@ -1,11 +1,13 @@
 """ Provides power control and status information for the RC7620 modem """
 import logging
 import RPi.GPIO as GPIO
-from filelock import FileLock, Timeout
 import time
 from enum import Enum, auto
 import usb.core
 import usb.util
+from lock import Lock
+
+logging.getLogger().setLevel(logging.INFO)
 
 P3V7_EN = 7
 POWER_ON_N = 5
@@ -32,30 +34,24 @@ class Modem:
     """
 
     def __init__(self, lock_file_path=LOCK_FILE):
-        logging.getLogger().setLevel(logging.INFO)
-        self.lock_file_path = lock_file_path
-        self.lock = FileLock(self.lock_file_path)
+        """ Attempt to acquire the lock and initialise the GPIO """
+        try:
+            self.lock = Lock(lock_file_path)
+        except RuntimeError as e:
+            logging.critical(e)
+            self.result = False
+            raise
         self.state = ModemState.UNKNOWN
+
         GPIO.setmode(GPIO.BCM)
 
-    def initialize(self):
-        """ Try to aquire the lock. If successful, initialize the GPIO pins """
-        try:
-            # Attempt to acquire the lock, with a timeout of 5 seconds
-            with self.lock.acquire(timeout=5):
-                logging.info("Modem lock acquired. Initializing the driver...")
-                # Initialization code here
-                if self.is_enumerated():
-                    self.configure_gpio()   # GPIO pins must be HIGH-Z until modem is booted
-                GPIO.setup(P3V7_EN, GPIO.OUT, initial=GPIO.LOW)
-                GPIO.setup(POWER_ON_N, GPIO.OUT, initial=GPIO.LOW)
-                logging.info("Modem driver initialized successfully.")
-        except Timeout:
-            logging.critical("Another instance is currently running or initialization took too long. Exiting.")
-            return False
-        return True
+        if self.is_enumerated():
+            self.configure_gpio()   # GPIO pins must be HIGH-Z until modem is booted
 
-        # The release method is not needed here as the 'with' statement automatically releases the lock
+        GPIO.setup(P3V7_EN, GPIO.OUT)
+        GPIO.setup(POWER_ON_N, GPIO.OUT, initial=GPIO.LOW)
+
+        logging.info("Modem driver initialized successfully.")
 
     def configure_gpio(self):
         """
