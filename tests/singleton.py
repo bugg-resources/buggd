@@ -6,7 +6,7 @@ class Singleton:
 
     def __init__(self):
         try:
-            self.lock = FileLock(f"{Singleton._lock_path}.lock")
+            self.lock = FileLock(f"{Singleton._lock_path}.lock", thread_local=False)
             with self.lock.acquire(timeout=1):
                 print("Singleton instance is running.")
         except Timeout:
