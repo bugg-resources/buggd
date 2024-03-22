@@ -58,7 +58,10 @@ class Modem:
         # The release method is not needed here as the 'with' statement automatically releases the lock
 
     def configure_gpio(self):
-        """ Configure the GPIO pins """
+        """
+        Configure the GPIO pins
+        It's important to only take the pins out of HIGH-Z when the modem is fully booted.
+        """
         GPIO.setup(RESET_IN_N, GPIO.OUT, initial=GPIO.LOW)   
 
     def release_gpio(self):
