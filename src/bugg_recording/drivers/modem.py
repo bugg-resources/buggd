@@ -1,10 +1,11 @@
 """ Provides power control and status information for the RC7620 modem """
 import logging
-import RPi.GPIO as GPIO
 import time
 from enum import Enum, auto
 import usb.core
 import usb.util
+import serial
+import RPi.GPIO as GPIO
 from .lock import Lock
 
 logger = logging.getLogger(__name__)
@@ -14,10 +15,20 @@ P3V7_EN = 7
 POWER_ON_N = 5
 RESET_IN_N = 6
 
-LOCK_FILE = '/tmp/modem.lock'
+LOCK_FILE = "/tmp/modem.lock"
+
+CONTROL_INTERFACE = "/dev/tty_modem_command_interface"
+CONTROL_INTERFACE_BAUD = 115200
+CONTROL_INTERFACE_TIMEOUT = 1
 
 VENDOR_ID = 0x1199
 PRODUCT_ID = 0x68c0
+
+class ModemTimeoutException(Exception):
+    """Exception raised when a timeout occurs while waiting for a response from the modem."""
+
+class ModemNoSimException(Exception):
+    """Exception raised when no SIM card is detected in the modem."""
 
 class ModemState(Enum):
     """ Represents the state of the modem hardware """
@@ -43,6 +54,7 @@ class Modem:
             self.result = False
             raise
         self.state = ModemState.UNKNOWN
+        self.port = None
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False) # Squash warning if the pin is already in use
@@ -80,10 +92,7 @@ class Modem:
         This is true if P3V7_EN is an output and is HIGH.
         Calling GPIO.input on an output pin will return the output state.
         """
-        if GPIO.gpio_function(P3V7_EN) == GPIO.OUT and GPIO.input(P3V7_EN) == GPIO.HIGH:
-            return True
-        else:
-            return False
+        return GPIO.gpio_function(P3V7_EN) == GPIO.OUT and GPIO.input(P3V7_EN) == GPIO.HIGH
 
     def get_state(self):
         """ Get the state of the modem """
@@ -94,6 +103,7 @@ class Modem:
         self.turn_on_rail()
         time.sleep(0.5)
 
+        # Strobe the POWER_ON_N pin to boot the modem
         GPIO.output(POWER_ON_N, GPIO.HIGH)
         time.sleep(1)
         GPIO.output(POWER_ON_N, GPIO.LOW)
@@ -115,6 +125,7 @@ class Modem:
     def power_off(self):
         """ Command modem to power down safely from software then remove power """
         # TODO: Implement software shutdown
+        self.close_control_interface()
         self.release_gpio()
         self.turn_off_rail()
 
@@ -122,4 +133,86 @@ class Modem:
         """ Check if the modem is enumerated on the USB bus """
         return usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID) is not None
 
+    def open_control_interface(self):
+        """ Open the control interface for sending AT commands to the modem. """
+        if self.port is None:
+            try:
+                self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
+            except serial.SerialException as e:
+                logger.error("Failed to open control interface: %s", e)
+                return False
+        return True
+
+    def close_control_interface(self):
+        """ Close the control interface """
+        if self.port is not None:
+            self.port.close()
+            self.port = None
     
+    def send_at_command(self, command):
+        """
+        If the control interface is not open, open it.
+        Send an AT command to the modem and returns the response string.
+        
+        Args:
+        - command: The AT command to send to the modem. 
+        
+        Returns:
+        - The response string from the modem.
+        
+        Raises:
+        - ModemTimeoutException: If a timeout occurs waiting for a response.
+        """
+        if (self.port is None):
+            self.open_control_interface()
+
+        # Clear the input buffer
+        self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
+        # Send the AT command
+        self.port.write((command + '\r\n').encode())
+        # Read the response
+        response = self.port.read_until().decode('utf-8').strip()
+        
+        # Check if a timeout occurred
+        if not response:
+            raise ModemTimeoutException("Timeout occurred waiting for a response from the modem.")
+        
+        return response
+    
+    def is_responding(self):
+        """
+        Check if the modem is responding to AT commands.
+        
+        Returns:
+        - True if the modem is responding, False otherwise.
+        """
+        try:
+            response = self.send_at_command("AT")
+            return "OK" in response
+        except ModemTimeoutException:
+            return False
+
+    def get_sim_ccid(self):
+        """
+        Get the SIM card's ICCID.
+        
+        Returns:
+        - The ICCID string.
+        """
+        response = self.send_at_command("AT+CCID?")
+        if "ERROR" in response:
+            raise ModemNoSimException("No SIM card detected.")
+        return response.split(": ")[1]
+
+    def sim_present(self):
+        """
+        Check if a SIM card is present in the modem.
+        
+        Returns:
+        - True if a SIM card is present, False otherwise.
+        """
+        try:
+            self.get_sim_ccid()
+            return True
+        except ModemNoSimException:
+            return False 
