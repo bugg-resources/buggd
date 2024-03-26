@@ -4,9 +4,9 @@ import os
 import shutil
 import sensors
 import logging
-from utils import call_cmd_line
 import datetime
 from bugg_recording.sensors.sensorbase import SensorBase
+from bugg_recording.apps.buggd.utils import call_cmd_line
 
 class I2SMic(SensorBase):
 
