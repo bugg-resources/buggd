@@ -244,7 +244,7 @@ class Modem:
             return None
 
         try:
-            return response.split(": ")[1]
+            return response.split(": ")[1].split("\r\n")[0]
         except (AttributeError, TypeError):
             return None
 
