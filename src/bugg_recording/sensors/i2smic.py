@@ -6,7 +6,7 @@ import sensors
 import logging
 from utils import call_cmd_line
 import datetime
-from sensors.SensorBase import SensorBase
+from bugg_recording.sensors.sensorbase import SensorBase
 
 class I2SMic(SensorBase):
 
