@@ -39,7 +39,7 @@ def main():
     stdout_handler.setFormatter(formatter)
 
     # Configure the root logger to use the stdout handler
-    logging.basicConfig(level=logging.INFO, handlers=[stdout_handler])
+    logging.basicConfig(level=logging.WARNING, handlers=[stdout_handler])
     logger = logging.getLogger(__name__)
     logger.info("Starting soundcard configuration utility.")
     
