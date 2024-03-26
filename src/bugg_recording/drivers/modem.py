@@ -19,7 +19,8 @@ LOCK_FILE = "/tmp/modem.lock"
 
 CONTROL_INTERFACE = "/dev/tty_modem_command_interface"
 CONTROL_INTERFACE_BAUD = 115200
-CONTROL_INTERFACE_TIMEOUT = 1
+CONTROL_INTERFACE_TIMEOUT = 0.3
+CONTROL_INTERFACE_READ_SIZE = 100
 
 VENDOR_ID = 0x1199
 PRODUCT_ID = 0x68c0
@@ -154,11 +155,11 @@ class Modem:
             self.open_control_interface()
 
         # Clear the input buffer
-        # self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
+        self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
         # Send the AT command
         self.port.write((command + '\r\n').encode())
         # Read the response
-        response = self.port.read_until().decode('utf-8').strip()
+        response = self.port.read(CONTROL_INTERFACE_READ_SIZE).decode('utf-8').strip()
         
         # Check if a timeout occurred
         if not response:
