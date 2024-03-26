@@ -45,7 +45,7 @@ class Soundcard:
         self.zc_gpo = 1     # Enable zero-crossing phantom switching by default
         self.phantom_mode = 0
 
-        self.state = {'gain':self.gain, 'phantom':self.phantom_mode}
+        self.load_state()
 
     def __del__(self):
         """ Release the lock file when the object is deleted"""
