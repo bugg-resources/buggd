@@ -141,6 +141,10 @@ class Modem:
 
     def power_off(self):
         """ Command modem to power down safely from software then remove power """
+        if not self.is_enumerated():
+            logger.info("Modem is already powered off.")
+            return True
+
         logger.info("Turning off modem. Issuing AT command to power down...")
         if self.send_at_command("AT!POWERDOWN"):
             self.release_gpio()
