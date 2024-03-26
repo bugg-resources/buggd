@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 from ...drivers.soundcard import Soundcard
 
 sc = Soundcard()
