@@ -77,6 +77,9 @@ class Modem:
     def turn_off_rail(self):
         """ Turn off the 3.7V rail """
         GPIO.output(P3V7_EN, GPIO.LOW)
+        self.close_control_interface()
+        self.release_gpio()
+
 
     def rail_is_on(self):
         """
@@ -110,12 +113,49 @@ class Modem:
         logger.error("Timed out waiting for modem to boot up.")
         return False
 
+    def wait_power_off(self):
+        """
+        Wait for the modem to power down.
+        Returns True if the modem has powered down, False otherwise.
+        """
+        # Wait for the modem to power down 
+        max_tries = 10
+        while(max_tries > 0):
+            if self.is_enumerated():
+                logger.info("Modem is still powered on. Waiting for it to power down...")
+            else:
+                logger.info("Modem has powered down.")
+                return True
+            time.sleep(3)
+            max_tries -= 1
+        return False
+
     def power_off(self):
         """ Command modem to power down safely from software then remove power """
-        # TODO: Implement software shutdown
-        self.close_control_interface()
-        self.release_gpio()
-        self.turn_off_rail()
+        logger.info("Turning off modem. Issuing AT command to power down...")
+        if self.send_at_command("AT!POWERDOWN"):
+            self.release_gpio()
+
+        if self.wait_power_off():
+            logger.info("Modem has powered down. Turning off 3.7V rail.")
+            self.turn_off_rail()
+            return True
+        else:
+            logger.error("Timed out waiting for modem to power down. Performing emergency power down.")
+            self.configure_gpio()
+            GPIO.output(RESET_IN_N, GPIO.HIGH)
+            time.sleep(10)
+            GPIO.output(RESET_IN_N, GPIO.LOW)
+            self.release_gpio()
+
+        if self.wait_power_off():
+            logger.info("Modem has powered down. Turning off 3.7V rail.")
+            self.turn_off_rail()
+            return True
+        else:
+            logger.error("Timed out waiting for emergency power down. Turning off 3.7V rail anyway.")
+            self.turn_off_rail()
+            return False
 
     def is_enumerated(self):
         """ Check if the modem is enumerated on the USB bus """
