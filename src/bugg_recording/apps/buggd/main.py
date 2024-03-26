@@ -375,8 +375,8 @@ def blink_error_leds(led_driver, error_e, dur=None):
         while True: time.sleep(60)
 
     # Reboot unit
-    logging.info('Rebooting device to try recover from error')
     if REBOOT_ALLOWED:
+        logging.info('Rebooting device to try recover from error')
         call_cmd_line('sudo reboot')
 
 
