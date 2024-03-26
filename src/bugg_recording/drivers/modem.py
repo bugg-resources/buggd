@@ -96,6 +96,10 @@ class Modem:
 
     def power_on(self):
         """ Turn on the rail, assert POWER_ON_N, and wait for the modem to enumerate """
+        if self.is_enumerated():
+            logger.info("Modem is already powered on.")
+            return True
+
         self.turn_on_rail()
         time.sleep(0.5)
 
