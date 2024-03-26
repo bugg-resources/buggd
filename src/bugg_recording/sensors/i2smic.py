@@ -7,7 +7,8 @@ import logging
 import datetime
 from .options import set_option
 from .sensorbase import SensorBase
-from ...apps.buggd.utils import call_cmd_line
+# Cannot use a relative import across different sub-packages, so import directly
+from bugg_recording.apps.buggd.utils import call_cmd_line
 
 class I2SMic(SensorBase):
 
