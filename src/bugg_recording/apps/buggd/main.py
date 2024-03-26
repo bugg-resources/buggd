@@ -527,8 +527,7 @@ def record(led_driver):
         logging.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
 
-if __name__ == "__main__":
-
+def main():
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
 
@@ -540,3 +539,6 @@ if __name__ == "__main__":
 
         # Blink error code on LEDs
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
+
+if __name__ == "__main__":
+    main()
