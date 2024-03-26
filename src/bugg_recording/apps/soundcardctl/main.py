@@ -15,14 +15,14 @@ def handle_power_command(logger, args):
 
 def handle_gain_command(logger, args):
     """ Set gain """
-    logger.info(f"Setting gain to {args.gain}")
-    sc.set_gain(args.gain)
+    logger.info(f"Setting gain to {args.parameter}")
+    sc.set_gain(args.parameter)
 
 
 def handle_phantom_command(logger, args):
     """ Set phantom power """
-    logger.info(f"Setting phantom power to {args.phantom}")
-    match args.phantom:
+    logger.info(f"Setting phantom power to {args.parameter}")
+    match args.parameter:
         case 'none':
             sc.set_phantom(sc.NONE)
         case 'PIP':
