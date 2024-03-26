@@ -19,7 +19,7 @@ def handle_power_command(logger, modem, args):
 def handle_sim_state(logger, modem, args):
     """ Get the SIM card state """
     if modem.sim_present():
-        ccid = modem.get_ccid()
+        ccid = modem.get_sim_ccid()
         logger.info(f"SIM card present. CCID: {ccid}")
     else:
         logger.info("No SIM card present.")
