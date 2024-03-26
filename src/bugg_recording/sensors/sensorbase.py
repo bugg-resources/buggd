@@ -3,7 +3,7 @@ import time
 import subprocess
 import os
 import logging
-from . import set_option
+from .options import set_option
 
 class SensorBase(object):
 

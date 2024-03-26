@@ -5,7 +5,7 @@ import shutil
 import sensors
 import logging
 import datetime
-from . import set_option
+from .options import set_option
 from .sensorbase import SensorBase
 from ...apps.buggd.utils import call_cmd_line
 
