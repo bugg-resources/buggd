@@ -171,7 +171,7 @@ class Modem:
                 self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
             except serial.SerialException as e:
                 logger.error("Failed to open control interface: %s", e)
-                return False
+                raise
         return True
 
     def close_control_interface(self):
