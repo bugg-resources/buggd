@@ -31,6 +31,9 @@ class ModemTimeoutException(Exception):
 class ModemNoSimException(Exception):
     """Exception raised when no SIM card is detected in the modem."""
 
+class ModemNoResponseException(Exception):
+    """Exception raised when the modem does not respond to AT commands."""
+
 class Modem:
     """
     Provides power control and status information for the RC7620 GSM modem
@@ -191,21 +194,24 @@ class Modem:
         Raises:
         - ModemTimeoutException: If a timeout occurs waiting for a response.
         """
-        if (self.port is None):
-            self.open_control_interface()
+        try:
+            if (self.port is None):
+                self.open_control_interface()
 
-        # Clear the input buffer
-        self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
-        # Send the AT command
-        self.port.write((command + '\r\n').encode())
-        # Read the response
-        response = self.port.read(CONTROL_INTERFACE_READ_SIZE).decode('utf-8').strip()
+            # Clear the input buffer
+            self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
+            # Send the AT command
+            self.port.write((command + '\r\n').encode())
+            # Read the response
+            response = self.port.read(CONTROL_INTERFACE_READ_SIZE).decode('utf-8').strip()
+            if not response:
+                raise ModemTimeoutException("Timeout occurred waiting for a response from the modem.")
+            
+            return response
+        except (ModemTimeoutException, serial.SerialException) as e:
+            logger.error("Error sending AT command: %s", e)
         
-        # Check if a timeout occurred
-        if not response:
-            raise ModemTimeoutException("Timeout occurred waiting for a response from the modem.")
-        
-        return response
+        return None
     
     def is_responding(self):
         """
@@ -217,7 +223,7 @@ class Modem:
         try:
             response = self.send_at_command("AT")
             return "OK" in response
-        except ModemTimeoutException:
+        except (TypeError, ModemTimeoutException):
             return False
 
     def get_sim_ccid(self):
@@ -226,11 +232,20 @@ class Modem:
         
         Returns:
         - The ICCID string.
+        - None if the modem does not respond to the AT command or if the SIM card is not present.
         """
-        response = self.send_at_command("AT+CCID?")
+        response = self.send_at_command("AT+CCID")
+
+        if response is None:
+            return None
+
         if "ERROR" in response:
-            raise ModemNoSimException("No SIM card detected.")
-        return response.split(": ")[1]
+            return None
+
+        try:
+            return response.split(": ")[1]
+        except (AttributeError, TypeError):
+            return None
 
     def sim_present(self):
         """
