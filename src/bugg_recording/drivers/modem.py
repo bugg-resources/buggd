@@ -30,14 +30,6 @@ class ModemTimeoutException(Exception):
 class ModemNoSimException(Exception):
     """Exception raised when no SIM card is detected in the modem."""
 
-class ModemState(Enum):
-    """ Represents the state of the modem hardware """
-    UNKNOWN = auto() # When driver initialises, the modem may already be powered on in an unknown state
-    RAIL_OFF = auto() # When driver initialises, we don't even know whether we're asserting P3V7_EN
-    OFF = auto()
-    NO_SIM = auto() # The modem is powered on but there is no SIM card
-    READY = auto() # The modem is powered on and ready to use
-
 class Modem:
     """
     Provides power control and status information for the RC7620 GSM modem
@@ -53,7 +45,6 @@ class Modem:
             logger.critical(e)
             self.result = False
             raise
-        self.state = ModemState.UNKNOWN
         self.port = None
 
         GPIO.setmode(GPIO.BCM)
@@ -93,10 +84,6 @@ class Modem:
         Calling GPIO.input on an output pin will return the output state.
         """
         return GPIO.gpio_function(P3V7_EN) == GPIO.OUT and GPIO.input(P3V7_EN) == GPIO.HIGH
-
-    def get_state(self):
-        """ Get the state of the modem """
-        return self.state
 
     def power_on(self):
         """ Turn on the rail, assert POWER_ON_N, and wait for the modem to enumerate """
@@ -167,7 +154,7 @@ class Modem:
             self.open_control_interface()
 
         # Clear the input buffer
-        self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
+        # self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
         # Send the AT command
         self.port.write((command + '\r\n').encode())
         # Read the response
