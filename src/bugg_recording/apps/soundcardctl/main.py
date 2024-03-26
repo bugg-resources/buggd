@@ -54,12 +54,12 @@ def main():
 
     # Gain command
     set_parser = subparsers.add_parser('gain', help='Set gain')
-    set_parser.add_argument('parameter', required=True, type=int, choices=range(0, 21), metavar='[0-20]', help='Set gain: 3dB steps, 0-60dB')
+    set_parser.add_argument('parameter', type=int, choices=range(0, 21), metavar='[0-20]', help='Set gain: 3dB steps, 0-60dB')
     set_parser.set_defaults(func=handle_gain_command)
 
     # Phantom command
     set_parser = subparsers.add_parser('phantom', help='Set phantom')
-    set_parser.add_argument('parameter', required=True, choices=['none','P48', 'PIP', '3V3'], help='set power mode')
+    set_parser.add_argument('parameter', choices=['none','P48', 'PIP', '3V3'], help='set power mode')
     set_parser.set_defaults(func=handle_phantom_command)
 
     args = parser.parse_args()
