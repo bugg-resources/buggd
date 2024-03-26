@@ -1,7 +1,7 @@
 # Import individual sensor class files into the sensor module namespace
 # This does need to be edited as classes are added
-from sensors.SensorBase import SensorBase
-from sensors.I2SMic import I2SMic
+from bugg_recording.sensors.sensorbase import SensorBase
+from bugg_recording.sensors.i2smic import I2SMic
 
 
 def set_option(var, config, opts):

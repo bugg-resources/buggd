@@ -7,11 +7,12 @@ import signal
 import threading
 import datetime as dt
 import json
-import sensors
 import logging
 import inspect
 from google.cloud import storage
 from pcf8574 import PCF8574
+
+from ...sensors import *
 from ...drivers.modem import Modem
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
