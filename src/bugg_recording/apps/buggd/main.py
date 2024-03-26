@@ -21,6 +21,11 @@ try:
 except:
     import http.client as httplib
 
+# Allow disabling of reboot feature for testing
+# TODO: make this a configurable parameter from the config.json file
+# TODO: set this to True for production
+REBOOT_ALLOWED = False
+
 # set a global name for a common logging for functions using this module
 LOG = 'bugg-recording'
 
@@ -371,7 +376,8 @@ def blink_error_leds(led_driver, error_e, dur=None):
 
     # Reboot unit
     logging.info('Rebooting device to try recover from error')
-    call_cmd_line('sudo reboot')
+    if REBOOT_ALLOWED:
+        call_cmd_line('sudo reboot')
 
 
 def record(led_driver, modem):
