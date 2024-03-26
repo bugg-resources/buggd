@@ -45,6 +45,7 @@ class Soundcard:
         self.zc_gpo = 1     # Enable zero-crossing phantom switching by default
         self.phantom_mode = 0
 
+        self.state={'gain':0, 'phantom':0}
         self.load_state()
 
     def __del__(self):
@@ -93,7 +94,9 @@ class Soundcard:
         tx[1] |= self.zc_gain << 4
         tx[1] |= self.phantom_mode
 
+        logger.debug("Writing state: gain %d, phantom %d", self.gain, self.phantom_mode)
         self.spi.xfer(tx)
+
         self.state = {'gain':self.gain, 'phantom':self.phantom_mode}
         self.store_state()
 
