@@ -42,7 +42,7 @@ def main():
     # Configure the root logger to use the stdout handler
     logging.basicConfig(level=logging.INFO, handlers=[stdout_handler])
     logger = logging.getLogger(__name__)
-    logger.info("Starting modem configuration utility.")
+    logger.info("Starting soundcard configuration utility.")
     
     parser = argparse.ArgumentParser(description='Test sound commands.')
     subparsers = parser.add_subparsers(dest='command', help='Commands')
@@ -54,12 +54,12 @@ def main():
 
     # Gain command
     set_parser = subparsers.add_parser('gain', help='Set gain')
-    set_parser.add_argument('--gain', '-g', required=True, type=int, choices=range(0, 21), metavar='[0-20]', help='Set gain: 3dB steps, 0-60dB')
+    set_parser.add_argument('parameter', required=True, type=int, choices=range(0, 21), metavar='[0-20]', help='Set gain: 3dB steps, 0-60dB')
     set_parser.set_defaults(func=handle_gain_command)
 
     # Phantom command
     set_parser = subparsers.add_parser('phantom', help='Set phantom')
-    set_parser.add_argument('--phantom', '-p', required=True, choices=['none','P48', 'PIP', '3V3'], help='set power mode')
+    set_parser.add_argument('parameter', required=True, choices=['none','P48', 'PIP', '3V3'], help='set power mode')
     set_parser.set_defaults(func=handle_phantom_command)
 
     args = parser.parse_args()
