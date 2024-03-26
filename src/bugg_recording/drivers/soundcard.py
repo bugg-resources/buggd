@@ -72,7 +72,7 @@ class Soundcard:
         else:
             self.gain = 0
             self.phantom_mode = 0
-            self.write_state()
+            self.store_state()
 
     def enable(self):
         """ Turn on the soundcard power rails, set gain to 0, and disable phantom power """
