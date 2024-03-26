@@ -12,15 +12,15 @@ import logging
 import inspect
 from google.cloud import storage
 from pcf8574 import PCF8574
-from utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
-from utils import check_internet_conn, update_time, set_led, enable_modem, disable_modem, wait_for_internet_conn, check_reboot_due
+from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
+from .utils import check_internet_conn, update_time, set_led, enable_modem, disable_modem, wait_for_internet_conn, check_reboot_due
 try:
     import httplib
 except:
     import http.client as httplib
 
 # set a global name for a common logging for functions using this module
-LOG = 'bugg-cm4-firmware'
+LOG = 'bugg-recording'
 
 # How many times to try for an internet connection before starting recording
 BOOT_INTERNET_RETRIES = 30
