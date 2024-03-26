@@ -3,34 +3,33 @@ import logging
 import sys
 from ...drivers.soundcard import Soundcard
 
-sc = Soundcard()
 
-def handle_power_command(logger, args):
+def handle_power_command(logger, soundcard, args):
     """ Turn the soundcard on / off """
     logger.info(f"Turning soundcard {args.parameter}")
     if args.parameter == 'on':
-        sc.enable()
+        soundcard.enable()
     elif args.parameter == 'off':
-        sc.disable()
+        soundcard.disable()
 
-def handle_gain_command(logger, args):
+def handle_gain_command(logger, soundcard, args):
     """ Set gain """
     logger.info(f"Setting gain to {args.parameter}")
-    sc.set_gain(args.parameter)
+    soundcard.set_gain(args.parameter)
 
 
-def handle_phantom_command(logger, args):
+def handle_phantom_command(logger, soundcard, args):
     """ Set phantom power """
     logger.info(f"Setting phantom power to {args.parameter}")
     match args.parameter:
         case 'none':
-            sc.set_phantom(sc.NONE)
+            soundcard.set_phantom(soundcard.NONE)
         case 'PIP':
-            sc.set_phantom(sc.PIP)
+            soundcard.set_phantom(soundcard.PIP)
         case '3V3':
-            sc.set_phantom(sc.P3V3)
+            soundcard.set_phantom(soundcard.P3V3)
         case 'P48':
-            sc.set_phantom(sc.P48)
+            soundcard.set_phantom(soundcard.P48)
 
 def main():
     """ Tool to set power, gain and phantom power of the soundcard."""
@@ -46,6 +45,8 @@ def main():
     
     parser = argparse.ArgumentParser(description='Test sound commands.')
     subparsers = parser.add_subparsers(dest='command', help='Commands')
+
+    soundcard = Soundcard()
 
     # Power command
     power_parser = subparsers.add_parser('power', help='Control power state')
@@ -66,7 +67,7 @@ def main():
 
     # Execute the function associated with the chosen command
     if hasattr(args, 'func'):
-        args.func(logger, args)
+        args.func(logger, soundcard, args)
     else:
         parser.print_help()
 
