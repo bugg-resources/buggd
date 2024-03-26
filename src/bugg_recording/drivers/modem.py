@@ -121,6 +121,7 @@ class Modem:
         while(max_tries > 0):
             logger.info("Checking if modem is enumerated...")
             if self.is_enumerated():
+                logger.info("Modem is enumerated.")
                 return True
             time.sleep(2)
             max_tries -= 1

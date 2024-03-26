@@ -12,8 +12,9 @@ import logging
 import inspect
 from google.cloud import storage
 from pcf8574 import PCF8574
+from ...drivers.modem import Modem
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
-from .utils import check_internet_conn, update_time, set_led, enable_modem, disable_modem, wait_for_internet_conn, check_reboot_due
+from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
 try:
     import httplib
 except:
@@ -219,7 +220,7 @@ class StopMonitoring(Exception):
     pass
 
 
-def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, data_led_update_int):
+def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, modem, data_led_update_int):
 
     """
     Function to synchronize the upload data folder with the GCS bucket
@@ -242,7 +243,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, dat
     # Check for internet conn to update LED
     GLOB_is_connected = check_internet_conn(led_driver, DATA_LED_CHS, col_succ=DATA_LED_CONN, col_fail=DATA_LED_NO_CONN)
     # Turn off modem to save power
-    disable_modem()
+    modem.power_off()
 
     # Wait till half way through first recording to first upload try
     wait_t = start_offs - (time.time() - start_t)
@@ -254,7 +255,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, dat
         start_t = time.time()
 
         # Enable the modem and wait for an internet connection
-        enable_modem()
+        modem.power_on()
         GLOB_is_connected = wait_for_internet_conn(BOOT_INTERNET_RETRIES, led_driver, DATA_LED_CHS, col_succ=DATA_LED_CONN, col_fail=DATA_LED_NO_CONN)
 
         # Set data LED to active uploading state (only if the device is connected as otherwise it's confusing - is the device uploading or not?)
@@ -301,7 +302,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, dat
 
         # Disable the modem to save power
         logging.info('Disabling modem until next server sync (to save power)')
-        disable_modem()
+        modem.power_off()
 
         # Sleep the thread until the next upload cycle
         sync_wait = sync_interval - (time.time() - start_t)
@@ -372,7 +373,7 @@ def blink_error_leds(led_driver, error_e, dur=None):
     call_cmd_line('sudo reboot')
 
 
-def record(led_driver):
+def record(led_driver, modem):
 
     """
     Function to setup, run and log continuous sampling from the sensor.
@@ -420,7 +421,7 @@ def record(led_driver):
 
     if not GLOB_offline_mode:
         # Enable the modem for a mobile network connection. If no modem set recorder to offline mode
-        GLOB_offline_mode = not enable_modem()
+        GLOB_offline_mode = not modem.power_on()
 
     # Try to mount the external SD card
     try:
@@ -491,7 +492,7 @@ def record(led_driver):
     if not GLOB_offline_mode:
         sync_thread = threading.Thread(target=gcs_server_sync, args=(sensor.server_sync_interval,
                                                                      upload_dir, die, CONFIG_FNAME,
-                                                                     led_driver, DATA_LED_UPDATE_INT))
+                                                                     led_driver, modem, DATA_LED_UPDATE_INT))
 
     record_thread = threading.Thread(target=continuous_recording, args=(sensor, working_dir,
                                                                     data_dir, led_driver, die))
@@ -530,10 +531,11 @@ def record(led_driver):
 def main():
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
+    modem = Modem()
 
     try:
         # run continuous recording function
-        record(led_driver)
+        record(led_driver, modem)
     except Exception as e:
         logging.error('Caught exception on main record() function: {}'.format(str(e)))
 
