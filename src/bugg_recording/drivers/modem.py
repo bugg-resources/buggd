@@ -75,10 +75,12 @@ class Modem:
 
     def turn_on_rail(self):
         """ Turn on the 3.7V rail """
+        logger.info("Turning on 3.7V rail.")
         GPIO.output(P3V7_EN, GPIO.HIGH)
     
     def turn_off_rail(self):
         """ Turn off the 3.7V rail """
+        logger.info("Turning off 3.7V rail.")
         GPIO.output(P3V7_EN, GPIO.LOW)
         self.close_control_interface()
         self.release_gpio()
@@ -152,7 +154,6 @@ class Modem:
             self.release_gpio()
 
         if self.wait_power_off():
-            logger.info("Modem has powered down. Turning off 3.7V rail.")
             self.turn_off_rail()
             return True
         else:
@@ -255,7 +256,8 @@ class Modem:
         - True if a SIM card is present, False otherwise.
         """
         try:
-            self.get_sim_ccid()
-            return True
+            if self.get_sim_ccid():
+               return True
         except ModemNoSimException:
             return False 
+        return False
