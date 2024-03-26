@@ -5,8 +5,9 @@ import shutil
 import sensors
 import logging
 import datetime
-from bugg_recording.sensors.sensorbase import SensorBase
-from bugg_recording.apps.buggd.utils import call_cmd_line
+from . import set_option
+from .sensorbase import SensorBase
+from ...apps.buggd.utils import call_cmd_line
 
 class I2SMic(SensorBase):
 
@@ -36,12 +37,12 @@ class I2SMic(SensorBase):
         opts = self.options()
         opts = {var['name']: var for var in opts}
 
-        self.record_length = sensors.set_option('record_length', config, opts)
-        self.record_freq = sensors.set_option('record_freq', config, opts)
-        self.compress_data = sensors.set_option('compress_data', config, opts)
-        self.amplification = sensors.set_option('amplification', config, opts)
-        self.capture_delay = sensors.set_option('capture_delay', config, opts)
-        self.capture_card = sensors.set_option('capture_card', config, opts)
+        self.record_length = set_option('record_length', config, opts)
+        self.record_freq = set_option('record_freq', config, opts)
+        self.compress_data = set_option('compress_data', config, opts)
+        self.amplification = set_option('amplification', config, opts)
+        self.capture_delay = set_option('capture_delay', config, opts)
+        self.capture_card = set_option('capture_card', config, opts)
 
         # set internal variables and required class variables
         self.working_file = 'currentlyRecording.wav'

@@ -2,8 +2,8 @@ import datetime
 import time
 import subprocess
 import os
-import sensors
 import logging
+from . import set_option
 
 class SensorBase(object):
 
@@ -24,7 +24,7 @@ class SensorBase(object):
         opts = {var['name']: var for var in opts}
 
         # config options
-        self.capture_delay = sensors.set_option('capture_delay', config, opts)
+        self.capture_delay = set_option('capture_delay', config, opts)
 
         # set internal variables and required class variables
         self.current_file = None
