@@ -14,12 +14,7 @@ class PCMD3180:
     def __init__(self):
         self.address = I2C_ADDRESS
         GPIO.setup(SHDNZ, GPIO.OUT)
-
-        self.reset()
-        self.send_configuration()
-
-    def __del__(self):
-        GPIO.cleanup()
+        self.power_off()
 
     def power_on(self):
         GPIO.output(SHDNZ, GPIO.HIGH)
@@ -53,7 +48,7 @@ class PCMD3180:
 
     def send_configuration(self):
         logger.info("Sending configuration to PCMD3180")
-        initialization_data = {
+        config_data = {
             0x02: 0x81,
             0x3C: 0x40,
             0x41: 0x40,
@@ -70,7 +65,7 @@ class PCMD3180:
             0x75: 0x60,
             0x3e: 0xff,
         }
-        for reg, data in initialization_data.items():
+        for reg, data in config_data.items():
             self.write_register(reg, data)
         logger.info("Configuration sent.")
 
