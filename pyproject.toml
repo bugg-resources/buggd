@@ -21,7 +21,8 @@ dependencies = [
     "systemd-python",
     "filelock",
     "pyusb",
-    "pyserial"
+    "pyserial",
+    "smbus2",
 ]
 
 [project.scripts]
