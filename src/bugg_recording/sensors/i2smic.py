@@ -29,7 +29,7 @@ class I2SMic(SensorBase):
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
         # Construct the path to the Bash script relative to the Python script
-        pcmd3180_sh = os.path.join(current_dir, '../hardware_drivers/pcmd3180_i2c_init.sh')
+        pcmd3180_sh = os.path.join(current_dir, '../../scripts/pcmd3180_i2c_init.sh')
 
         call_cmd_line(pcmd3180_sh, print_output=True)
 
