@@ -24,11 +24,6 @@ class I2SMic(SensorBase):
 
         call_cmd_line('sudo killall arecord')
 
-        # Get the directory of the current Python script
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-
-
-
         # Initialise the sensor config, double checking the types of values. This
         # code uses the variables named and described in the config static to set
         # defaults and override with any passed in the config file.
