@@ -7,6 +7,7 @@ import logging
 import datetime
 from .options import set_option
 from .sensorbase import SensorBase
+from ...drivers.pcmd3180 import PCMD3180
 # Cannot use a relative import across different sub-packages, so import directly
 from bugg_recording.apps.buggd.utils import call_cmd_line
 
@@ -23,15 +24,14 @@ class I2SMic(SensorBase):
         """
         # Initialise the PCMD3180 chip through I2C
         logger.info('Initialising PCMD3180 PDM->I2S chip over I2C')
+        self.pcmd3180 = PCMD3180()
+
         call_cmd_line('sudo killall arecord')
 
         # Get the directory of the current Python script
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
-        # Construct the path to the Bash script relative to the Python script
-        pcmd3180_sh = os.path.join(current_dir, '../../scripts/pcmd3180_i2c_init.sh')
 
-        call_cmd_line(pcmd3180_sh, print_output=True)
 
         # Initialise the sensor config, double checking the types of values. This
         # code uses the variables named and described in the config static to set
