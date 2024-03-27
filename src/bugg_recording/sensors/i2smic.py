@@ -1,15 +1,11 @@
-import time
-import subprocess
 import os
 import shutil
-import sensors
 import logging
 import datetime
+from bugg_recording.apps.buggd.utils import call_cmd_line
+from bugg_recording.drivers.pcmd3180 import PCMD3180
 from .options import set_option
 from .sensorbase import SensorBase
-from ...drivers.pcmd3180 import PCMD3180
-# Cannot use a relative import across different sub-packages, so import directly
-from bugg_recording.apps.buggd.utils import call_cmd_line
 
 logger = logging.getLogger(__name__)
 class I2SMic(SensorBase):
