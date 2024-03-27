@@ -4,6 +4,7 @@ import logging
 import datetime
 from bugg_recording.apps.buggd.utils import call_cmd_line
 from bugg_recording.drivers.soundcard import Soundcard
+from bugg_recording.drivers.pcmd3180 import PCMD3180
 from .option import set_option
 from .sensorbase import SensorBase
 
@@ -18,9 +19,10 @@ class ExternalMic(SensorBase):
             config: A dictionary loaded from a config JSON file used to replace
             the default settings of the sensor.
         """
-        # Initialise the PCMD3180 chip through I2C
+
         logger.info('Initialising the soundcard')
         self.soundcard = Soundcard()
+        self.pcmd3180 = PCMD3180()
 
         call_cmd_line('sudo killall arecord')
 
@@ -38,6 +40,7 @@ class ExternalMic(SensorBase):
         self.capture_card = set_option('capture_card', config, opts)
         self.gain = set_option('gain', config, opts)
         self.phantom_power = set_option('phantom_power', config, opts)
+        self.enable_internal_mic = set_option('enable_internal_mic', config, opts)
 
         # set internal variables and required class variables
         self.working_file = 'currentlyRecording.wav'
@@ -48,6 +51,13 @@ class ExternalMic(SensorBase):
 
         # Power on the soundcard, with phantom power off and gain set to 0dB
         self.soundcard.enable()
+        self.soundcard.set_gain(self.gain)
+        self.soundcard.set_phantom(self.phantom_power)
+
+        # Power on the internal microphone if required
+        if self.enable_internal_mic:
+            self.pcmd3180.reset()
+            self.pcmd3180.send_configuration()
 
     @staticmethod
     def options():
@@ -85,7 +95,11 @@ class ExternalMic(SensorBase):
                 {'name': 'phantom_power',
                  'type': str,
                  'default': 'none',
-                 'prompt': '\'none\', \'PIP\' = Plug In Power, \'3V3\' = 3.3V on M12 Pin 4, \'P48\' = 48V - WARNING: high voltage - check compatibility before connecting microphone'},
+                 'prompt': '\'NONE\', \'PIP\' = Plug In Power, \'P3V3\' = 3.3V on M12 Pin 4, \'P48\' = 48V - WARNING: high voltage - check compatibility before connecting microphone'},
+                {'name': 'enable_internal_mic',
+                 'type': bool,
+                 'default': False,
+                 'prompt': 'Should the internal microphone be enabled on the other channel?'}
                 ]
 
 
