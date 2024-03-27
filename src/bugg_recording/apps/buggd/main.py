@@ -424,7 +424,8 @@ def record(led_driver, modem):
     logging.info('Start of python_record.py at {}'.format(start_time))
 
     # Log current git commit information
-    stdout = call_cmd_line(['git', 'log', '-1', '--format="%H"'], use_shell=False)
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    stdout = call_cmd_line(['git', '-C', current_dir, 'log', '-1', '--format="%H"'], use_shell=False)
     logging.info('Current git commit hash: {}'.format(stdout.strip()))
 
     if not GLOB_offline_mode:
