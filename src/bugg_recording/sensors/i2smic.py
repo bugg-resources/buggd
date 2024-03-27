@@ -4,7 +4,7 @@ import logging
 import datetime
 from bugg_recording.apps.buggd.utils import call_cmd_line
 from bugg_recording.drivers.pcmd3180 import PCMD3180
-from .options import set_option
+from .option import set_option
 from .sensorbase import SensorBase
 
 logger = logging.getLogger(__name__)
@@ -21,6 +21,8 @@ class I2SMic(SensorBase):
         # Initialise the PCMD3180 chip through I2C
         logger.info('Initialising PCMD3180 PDM->I2S chip over I2C')
         self.pcmd3180 = PCMD3180()
+        self.pcmd3180.reset()
+        self.pcmd3180.send_configuration()
 
         call_cmd_line('sudo killall arecord')
 
