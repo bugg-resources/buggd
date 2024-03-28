@@ -186,7 +186,7 @@ class Modem:
                 self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
                 self.port.reset_input_buffer()
                 self.port.write("ATE0\r\n".encode())  # Turn off echo
-                self.port.reset_input_buffer()
+                self.port.read(CONTROL_INTERFACE_READ_SIZE)
             except serial.SerialException as e:
                 logger.error("Failed to open control interface: %s", e)
                 raise
