@@ -157,7 +157,6 @@ class Modem:
             self.release_gpio()
 
         if self.wait_power_off():
-            logger.info("Turning off 3.7V rail.")
             self.turn_off_rail()
             return True
         else:
