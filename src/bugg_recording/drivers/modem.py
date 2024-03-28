@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 from .lock import Lock
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 P3V7_EN = 7
 POWER_ON_N = 5
@@ -256,6 +256,8 @@ class Modem:
 
         if "ERROR" in response:
             return None
+
+        logger.debug("SIM CCID response: %s", response)
 
         try:
             return response.split(": ")[1].split("\r\n")[0]
