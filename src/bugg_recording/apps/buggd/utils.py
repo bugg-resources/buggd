@@ -221,6 +221,7 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
         m_pwd = m_pwd.strip()
 
         # Add the profile to the network manager
+        logging.info('Adding network connection profile from config file')
         add_network_profile(m_conname, m_host, m_uname, m_pwd)
 
     except Exception as e:
