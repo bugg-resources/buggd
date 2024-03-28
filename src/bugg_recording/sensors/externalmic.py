@@ -161,9 +161,9 @@ class ExternalMic(SensorBase):
             # Compress the raw audio file to mp3 format
             comp_path = os.path.join(self.data_dir, uncomp_f_name) + '.mp3'
             logger.info('{} - Starting compression'.format(uncomp_f_name))
-            cmd = ('ffmpeg -loglevel panic -i {} -codec:a libmp3lame -filter:a "volume={}" -qscale:a 0 -ac 1 {} >/dev/null 2>&1') # VBR compression
+            cmd = ('ffmpeg -loglevel panic -i {} -codec:a libmp3lame -filter:a "volume={}" -qscale:a 0 -ac {} {} >/dev/null 2>&1') # VBR compression
             #cmd = ('ffmpeg -loglevel panic -i {} -codec:a libmp3lame -filter:a "volume=5" -b:a 192k -ac 1 {} >/dev/null 2>&1') # CBR compression
-            call_cmd_line(cmd.format(uncomp_path, self.amplification, comp_path))
+            call_cmd_line(cmd.format(uncomp_path, self.amplification, self.channels, comp_path))
             logger.info('{} - Finished audio compression'.format(uncomp_f_name))
 
         else:
