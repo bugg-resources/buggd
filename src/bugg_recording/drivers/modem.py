@@ -183,6 +183,7 @@ class Modem:
         """ Open the control interface for sending AT commands to the modem. """
         if self.port is None:
             try:
+                logger.debug("Opening port...")
                 self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
                 self.port.reset_input_buffer()
                 self.port.write("ATE0\r\n".encode())  # Turn off echo
