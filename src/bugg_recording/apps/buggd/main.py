@@ -254,7 +254,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
 
     # Wait till half way through first recording to first upload try
     wait_t = start_offs - (time.time() - start_t)
-    time.sleep(wait_t)
+    time.sleep(max(0, wait_t))
 
     # keep running while the die is not set
     while not die.is_set():
