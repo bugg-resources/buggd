@@ -132,7 +132,7 @@ class ExternalMic(SensorBase):
         wfile_trimmed = os.path.join(self.working_dir, 'trimmed_{}'.format(self.working_file))
 
         # Record audio at given freq and duration using the arecord command
-        rec_cmd = 'sudo arecord --device plughw:{},0 -c1 --rate {} --format S32_LE --duration {} {}'
+        rec_cmd = 'sudo arecord --device plughw:{},0 -c1 --rate {} --format S16_LE --duration {} {}'
         call_cmd_line(rec_cmd.format(self.capture_card, self.record_freq, self.record_length + self.rec_start_trim_secs, wfile))
 
         # Trim the first N seconds of audio to remove the 'popping' sound
