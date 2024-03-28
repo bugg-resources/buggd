@@ -8,7 +8,7 @@ import os
 import json
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 EXT_MIC_EN = 12
 
