@@ -249,7 +249,7 @@ class Modem:
         - The ICCID string.
         - None if the modem does not respond to the AT command or if the SIM card is not present.
         """
-        response = self.send_at_command("AT+CCID")
+        response = self.send_at_command("AT+CCID?")
 
         if response is None:
             return None
