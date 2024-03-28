@@ -63,7 +63,8 @@ class PCMD3180:
             0x73: 0xFF,
             0x74: 0xFF,
             0x75: 0x60,
-            0x3e: 0xff,
+            0x3e: 0xff, # Max volume (27dB)
+            0x07: 0x80, # LJ format, 16 bit
         }
         for reg, data in config_data.items():
             self.write_register(reg, data)
