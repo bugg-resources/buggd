@@ -41,6 +41,7 @@ class ExternalMic(SensorBase):
         self.gain = set_option('gain', config, opts)
         self.phantom_power = set_option('phantom_power', config, opts)
         self.enable_internal_mic = set_option('enable_internal_mic', config, opts)
+        self.channels = 2 if self.enable_internal_mic else 1
 
         # set internal variables and required class variables
         self.working_file = 'currentlyRecording.wav'
@@ -132,8 +133,8 @@ class ExternalMic(SensorBase):
         wfile_trimmed = os.path.join(self.working_dir, 'trimmed_{}'.format(self.working_file))
 
         # Record audio at given freq and duration using the arecord command
-        rec_cmd = 'sudo arecord --device plughw:{},0 -c1 --rate {} --format S16_LE --duration {} {}'
-        call_cmd_line(rec_cmd.format(self.capture_card, self.record_freq, self.record_length + self.rec_start_trim_secs, wfile))
+        rec_cmd = 'sudo arecord --device plughw:{},0 --channels {} --rate {} --format S16_LE --duration {} {}'
+        call_cmd_line(rec_cmd.format(self.capture_card, self.channels, self.record_freq, self.record_length + self.rec_start_trim_secs, wfile))
 
         # Trim the first N seconds of audio to remove the 'popping' sound
         trim_cmd = 'ffmpeg -y -loglevel panic -i {} -ss {} {} >/dev/null 2>&1'
