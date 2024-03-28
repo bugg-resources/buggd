@@ -7,10 +7,7 @@ import json
 import RPi.GPIO as GPIO
 from datetime import datetime
 import time
-try:
-    import httplib
-except:
-    import http.client as httplib
+import requests
 
 
 def set_led(led_driver, channels_arr, col_arr):
@@ -89,19 +86,23 @@ def update_time():
 
 def check_internet_conn(led_driver=[], led_driver_chs=[], col_succ=[], col_fail=[], timeout=2):
     """
-    Check if there is a valid internet conntection
+    Check if there is a valid internet connection by fetching the entire content of Google's homepage and print the number of bytes.
     """
-
-    # Try grabbing the header of google.com and catch the exception if not possible
-    conn = httplib.HTTPConnection('google.com', timeout=timeout)
-    success = False
     try:
-        conn.request('HEAD', '/')
-        conn.close()
-        if led_driver:
-            set_led(led_driver, led_driver_chs, col_succ)
-        return True
+        # Use the requests library to handle the connection and automatically follow redirects
+        response = requests.get('http://www.google.com', timeout=timeout)
+        
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            content_length = len(response.content)  # Get the number of bytes in the response content
+            logging.debug("Successfully fetched Google's homepage. Content size: %s bytes.", content_length)
+            if led_driver:
+                set_led(led_driver, led_driver_chs, col_succ)
+            return True
+        else:
+            logging.debug("Failed to fetch Google's homepage. Status code: %s", response.status_code)
     except Exception as e:
+        print(f"An error occurred: {e}")
         if led_driver:
             set_led(led_driver, led_driver_chs, col_fail)
         return False
