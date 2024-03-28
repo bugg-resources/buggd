@@ -222,6 +222,7 @@ class Modem:
             self.port.write((command + '\r\n').encode())
             # Read the response
             response = self.port.read(CONTROL_INTERFACE_READ_SIZE).decode('utf-8').strip()
+            logger.debug("AT command: %s, response: %s", command, response) 
             if not response:
                 raise ModemTimeoutException("Timeout occurred waiting for a response from the modem.")
             
