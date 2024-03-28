@@ -23,6 +23,7 @@ dependencies = [
     "pyusb",
     "pyserial",
     "smbus2",
+    "requests",
 ]
 
 [project.scripts]

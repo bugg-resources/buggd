@@ -1,8 +1,5 @@
 import datetime
 import time
-import subprocess
-import os
-import logging
 from .option import set_option
 
 class SensorBase(object):

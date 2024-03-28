@@ -1,31 +1,24 @@
 import os
 import sys
 import time
-import subprocess
 import shutil
 import signal
 import threading
 import datetime as dt
 import json
 import logging
-import inspect
 from google.cloud import storage
 from pcf8574 import PCF8574
 
-from ... import sensors as sensors
-from ...drivers.modem import Modem
+from bugg_recording import sensors
+from bugg_recording.drivers.modem import Modem
 
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
-try:
-    import httplib
-except:
-    import http.client as httplib
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
-# TODO: set this to True for production
-REBOOT_ALLOWED = False
+REBOOT_ALLOWED = True
 
 # set a global name for a common logging for functions using this module
 LOG = 'bugg-recording'
