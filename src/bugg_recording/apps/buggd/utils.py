@@ -211,11 +211,14 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
     try:
         # Load the mobile network settings from the config file
         config = json.load(open(local_config_path))
-        modem_config = config['mobile_network'].strip()
-        m_uname = modem_config['username'].strip()
-        m_pwd = modem_config['password'].strip()
-        m_host = modem_config['hostname'].strip()
+        modem_config = config['mobile_network']
+        m_uname = modem_config['username']
+        m_pwd = modem_config['password']
+        m_host = modem_config['hostname']
         m_conname = m_host.replace('.','') + config['device']['config_id']
+
+        m_uname = m_uname.strip()
+        m_pwd = m_pwd.strip()
 
         # Add the profile to the network manager
         add_network_profile(m_conname, m_host, m_uname, m_pwd)
