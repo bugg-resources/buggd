@@ -139,17 +139,46 @@ def wait_for_internet_conn(n_tries, led_driver, led_driver_chs, col_succ, col_fa
 
     return is_conn
 
+
 def add_network_profile(name, apn, username, password):
-    logging.info('Adding profile {}: host {} uname {} pwd {} to network manager'.format(m_conname, m_host, m_uname, m_pwd))
-    nm_cmd = 'sudo nmcli connection add type gsm ifname \'*\' con-name \'{}\' apn \'{}\' connection.autoconnect yes'.format(m_conname, m_host)
+    """ Add a new GSM connection profile to NetworkManager if there isn't already one with the same apn, username and password. """
+   
+    try:
+        # List existing GSM connections and grab their UUIDs
+        result = subprocess.run(['nmcli', '-t', '-f', 'TYPE,UUID', 'connection', 'show'], stdout=subprocess.PIPE, check=True)
+        connections_output = result.stdout.decode().strip()
+        gsm_uuids = [line.split(':')[1] for line in connections_output.split('\n') if line.startswith('gsm')]
+ 
+        # Check each GSM connection for the specified APN, username, and password
+        exists = False
+        for uuid in gsm_uuids:
+            # Fetch details of each GSM connection
+            details_result = subprocess.run(['nmcli', '--show-secrets', '-t', 'connection', 'show', uuid], stdout=subprocess.PIPE, check=True)
+            details_output = details_result.stdout.decode()
+        
+            # Build dictionary of the connection details
+            details = dict(line.split(':', 1) for line in details_output.splitlines() if ':' in line)
+            if details.get('gsm.apn') == apn and details.get('gsm.username') == username and details.get('gsm.password') == password:
+                exists = True
+                logging.info("Skipping: connection with these details already exists.")
+                break
+    
+        # If the connection does not exist, add it using the provided name
+        if not exists:
+            add_command = ['nmcli', 'connection', 'add', 'type', 'gsm', 'con-name', name, 'gsm.apn', apn] 
+            if username is not None and username != "":
+                add_command.append('gsm.username')
+                add_command.append(username)
+            if password is not None and password != "":
+                add_command.append('gsm.password')
+                add_command.append(password)
+        
+            if subprocess.run(add_command, check=True):
+                logging.info("New connection added with name: %s", name)
+                
+    except subprocess.CalledProcessError as e:
+        logging.info("Failed to add new connection: %s", e)
 
-    # Check if username and password aren't blank before adding them to the profile
-    if m_uname.strip() != '':
-        nm_cmd = nm_cmd + '  gsm.username {}'.format(m_uname)
-    if m_pwd.strip() != '':
-        nm_cmd = nm_cmd + '  gsm.password {}'.format(m_pwd)
-
-    call_cmd_line(nm_cmd)
 
 def copy_sd_card_config(sd_mount_loc, config_fname):
 
@@ -182,10 +211,10 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
     try:
         # Load the mobile network settings from the config file
         config = json.load(open(local_config_path))
-        modem_config = config['mobile_network']
-        m_uname = modem_config['username']
-        m_pwd = modem_config['password']
-        m_host = modem_config['hostname']
+        modem_config = config['mobile_network'].strip()
+        m_uname = modem_config['username'].strip()
+        m_pwd = modem_config['password'].strip()
+        m_host = modem_config['hostname'].strip()
         m_conname = m_host.replace('.','') + config['device']['config_id']
 
         # Add the profile to the network manager
