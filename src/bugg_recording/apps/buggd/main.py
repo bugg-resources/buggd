@@ -295,7 +295,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
 
                         # If the file did not upload successfully an Exception will be thrown
                         # by upload_from_filename, so if we're here it's safe to delete the local file
-                        logging.info('Deleting local file at {}'.format(local_path))
+                        logging.info('Upload complete. Deleting local file at {}'.format(local_path))
                         os.remove(local_path)
 
             except Exception as e:
@@ -421,7 +421,7 @@ def record(led_driver, modem):
     hdlr = logging.FileHandler(filename=logfile)
     logging.getLogger().addHandler(hdlr)
 
-    logging.info('Start of python_record.py at {}'.format(start_time))
+    logging.info('Start of buggd at {}'.format(start_time))
 
     # Log current git commit information
     current_dir = os.path.dirname(os.path.realpath(__file__))
