@@ -44,7 +44,6 @@ def call_cmd_line(args, use_shell=True, print_output=False, run_in_bg=False):
     """
     Use command line calls - wrapper around subprocess.Popen
     """
-    logging.info('cwd {}'.format(os.getcwd()))
     p = subprocess.Popen(args, stdout=subprocess.PIPE, shell=use_shell, encoding='utf8')
     if run_in_bg: return
 
@@ -140,6 +139,17 @@ def wait_for_internet_conn(n_tries, led_driver, led_driver_chs, col_succ, col_fa
 
     return is_conn
 
+def add_network_profile(name, apn, username, password):
+    logging.info('Adding profile {}: host {} uname {} pwd {} to network manager'.format(m_conname, m_host, m_uname, m_pwd))
+    nm_cmd = 'sudo nmcli connection add type gsm ifname \'*\' con-name \'{}\' apn \'{}\' connection.autoconnect yes'.format(m_conname, m_host)
+
+    # Check if username and password aren't blank before adding them to the profile
+    if m_uname.strip() != '':
+        nm_cmd = nm_cmd + '  gsm.username {}'.format(m_uname)
+    if m_pwd.strip() != '':
+        nm_cmd = nm_cmd + '  gsm.password {}'.format(m_pwd)
+
+    call_cmd_line(nm_cmd)
 
 def copy_sd_card_config(sd_mount_loc, config_fname):
 
@@ -179,16 +189,7 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
         m_conname = m_host.replace('.','') + config['device']['config_id']
 
         # Add the profile to the network manager
-        logging.info('Adding profile {}: host {} uname {} pwd {} to network manager'.format(m_conname, m_host, m_uname, m_pwd))
-        nm_cmd = 'sudo nmcli connection add type gsm ifname \'*\' con-name \'{}\' apn \'{}\' connection.autoconnect yes'.format(m_conname, m_host)
-
-        # Check if username and password aren't blank before adding them to the profile
-        if m_uname.strip() != '':
-            nm_cmd = nm_cmd + '  gsm.username {}'.format(m_uname)
-        if m_pwd.strip() != '':
-            nm_cmd = nm_cmd + '  gsm.password {}'.format(m_pwd)
-
-        call_cmd_line(nm_cmd)
+        add_network_profile(m_conname, m_host, m_uname, m_pwd)
 
     except Exception as e:
         logging.info('Couldn\'t add network manager profile from config file: {}'.format(str(e)))
