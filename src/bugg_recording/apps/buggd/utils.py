@@ -102,7 +102,7 @@ def check_internet_conn(led_driver=[], led_driver_chs=[], col_succ=[], col_fail=
         else:
             logging.debug("Failed to fetch Google's homepage. Status code: %s", response.status_code)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.debug("An error occurred: %s", e)
         if led_driver:
             set_led(led_driver, led_driver_chs, col_fail)
         return False
