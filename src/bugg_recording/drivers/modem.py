@@ -217,7 +217,6 @@ class Modem:
         try:
             # Check port isn't already open. Some processes, like ModemManager, open in non-exclusive mode that pyserial can't detect
             if self.is_serial_port_in_use(CONTROL_INTERFACE):
-                logger.error(f"Serial port {CONTROL_INTERFACE} is in use, probably by ModemManager.")
                 raise ModemInUseException("Serial port already open")
 
             # Open the serial port
