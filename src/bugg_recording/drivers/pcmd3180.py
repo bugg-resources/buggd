@@ -6,7 +6,7 @@ from smbus2 import SMBus
 import RPi.GPIO as GPIO
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+#logger.setLevel(logging.INFO)
 
 SHDNZ = 0
 
@@ -32,11 +32,13 @@ class PCMD3180:
 
     def power_on(self):
         """ Turn on the PCMD3180 """
+        logger.debug("Powering on PCMD3180")
         GPIO.output(SHDNZ, GPIO.HIGH)
         time.sleep(0.5)
 
     def power_off(self):
         """ Turn off the PCMD3180"""
+        logger.debug("Powering off PCMD3180")
         GPIO.output(SHDNZ, GPIO.LOW)
         time.sleep(0.1)
 
