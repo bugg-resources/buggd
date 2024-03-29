@@ -31,7 +31,7 @@ class FactoryTest:
         self.test_recording()
         
         self.logger.info("Factory test completed.")
-        self.logger.info("Results: %s", self.get_results_string())
+        self.logger.info("Results:\n%s", self.get_results_string())
         return True
 
     def test_modem(self):
