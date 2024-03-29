@@ -55,7 +55,7 @@ def main():
     stdout_handler.setFormatter(formatter)
 
     # Configure the root logger to use the stdout handler
-    logging.basicConfig(level=logging.DEBUG, handlers=[stdout_handler])
+    logging.basicConfig(level=logging.WARNING, handlers=[stdout_handler])
     logger = logging.getLogger(__name__)
     logger.info("Starting soundcard configuration utility.")
     
@@ -90,7 +90,6 @@ def main():
     # Measure variance command
     measure_parser = subparsers.add_parser('variance', help='Measure variance (hiss check to detect signal presence)')
     measure_parser.set_defaults(func=handle_variance_command)
-    
 
     args = parser.parse_args()
 
