@@ -10,7 +10,7 @@ from .lock import Lock
 from .pcmd3180 import PCMD3180
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+#logger.setLevel(logging.INFO)
 
 EXT_MIC_EN = 12
 
@@ -18,7 +18,19 @@ LOCK_FILE = "/tmp/soundcard.lock"
 STATE_FILE = "/tmp/soundcard_state.json"
 
 class Soundcard:
-    """ Provides controls for the soundcard """
+    """ 
+    This class provides power, phantom power, and gain controls for the soundcard.
+    
+    It maintains the state of the SPI PGA chip (gain and phantom power settings) 
+    in a temporary file. This allows us to change gain or phantom power settings
+    independenty, since the chip only has a single register for both settings.
+
+    It manages both internal and external channels.
+
+    There is also a method to measure the variance of the audio signal, which is used to
+    determine whether the soundcard is functioning correctly.
+    
+    """
 
     # Phantom power modes
     NONE = "NONE"
@@ -52,6 +64,7 @@ class Soundcard:
 
     def close(self):
         """ Release the lock file """
+        logger.debug("Closing soundcard")
         self.disable_external_channel()
         self.disable_internal_channel()
         GPIO.cleanup()
@@ -83,6 +96,8 @@ class Soundcard:
 
     def enable_external_channel(self):
         """ Turn on the soundcard power rails, set gain to 0, and disable phantom power """
+        logger.debug("Enabling external channel")
+
         GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         GPIO.output(EXT_MIC_EN, 1)
         self.set_gain(0)
@@ -91,15 +106,22 @@ class Soundcard:
 
     def disable_external_channel(self):
         """ Turn off the soundcard power rails"""
-        GPIO.setup(EXT_MIC_EN, GPIO.IN) # Pulled down externally
+        logger.debug("Disabling external channel")
+
+        GPIO.setup(EXT_MIC_EN, GPIO.OUT) # Pulled down externally
+        GPIO.output(EXT_MIC_EN, 0)
 
     def enable_internal_channel(self):
         """ Turn on I2S bridge, initialise it """
+        logger.debug("Enabling internal channel")
+        
         self.pcmd3180.reset()
         self.pcmd3180.send_configuration()
 
     def disable_internal_channel(self):
         """ Turn off I2S bridge """
+        logger.debug("Disabling internal channel")
+
         self.pcmd3180.power_off()
 
     def write_state(self):
