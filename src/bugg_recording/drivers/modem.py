@@ -203,14 +203,11 @@ class Modem:
                     try:
                         # Check if this fd is a symlink to our target device
                         if os.path.realpath(fd_path) == target_device:
-                            print(f"Device {port} is in use by process {pid}")
+                            logger.info(f"Device {port} is in use by process {pid}")
                             return True
                     except FileNotFoundError:
                         # The fd was closed; move on to the next
                         continue
-        
-        # If we've checked all processes and found no link to the target device
-        print(f"Device {port} is not in use")
         return False
     
     def send_at_command(self, command):
