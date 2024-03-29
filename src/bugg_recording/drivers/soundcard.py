@@ -3,9 +3,11 @@
 import RPi.GPIO as GPIO
 import spidev
 import logging
-from .lock import Lock
 import os
 import json
+import subprocess
+from .lock import Lock
+from .pcmd3180 import PCMD3180
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -33,6 +35,7 @@ class Soundcard:
             self.result = False
             raise
 
+        self.pcmd3180 = PCMD3180()
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False) # Squash warning if the pin is already in use
         GPIO.setup(EXT_MIC_EN, GPIO.OUT)
@@ -75,16 +78,25 @@ class Soundcard:
             self.phantom_mode = 0
             self.store_state()
 
-    def enable(self):
+    def enable_external_channel(self):
         """ Turn on the soundcard power rails, set gain to 0, and disable phantom power """
         GPIO.output(EXT_MIC_EN, 1)
         self.set_gain(0)
         self.set_phantom(self.NONE)
         self.write_state()
 
-    def disable(self):
+    def disable_external_channel(self):
         """ Turn off the soundcard power rails"""
         GPIO.output(EXT_MIC_EN, 0)
+
+    def enable_internal_channel(self):
+        """ Turn on I2S bridge, initialise it """
+        self.pcmd3180.reset()
+        self.pcmd3180.send_configuration()
+
+    def disable_internal_channel(self):
+        """ Turn off I2S bridge """
+        self.pcmd3180.power_off()
 
     def write_state(self):
         """ Write the current state to the soundcard """
@@ -122,3 +134,50 @@ class Soundcard:
             case _:
                 raise ValueError("Invalid phantom mode")
         self.write_state()
+
+        
+    def measure_variance(self):
+        """
+        Record a second of audio from both channels and compute the variance.
+        This is used to determine whether the soundcard is functioning correctly.
+
+        Returns a dict with the variance of each channel.
+        """
+
+        fn = '/tmp/soundcard_test.raw'
+        fn_internal = fn + '.0'
+        fn_external = fn + '.1'
+
+        try:
+            subprocess.run(['arecord', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', '--file-type=raw', fn], check=True)
+
+            samples_internal = read_16bit_signed_pcm(fn_internal)
+            samples_external = read_16bit_signed_pcm(fn_external)
+
+            variance_internal = calculate_variance(samples_internal, calculate_mean(samples_internal))
+            variance_external = calculate_variance(samples_external, calculate_mean(samples_external))
+            
+            return {'internal': variance_internal, 'external': variance_external}
+            
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            logger.error("Failed to record audio: %s", e)
+            return None
+
+
+def read_16bit_signed_pcm(file_path):
+    """ Read a raw 16-bit signed PCM file and return the samples as a list. """
+    with open(file_path, 'rb') as file:
+        content = file.read()
+        samples = [int.from_bytes(content[i:i+2], 'little', signed=True) for i in range(0, len(content), 2)]
+    return samples
+
+
+def calculate_mean(data):
+    """ Calculate the mean of a list of numbers. Avoids dependency on numpy. """
+    return sum(data) / len(data)
+
+
+def calculate_variance(data, mean):
+    """ Calculate the variance of a list of numbers. Avoids dependency on numpy."""
+    return sum((x - mean) ** 2 for x in data) / len(data)
+
