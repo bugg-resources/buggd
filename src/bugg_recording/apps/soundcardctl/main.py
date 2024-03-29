@@ -13,18 +13,18 @@ def handle_power_commandMeh(logger, soundcard, args):
         soundcard.disable()
 
 def handle_power_command(logger, soundcard, args):
-    if args.object == 'internal':
+    if args.channel == 'internal':
         if args.state == 'on':
             print("Turning internal soundcard on")
         else:
             print("Turning internal soundcard off")
-    elif args.object == 'external':
+    elif args.channel == 'external':
         if args.state == 'on':
             soundcard.enable()
         else:
             soundcard.disable()
     else:
-        logger.error("Invalid object type specified.")
+        logger.error("Invalid channel type specified.")
 
 
 def handle_gain_command(logger, soundcard, args):
@@ -65,15 +65,15 @@ def main():
 
     # Power command
     power_parser = subparsers.add_parser('power', help='Control power state')
-    power_subparsers = power_parser.add_subparsers(dest='object', help='Specify channel to control') 
+    power_subparsers = power_parser.add_subparsers(required=True, dest='channel', help='Specify channel to control') 
    
     # Internal power command
-    internal_power_parser = power_subparsers.add_parser('internal', help='Control power state for internal object')
-    internal_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for internal object')
+    internal_power_parser = power_subparsers.add_parser('internal', help='Control power state for internal microphone interface')
+    internal_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for internal microphone interface')
 
     # External power command
-    external_power_parser = power_subparsers.add_parser('external', help='Control power state for external object')
-    external_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for external object')
+    external_power_parser = power_subparsers.add_parser('external', help='Control power state for external microphone interface')
+    external_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for external microphone interface')
 
     power_parser.set_defaults(func=handle_power_command)
 
@@ -89,11 +89,16 @@ def main():
 
     args = parser.parse_args()
 
-    # Execute the function associated with the chosen command
-    if hasattr(args, 'func'):
-        args.func(logger, soundcard, args)
-    else:
+    # Manually check for the 'channel' argument in the 'power' command
+    if args.command == 'power' and not hasattr(args, 'channel'):
         parser.print_help()
+
+    else:
+        # Execute the function associated with the chosen command
+        if hasattr(args, 'func'):
+            args.func(logger, soundcard, args)
+        else:
+            parser.print_help()
 
 
 if __name__ == "__main__":
