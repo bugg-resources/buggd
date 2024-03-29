@@ -164,6 +164,6 @@ class FactoryTest:
             "\nFactory Self-Test Results:\n"
             + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
             + "\n"
-            + "Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!"
+            + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
         )
         return s
