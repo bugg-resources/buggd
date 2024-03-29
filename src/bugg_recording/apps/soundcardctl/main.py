@@ -4,13 +4,28 @@ import sys
 from ...drivers.soundcard import Soundcard
 
 
-def handle_power_command(logger, soundcard, args):
+def handle_power_commandMeh(logger, soundcard, args):
     """ Turn the soundcard on / off """
     logger.info(f"Turning soundcard {args.parameter}")
     if args.parameter == 'on':
         soundcard.enable()
     elif args.parameter == 'off':
         soundcard.disable()
+
+def handle_power_command(logger, soundcard, args):
+    if args.object == 'internal':
+        if args.state == 'on':
+            print("Turning internal soundcard on")
+        else:
+            print("Turning internal soundcard off")
+    elif args.object == 'external':
+        if args.state == 'on':
+            soundcard.enable()
+        else:
+            soundcard.disable()
+    else:
+        logger.error("Invalid object type specified.")
+
 
 def handle_gain_command(logger, soundcard, args):
     """ Set gain """
@@ -50,7 +65,16 @@ def main():
 
     # Power command
     power_parser = subparsers.add_parser('power', help='Control power state')
-    power_parser.add_argument('parameter', choices=['on', 'off'], help='Power on or off')
+    power_subparsers = power_parser.add_subparsers(dest='object', help='Specify channel to control') 
+   
+    # Internal power command
+    internal_power_parser = power_subparsers.add_parser('internal', help='Control power state for internal object')
+    internal_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for internal object')
+
+    # External power command
+    external_power_parser = power_subparsers.add_parser('external', help='Control power state for external object')
+    external_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for external object')
+
     power_parser.set_defaults(func=handle_power_command)
 
     # Gain command
