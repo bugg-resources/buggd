@@ -120,7 +120,7 @@ class FactoryTest:
             modem = Modem()
 
             # Run the tests
-            self.results["modem_enumerates"] = modem.power_off() and modem.power_on() and modem.is_enumerated()
+            self.results["modem_enumerates"] = modem.power_off() and modem.power_on() and modem.is_enumerated() and modem.power_off()
             self.results["modem_responsive"] = modem.is_responding()
             self.results["modem_sim_readable"] = modem.sim_present()
             self.results["modem_towers_found"] = modem.get_rssi() is not None and modem.get_rssi() != 99
