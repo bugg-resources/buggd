@@ -7,6 +7,7 @@ import threading
 import datetime as dt
 import json
 import logging
+import argparse
 from google.cloud import storage
 from pcf8574 import PCF8574
 
@@ -533,9 +534,25 @@ def record(led_driver, modem):
 
 
 def main():
+
+    parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
+    parser.add_argument('--force-factory-test', action='store_true',
+                        help='Run factory test, even if trigger file is not present.')
+
+    args = parser.parse_args()
+
+    run_factory_test = False
+
+    if args.force_factory_test:
+        logging.info('Factory test requested.')
+        run_factory_test = True
+
     # If the trigger file exists, run the factory test
     if os.path.exists(FACTORY_TEST_TRIGGER):
         logging.info('Factory test trigger file found - running factory test.')
+        run_factory_test = True
+
+    if run_factory_test:
         test = FactoryTest() 
         sys.exit(test.run())
 
