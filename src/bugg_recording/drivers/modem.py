@@ -191,6 +191,9 @@ class Modem:
         try:
             # Open the serial port
             with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+                ser.write(("ATE0\r\n").encode())
+                time.sleep(0.1)
+                ser.read_all()
                 time.sleep(0.5)
                 ser.write((command + "\r\n").encode())
                 time.sleep(0.5)
