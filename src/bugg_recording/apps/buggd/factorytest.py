@@ -10,32 +10,6 @@ from bugg_recording.drivers.soundcard import Soundcard
 from bugg_recording.drivers.pcmd3180 import PCMD3180
 from .utils import discover_serial
 
-def i2c_device_present(addr, bus_num=1, force=True):
-    """
-    This function probes the I2C bus to check if a device responds.
-    Since I2C doesn't have a standard way to check if a device is present,
-    this function attempts to read a byte from the device.
-    There is no guarantee that this will not change the device's state.
-    There is also no guarantee that every device will respond to this, but
-    it works for the devices we currently use 
-    """
-
-    try:
-        # Prepare read and write operations without changing the device state
-        with SMBus(bus_num) as bus:
-            # Attempt to read a byte from the device
-            bus.read_byte(addr, force=force)
-        return True
-    except OSError as expt:
-        if expt.errno == 16:
-            # Device is busy but present
-            return True
-        # Any other OSError means the device did not respond as expected
-        return False
-    except Exception:
-        return False
-
-
 class FactoryTest:
     """ 
     This class runs a series of tests on the hardware in the factory.
@@ -246,3 +220,29 @@ class FactoryTest:
             os.symlink(self.results_file, "/etc/issue.d/factory_test_results.issue")
         except FileExistsError:
             pass
+
+
+def i2c_device_present(addr, bus_num=1, force=True):
+    """
+    This function probes the I2C bus to check if a device responds.
+    Since I2C doesn't have a standard way to check if a device is present,
+    this function attempts to read a byte from the device.
+    There is no guarantee that this will not change the device's state.
+    There is also no guarantee that every device will respond to this, but
+    it works for the devices we currently use 
+    """
+
+    try:
+        # Prepare read and write operations without changing the device state
+        with SMBus(bus_num) as bus:
+            # Attempt to read a byte from the device
+            bus.read_byte(addr, force=force)
+        return True
+    except OSError as expt:
+        if expt.errno == 16:
+            # Device is busy but present
+            return True
+        # Any other OSError means the device did not respond as expected
+        return False
+    except Exception:
+        return False
