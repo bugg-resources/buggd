@@ -31,6 +31,14 @@ def handle_check_responding(logger, modem, args):
     else:
         logger.info("Modem is not responding.")
 
+def handle_get_signal_strength(logger, modem, args):
+    """ Get the signal strength """
+    signal_strength = modem.get_signal_strength()
+    if signal_strength:
+        logger.info(f"Signal strength: {signal_strength}")
+    else:
+        logger.info("Failed to get signal strength.")
+
 def main():
     """ 
     Standalone utility to control the modem's power state and check status
@@ -64,12 +72,16 @@ def main():
     check_responding_parser = subparsers.add_parser('check_responding', help='Check if modem is responding')
     check_responding_parser.set_defaults(func=handle_check_responding)
 
+    # Get signal strength command
+    get_signal_strength_parser = subparsers.add_parser('get_signal_strength', help='Get signal strength')
+    get_signal_strength_parser.set_defaults(func=handle_get_signal_strength)
+    
+
     args = parser.parse_args()
 
     # Execute the function associated with the chosen command
     if hasattr(args, 'func'):
         modem = Modem()
-        modem.open_control_interface()
         args.func(logger, modem, args)
     else:
         parser.print_help()

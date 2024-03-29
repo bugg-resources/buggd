@@ -185,8 +185,7 @@ class Modem:
         if self.port is None:
             try:
                 logger.debug("Opening port...")
-                self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, exclusive=True, timeout=CONTROL_INTERFACE_TIMEOUT)
-                time.sleep(2)
+                self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
                 self.port.write("ATE0\r\n".encode())  # Turn off echo   
                 time.sleep(0.5) 
                 self.port.read_all()  # Clear the input buffer
@@ -213,11 +212,11 @@ class Modem:
 
         try:
             # Open the serial port
-            # with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
-            time.sleep(0.5)
-            self.port.write((command + "\r\n").encode())
-            time.sleep(0.5)
-            response = self.port.read_all()
+            with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+                time.sleep(0.5)
+                ser.write((command + "\r\n").encode())
+                time.sleep(0.5)
+                response = ser.read_all()
 
         except serial.SerialException as e:
             logger.error("Failed to send AT command: %s", e)
@@ -229,75 +228,7 @@ class Modem:
 
         logger.debug(filtered_lines)
         return filtered_lines
-    
-    def send_at_commandass(self, command):
-        """
-        Sends an AT command to a modem and returns the response.
-
-        Returns:
-            str: The response from the modem.
-        """
-        response = ''
-
-        try:
-            # Open the serial port
-            with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
-                # Flush input buffer
-                ser.reset_input_buffer()
-                time.sleep(1)
-
-                # Send the AT command
-                ser.write((command + '\r\n').encode())
-
-                # Wait a bit for the modem to process the command and start responding
-                time.sleep(1)
-
-                # Read the response
-                while ser.in_waiting > 0:
-                    response += ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
-                    time.sleep(0.1)  # Wait a bit more for the rest of the response
-
-        except serial.SerialException as e:
-            logger.error("Failed to send AT command: %s", e)
-
-        return response
-    
-    
-    def send_at_commandfuck(self, command):
-        """
-        If the control interface is not open, open it.
-        Send an AT command to the modem and returns the response string.
-        
-        Args:
-        - command: The AT command to send to the modem. 
-        
-        Returns:
-        - The response string from the modem.
-        
-        Raises:
-        - ModemTimeoutException: If a timeout occurs waiting for a response.
-        """
-        try:
-            if (self.port is None):
-                self.open_control_interface()
-
-            # Clear the input buffer
-            #self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
-            # Send the AT command
-            self.port.write((command + '\r\n').encode())
-            time.sleep(TIME_WAIT_RESPONSE)
-            # Read the response
-            response = self.port.read(CONTROL_INTERFACE_READ_SIZE).decode('utf-8').strip()
-            logger.debug("AT command: %s, response: %s", command, response) 
-            if not response:
-                raise ModemTimeoutException("Timeout occurred waiting for a response from the modem.")
-            
-            return response
-        except (ModemTimeoutException, serial.SerialException) as e:
-            logger.error("Error sending AT command: %s", e)
-        
-        return None
-    
+   
     def is_responding(self):
         """
         Check if the modem is responding to AT commands.
@@ -310,6 +241,26 @@ class Modem:
             return "OK" in response
         except (TypeError, ModemTimeoutException):
             return False
+
+    def get_signal_strength(self):
+        """
+        Get the signal strength of the modem.
+        
+        Returns:
+        - The signal strength in dBm.
+        - None if the modem does not respond to the AT command.
+        """
+        response = self.send_at_command("AT+CSQ")
+
+        if response is None:
+            return None
+
+        logger.debug("Signal strength response: %s", response)
+
+        try:
+            return int(response[1].split(": ")[1].split(",")[0])
+        except:
+            return None
 
     def get_sim_ccid(self):
         """
