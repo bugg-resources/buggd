@@ -89,7 +89,7 @@ class FactoryTest:
             self.logger.warning("Some tests did not complete successfully. Check the results.")
             ret = False
 
-        self.all_passed = all(self.results)
+        self.all_passed = all(self.results.values())
 
         # Log the results
         self.logger.info("%s", self.get_results_string())
@@ -164,6 +164,6 @@ class FactoryTest:
             "\nFactory Self-Test Results:\n"
             + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
             + "\n"
-            + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
+            + "Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!"
         )
         return s
