@@ -29,12 +29,12 @@ def handle_check_enumerated(logger, modem, args):
     if modem.is_enumerated():
         logger.info("Modem is enumerated.")
     else:
-        logger.info("Modem is not enumerated.")
+        logger.info("Modem is not enumerated. It's probably not powered on.")
 
 def handle_check_responding(logger, modem, args):
     """ Check if the modem is responding """
     if modem.is_responding():
-        logger.info("Modem is responding.")
+        logger.info("Modem is responding to AT commands.")
     else:
         logger.info("Modem is not responding.")
 
