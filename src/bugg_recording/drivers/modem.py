@@ -218,7 +218,7 @@ class Modem:
                 self.open_control_interface()
 
             # Clear the input buffer
-            self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
+            #self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
             # Send the AT command
             self.port.write((command + '\r\n').encode())
             # Read the response
