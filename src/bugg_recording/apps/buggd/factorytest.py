@@ -239,4 +239,4 @@ class FactoryTest:
 
         # Link into /etc/issue.d
         os.makedirs("/etc/issue.d", exist_ok=True)
-        os.symlink(self.results_file, "/etc/issue.d/factory_test_results.txt")
+        os.symlink(self.results_file, "/etc/issue.d/factory_test_results.issue")
