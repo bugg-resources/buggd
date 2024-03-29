@@ -1,15 +1,20 @@
 import argparse
 import logging
 import sys
-from ...drivers.soundcard import Soundcard
+from bugg_recording.drivers.soundcard import Soundcard
+from bugg_recording.drivers.pcmd3180 import PCMD3180
 
 
 def handle_power_command(logger, soundcard, args):
+    """ Set power state of either the internal or external mic interface """
     if args.channel == 'internal':
+        pcmd = PCMD3180()
         if args.state == 'on':
-            print("Turning internal soundcard on")
+            pcmd.reset()
+            pcmd.send_configuration() 
         else:
-            print("Turning internal soundcard off")
+            pcmd.power_off()
+
     elif args.channel == 'external':
         if args.state == 'on':
             soundcard.enable()
