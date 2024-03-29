@@ -45,7 +45,7 @@ def handle_variance_command(logger, soundcard, args):
     if variances is None:
         logger.error("Failed to measure variance.")
     else:
-        print("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])
+        print(f"Signal variances: Internal = {variances['internal']:.2f}, External = {variances['external']:.2f}")
 
 def main():
     """ Tool to set power, gain and phantom power of the soundcard."""
