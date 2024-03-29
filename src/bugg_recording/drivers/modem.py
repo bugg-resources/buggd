@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 from .lock import Lock
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 
 P3V7_EN = 7
 POWER_ON_N = 5
