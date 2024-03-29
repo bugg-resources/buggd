@@ -268,7 +268,7 @@ class Modem:
         try:
             response = self.send_at_command("AT")
             return "OK" in response
-        except serial.SerialException:
+        except:
             return False
 
     def get_rssi(self):
@@ -347,4 +347,4 @@ class Modem:
         Returns:
         - True if a SIM card is present, False otherwise.
         """
-        return self.get_sim_ccid()
+        return self.get_sim_ccid() is not None
