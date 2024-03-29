@@ -205,7 +205,7 @@ class Modem:
         Sends an AT command to a modem and returns the response.
 
         Returns:
-            str: The response from the modem.
+            list: The response from the modem.
         """
         response = ''
 
@@ -221,7 +221,12 @@ class Modem:
             logger.error("Failed to send AT command: %s", e)
 
         logger.debug("AT command: %s, response: %s", command, response)
-        return response
+        s = response.decode('utf-8')
+        lines = s.splitlines()
+        filtered_lines = [line for line in lines if line.strip()] 
+
+        logger.debug(filtered_lines)
+        return filtered_lines
     
     def send_at_commandass(self, command):
         """
