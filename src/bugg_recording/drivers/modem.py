@@ -88,7 +88,6 @@ class Modem:
         """ Turn off the 3.7V rail """
         logger.info("Turning off 3.7V rail.")
         GPIO.output(P3V7_EN, GPIO.LOW)
-        self.close_control_interface()
         self.release_gpio()
 
 
@@ -242,6 +241,7 @@ class Modem:
                     rssi = int(item.split(": ")[1].split(",")[0])
                     if rssi == 99:
                         logger.warning("No signal - missing antenna?")
+                    return rssi
                 except:
                     return None
 
