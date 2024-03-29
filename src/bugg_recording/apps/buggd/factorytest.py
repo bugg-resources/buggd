@@ -4,6 +4,7 @@ run if the trigger file is present. '''
 import logging
 from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
+from bugg_recording.drivers.pcmd3180 import PCMD3180
 import subprocess
 from smbus2 import SMBus
 
@@ -142,10 +143,17 @@ class FactoryTest:
             pcmd3180_addr = 0x4c # I2S bridge
             ds3231_addr = 0x68 # RTC
 
+            # Power the PCMD3180
+            pcmd = PCMD3180()
+            pcmd.power_on()
+
             # Run the tests
             self.results["i2s_bridge_responding"] = i2c_device_present(pcmd3180_addr)
             self.results["rtc_responding"] = i2c_device_present(ds3231_addr)
             self.results["led_controller_responding"] = i2c_device_present(pcf8574_addr)
+
+            pcmd.power_off()
+            pcmd.close()
 
             return True
 
@@ -161,6 +169,9 @@ class FactoryTest:
 
         try:
             soundcard = Soundcard()
+
+            soundcard.enable_internal_channel()
+            soundcard.enable_external_channel()
 
             variances = soundcard.measure_variance()
 
