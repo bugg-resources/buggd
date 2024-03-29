@@ -331,4 +331,4 @@ class Modem:
         Returns:
         - True if a SIM card is present, False otherwise.
         """
-        return self.get_sim_ccid():
+        return self.get_sim_ccid()
