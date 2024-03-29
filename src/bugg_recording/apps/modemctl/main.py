@@ -7,7 +7,7 @@ It's mainly intended for use during debugging.
 import logging
 import sys
 import argparse
-from ...drivers.modem import Modem
+from ...drivers.modem import Modem, ModemInUseException
 
 def handle_power_command(logger, modem, args):
     """ Turn the modem on / off """
@@ -107,7 +107,7 @@ def main():
         modem = Modem()
         try:
             args.func(logger, modem, args)
-        except modem.ModemInUseException:
+        except ModemInUseException:
             logger.error("Modem is already in use, probably by ModemManager.")
     else:
         parser.print_help()
