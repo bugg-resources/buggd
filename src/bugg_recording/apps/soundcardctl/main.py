@@ -39,6 +39,14 @@ def handle_phantom_command(logger, soundcard, args):
         case 'P48':
             soundcard.set_phantom(soundcard.P48)
 
+def handle_variance_command(logger, soundcard, args):
+    """ Measure variance """
+    variances = soundcard.measure_variance()
+    if variances is None:
+        logger.error("Failed to measure variance.")
+    else:
+        logger.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])
+
 def main():
     """ Tool to set power, gain and phantom power of the soundcard."""
     # Create a StreamHandler for stdout
@@ -67,7 +75,6 @@ def main():
     # External power command
     external_power_parser = power_subparsers.add_parser('external', help='Control power state for external microphone interface')
     external_power_parser.add_argument('state', choices=['on', 'off'], help='Power state for external microphone interface')
-
     power_parser.set_defaults(func=handle_power_command)
 
     # Gain command
@@ -79,6 +86,11 @@ def main():
     set_parser = subparsers.add_parser('phantom', help='Set phantom')
     set_parser.add_argument('parameter', choices=['none','P48', 'PIP', '3V3'], help='set power mode')
     set_parser.set_defaults(func=handle_phantom_command)
+
+    # Measure variance command
+    measure_parser = subparsers.add_parser('variance', help='Measure variance')
+    measure_parser.set_defaults(func=handle_variance_command)
+    
 
     args = parser.parse_args()
 
