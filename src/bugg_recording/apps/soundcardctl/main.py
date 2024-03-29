@@ -15,7 +15,7 @@ def handle_power_command(logger, soundcard, args):
         if args.state == 'on':
             soundcard.enable_external_channel()
         else:
-            soundcard.disable_internal_channel()
+            soundcard.disable_external_channel()
     else:
         logger.error("Invalid channel type specified.")
 
@@ -55,7 +55,7 @@ def main():
     stdout_handler.setFormatter(formatter)
 
     # Configure the root logger to use the stdout handler
-    logging.basicConfig(level=logging.DEBUG, handlers=[stdout_handler])
+    logging.basicConfig(level=logging.WARNING, handlers=[stdout_handler])
     logger = logging.getLogger(__name__)
     logger.info("Starting soundcard configuration utility.")
     
