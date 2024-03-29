@@ -19,9 +19,8 @@ LOCK_FILE = "/tmp/modem.lock"
 
 CONTROL_INTERFACE = "/dev/tty_modem_command_interface"
 CONTROL_INTERFACE_BAUD = 115200
-CONTROL_INTERFACE_TIMEOUT = 0.3
+CONTROL_INTERFACE_TIMEOUT = 3
 CONTROL_INTERFACE_READ_SIZE = 100
-TIME_WAIT_RESPONSE = 0.5
 
 VENDOR_ID = 0x1199
 PRODUCT_ID = 0x68c0
@@ -222,7 +221,6 @@ class Modem:
             self.port.reset_input_buffer()  # Sometimes the modem sends status strings unprompted
             # Send the AT command
             self.port.write((command + '\r\n').encode())
-            time.sleep(TIME_WAIT_RESPONSE)
             # Read the response
             response = self.port.read(CONTROL_INTERFACE_READ_SIZE).decode('utf-8').strip()
             logger.debug("AT command: %s, response: %s", command, response) 
