@@ -214,7 +214,7 @@ class Modem:
             with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
                 ser.write((command + "\r\n").encode())
                 time.sleep(0.5)
-                ser.read_all()
+                response = ser.read_all()
 
         except serial.SerialException as e:
             logger.error("Failed to send AT command: %s", e)
