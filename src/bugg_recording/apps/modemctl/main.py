@@ -105,7 +105,10 @@ def main():
     # Execute the function associated with the chosen command
     if hasattr(args, 'func'):
         modem = Modem()
-        args.func(logger, modem, args)
+        try:
+            args.func(logger, modem, args)
+        except modem.ModemInUseException:
+            logger.error("Modem is already in use, probably by ModemManager.")
     else:
         parser.print_help()
 if __name__ == "__main__":

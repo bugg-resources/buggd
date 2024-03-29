@@ -27,14 +27,8 @@ TIME_WAIT_RESPONSE = 0.5
 VENDOR_ID = 0x1199
 PRODUCT_ID = 0x68c0
 
-class ModemTimeoutException(Exception):
-    """Exception raised when a timeout occurs while waiting for a response from the modem."""
-
-class ModemNoSimException(Exception):
-    """Exception raised when no SIM card is detected in the modem."""
-
-class ModemNoResponseException(Exception):
-    """Exception raised when the modem does not respond to AT commands."""
+class ModemInUseException(Exception):
+    """Exception raised when the modem is already in use by another process."""
 
 class Modem:
     """
@@ -224,7 +218,7 @@ class Modem:
             # Check port isn't already open. Some processes, like ModemManager, open in non-exclusive mode that pyserial can't detect
             if self.is_serial_port_in_use(CONTROL_INTERFACE):
                 logger.error(f"Serial port {CONTROL_INTERFACE} is in use, probably by ModemManager.")
-                return None          
+                raise ModemInUseException("Serial port already open")
 
             # Open the serial port
             with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
@@ -258,7 +252,7 @@ class Modem:
         try:
             response = self.send_at_command("AT")
             return "OK" in response
-        except (TypeError, ModemTimeoutException):
+        except serial.SerialException:
             return False
 
     def get_rssi(self):
@@ -305,8 +299,6 @@ class Modem:
 
     def get_sim_ccid(self):
         """
-        TRY AS I MIGHT, SOMETIMES THE RESPONSE IS EMPTY
-        
         Get the SIM card's ICCID.
         
         Returns:
@@ -339,9 +331,4 @@ class Modem:
         Returns:
         - True if a SIM card is present, False otherwise.
         """
-        try:
-            if self.get_sim_ccid():
-               return True
-        except ModemNoSimException:
-            return False 
-        return False
+        return self.get_sim_ccid():
