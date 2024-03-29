@@ -147,7 +147,7 @@ class Modem:
             return True
 
         logger.info("Turning off modem. Issuing AT command to power down...")
-        if self.send_at_command("AT!POWERDOWN"):
+        if self.send_at_command_no_response("AT!POWERDOWN"):
             self.release_gpio()
 
         if self.wait_power_off():
@@ -203,6 +203,23 @@ class Modem:
                         # The fd was closed; move on to the next
                         continue
         return False
+
+    def send_at_command_no_response(self, command):
+        """
+        Sends AT command in a fire-and-forget manner.
+        
+        This is useful if port is already open in non-exclusive mode by another process
+        and we'll be unable to read the response.
+        """
+        try:
+            # Open the serial port
+            with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+                ser.write((command + "\r\n").encode())
+
+        except serial.SerialException as e:
+            logger.error("Failed to send AT command: %s", e)
+            return None 
+
     
     def send_at_command(self, command):
         """
