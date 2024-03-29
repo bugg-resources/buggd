@@ -111,7 +111,7 @@ class FactoryTest:
         # Check if all tests passed - this indicates that all the hardware is functioning correctly 
         self.all_passed = all(self.results.values())
 
-        self.logger.info("\n%s\n", self.get_results_string())
+        self.logger.info("\n%s", self.get_results_string())
         self.write_results_to_disk()
 
         return ret
@@ -222,6 +222,7 @@ class FactoryTest:
             + "\n"
             + "-----------------------\n"
             + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
+            + "\n\n"
         )
         return s
 
