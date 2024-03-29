@@ -1,6 +1,8 @@
+""" Driver for the PCMD3180 I2S-to-PDM bridge """
+
 import logging
-from smbus2 import SMBus
 import time
+from smbus2 import SMBus
 import RPi.GPIO as GPIO
 
 logger = logging.getLogger(__name__)
@@ -11,6 +13,12 @@ SHDNZ = 0
 I2C_ADDRESS = 0x4c
 
 class PCMD3180:
+    """
+    Class to control the PCMD3180 I2S-to-PDM bridge
+    We are actually using it in Left-Justified format, not I2S,
+    because of the intricacies of the LJ -> SPI converter logic.
+    """
+
     def __init__(self):
         self.address = I2C_ADDRESS
         GPIO.setmode(GPIO.BCM)
@@ -19,18 +27,22 @@ class PCMD3180:
         self.power_off()
 
     def power_on(self):
+        """ Turn on the PCMD3180 """
         GPIO.output(SHDNZ, GPIO.HIGH)
         time.sleep(0.5)
 
     def power_off(self):
+        """ Turn off the PCMD3180"""
         GPIO.output(SHDNZ, GPIO.LOW)
         time.sleep(0.1)
 
     def reset(self):
+        """ Reset the PCMD3180 """
         self.power_off()
         self.power_on()
 
     def write_register(self, reg, data):
+        """ Write data to a register over I2C """
         i2c = SMBus(1)
         try:
             i2c.write_byte_data(self.address, reg, data)
@@ -39,6 +51,7 @@ class PCMD3180:
         i2c.close()
 
     def read_register(self, reg):
+        """ Read data from a register over I2C """
         i2c = SMBus(1)
         try:
             data = i2c.read_byte_data(self.address, reg)
@@ -46,9 +59,14 @@ class PCMD3180:
             logger.error("Failed to read from register %s: %s", reg, e)
             data = None
         i2c.close()
-        return data 
+        return data
 
     def send_configuration(self):
+        """
+        Send the configuration data to the PCMD3180 
+        
+        This sets up the channel we're using, the sample format, bus type, volume, etc.
+        """
         logger.info("Sending configuration to PCMD3180")
         config_data = {
             0x02: 0x81,
@@ -71,4 +89,3 @@ class PCMD3180:
         for reg, data in config_data.items():
             self.write_register(reg, data)
         logger.info("Configuration sent.")
-
