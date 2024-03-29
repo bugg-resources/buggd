@@ -163,10 +163,14 @@ class FactoryTest:
             soundcard = Soundcard()
 
             variances = soundcard.measure_variance()
+
+            if variances is None:
+                return False
+            
             logging.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
 
-            self.results["internal_microphone_recording"] = soundcard.measure_variance()['internal'] < 100
-            self.results["external_microphone_recording"] = soundcard.measure_variance()['external'] < 100
+            self.results["internal_microphone_recording"] = variances['internal'] > 100
+            self.results["external_microphone_recording"] = variances['external'] > 100
 
             return True
 
