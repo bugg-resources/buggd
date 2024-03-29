@@ -9,7 +9,7 @@ class FactoryTest:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.results = {
-            "modem_enumerated": False,
+            "modem_enumerates": False,
             "modem_responsive": False,
             "modem_sim_readable": False,
             "modem_towers_found": False,
@@ -31,28 +31,51 @@ class FactoryTest:
         self.test_recording()
         
         self.logger.info("Factory test completed.")
+        self.logger.info("Results: %s", self.get_results_string())
         return True
 
     def test_modem(self):
+        """
+        Run a series of tests on the modem.
+        
+        Returns:
+            bool: True if all tests ran successfully, False otherwise.
+            NOTE: A true result does not necessarily mean the modem is functioning correctly
+            check the results dictionary for more information.
+        """
         self.logger.info("Testing modem.")
 
         try:
-            subprocess.run(["sudo", "systemctl", "stop", "ModemManager"], check=True)
-        except subprocess.CalledProcessError as e:
-            self.logger.error("Failed to stop ModemManager.")
-            self.logger.error(e)
-            return False
-
-        modem = Modem()
-        self.results["modem_enumerated"] = modem.power_on()
             
-        
-        self.results["modem_responsive"] = self.modem_is_responsive()
-        self.results["modem_sim_readable"] = self.modem_is_sim_readable()
-        self.results["modem_towers_found"] = self.modem_towers_found()
+            # Stop ModemManager to prevent it from interfering with the modem
+            try:
+                subprocess.run(["sudo", "systemctl", "stop", "ModemManager"], check=True)
+            except subprocess.CalledProcessError as e:
+                self.logger.warning("Failed to stop ModemManager: %s", e)
+                return False
+
+            modem = Modem()
+
+            # Run the tests
+            self.results["modem_enumerated"] = modem.power_off() and modem.power_on() and modem.is_enumerated()
+            self.results["modem_responsive"] = modem.is_responding()
+            self.results["modem_sim_readable"] = modem.sim_present()
+            self.results["modem_towers_found"] = modem.get_rssi() is not None and modem.get_rssi() != 99
+
+            return True
+       
+        except Exception as e:
+            self.logger.error("Error during modem test: %s", e)
+            return False 
 
     def test_i2c_devices(self):
         pass
     
     def test_recording(self):
         pass
+
+    def get_results(self):
+        return self.results
+    
+    def get_results_string(self):
+        return "\n".join([f"{k}: {v}" for k, v in self.results.items()])
