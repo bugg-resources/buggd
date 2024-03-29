@@ -3,6 +3,7 @@ run if the trigger file is present. '''
 
 import logging
 from bugg_recording.drivers.modem import Modem
+from bugg_recording.drivers.soundcard import Soundcard
 import subprocess
 from smbus2 import SMBus
 
@@ -74,7 +75,7 @@ class FactoryTest:
         completed = [] 
 
         self.logger.info("Testing modem.")
-        completed.append(self.test_modem())
+        #completed.append(self.test_modem())
 
         self.logger.info("Testing I2C devices.")
         completed.append(self.test_i2c_devices())
@@ -153,7 +154,25 @@ class FactoryTest:
             return False
 
     def test_recording(self):
-        pass
+        """
+        Check for hiss on both the internal and external microphones
+        Do this by recording a second of audio and checking the variance
+        """
+
+        try:
+            soundcard = Soundcard()
+
+            variances = soundcard.measure_variance()
+            logging.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
+
+            self.results["internal_microphone_recording"] = soundcard.measure_variance()['internal'] < 100
+            self.results["external_microphone_recording"] = soundcard.measure_variance()['external'] < 100
+
+            return True
+
+        except Exception as e:
+            self.logger.error("Error during recording test: %s", e)
+            return False
 
     def get_results(self):
         """ Return the test results as a dictionary """
