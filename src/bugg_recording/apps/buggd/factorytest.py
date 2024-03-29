@@ -83,12 +83,15 @@ class FactoryTest:
 
         if all(completed):
             self.logger.info("All tests completed.")
-            return True
+            ret = True
         else:
             self.logger.warning("Some tests did not complete successfully. Check the results.")
+            ret = False
 
-            self.logger.info("%s", self.get_results_string())
-            return False
+        # Log the results
+        self.logger.info("%s", self.get_results_string())
+
+        return ret
         
 
     def test_modem(self):
