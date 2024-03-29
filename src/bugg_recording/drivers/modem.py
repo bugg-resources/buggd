@@ -186,9 +186,8 @@ class Modem:
             try:
                 logger.debug("Opening port...")
                 self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
-                #self.port.reset_input_buffer()
                 self.port.write("ATE0\r\n".encode())  # Turn off echo
-                self.port.read(CONTROL_INTERFACE_READ_SIZE)
+                time.sleep(1) 
             except serial.SerialException as e:
                 logger.error("Failed to open control interface: %s", e)
                 raise
@@ -201,6 +200,38 @@ class Modem:
             self.port = None
     
     def send_at_command(self, command):
+        """
+        Sends an AT command to a modem and returns the response.
+
+        Returns:
+            str: The response from the modem.
+        """
+        response = ''
+
+        try:
+            # Open the serial port
+            with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+                # Flush input buffer
+                ser.reset_input_buffer()
+
+                # Send the AT command
+                ser.write((command + '\r\n').encode())
+
+                # Wait a bit for the modem to process the command and start responding
+                time.sleep(1)
+
+                # Read the response
+                while ser.in_waiting > 0:
+                    response += ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+                    time.sleep(0.1)  # Wait a bit more for the rest of the response
+
+        except serial.SerialException as e:
+            logger.error("Failed to send AT command: %s", e)
+
+        return response
+    
+    
+    def send_at_commandfuck(self, command):
         """
         If the control interface is not open, open it.
         Send an AT command to the modem and returns the response string.
