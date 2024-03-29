@@ -285,10 +285,14 @@ class Modem:
 
         logger.debug("SIM CCID response: %s", response)
 
-        try:
-            return response.split(": ")[1].split("\r\n")[0]
-        except:
-            return None
+        for item in response:
+            if "+CCID" in item:
+                try:
+                    return int(item.split(": ")[1])
+                except:
+                    return None
+
+
 
     def sim_present(self):
         """
