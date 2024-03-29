@@ -2,24 +2,20 @@ import argparse
 import logging
 import sys
 from bugg_recording.drivers.soundcard import Soundcard
-from bugg_recording.drivers.pcmd3180 import PCMD3180
-
 
 def handle_power_command(logger, soundcard, args):
     """ Set power state of either the internal or external mic interface """
     if args.channel == 'internal':
-        pcmd = PCMD3180()
         if args.state == 'on':
-            pcmd.reset()
-            pcmd.send_configuration() 
+            soundcard.enable_internal_channel()
         else:
-            pcmd.power_off()
+            soundcard.disable_internal_channel()
 
     elif args.channel == 'external':
         if args.state == 'on':
-            soundcard.enable()
+            soundcard.enable_external_channel()
         else:
-            soundcard.disable()
+            soundcard.disable_internal_channel()
     else:
         logger.error("Invalid channel type specified.")
 
