@@ -15,6 +15,7 @@ from bugg_recording.drivers.modem import Modem
 
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
+from .factorytest import FactoryTest
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
@@ -53,6 +54,7 @@ PWR_LED_ON = (0, 0)
 CONFIG_FNAME = 'config.json'
 
 SD_MNT_LOC = '/mnt/sd/'
+FACTORY_TEST_TRIGGER = '/mnt/sd/factory.txt'
 
 GLOB_no_sd_mode = False
 GLOB_is_connected = False
@@ -531,6 +533,12 @@ def record(led_driver, modem):
 
 
 def main():
+    # If the trigger file exists, run the factory test
+    if os.path.exists(FACTORY_TEST_TRIGGER):
+        logging.info('Factory test trigger file found - running factory test.')
+        test = FactoryTest() 
+        sys.exit(test.run())
+
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
     modem = Modem()
