@@ -88,7 +88,7 @@ def main():
     set_parser.set_defaults(func=handle_phantom_command)
 
     # Measure variance command
-    measure_parser = subparsers.add_parser('variance', help='Measure variance')
+    measure_parser = subparsers.add_parser('variance', help='Measure variance (hiss check to detect signal presense)')
     measure_parser.set_defaults(func=handle_variance_command)
     
 
