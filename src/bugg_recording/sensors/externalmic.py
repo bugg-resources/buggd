@@ -4,7 +4,6 @@ import logging
 import datetime
 from bugg_recording.apps.buggd.utils import call_cmd_line
 from bugg_recording.drivers.soundcard import Soundcard
-from bugg_recording.drivers.pcmd3180 import PCMD3180
 from .option import set_option
 from .sensorbase import SensorBase
 
@@ -22,7 +21,6 @@ class ExternalMic(SensorBase):
 
         logger.info('Initialising the soundcard')
         self.soundcard = Soundcard()
-        self.pcmd3180 = PCMD3180()
 
         call_cmd_line('sudo killall arecord')
 
@@ -51,15 +49,14 @@ class ExternalMic(SensorBase):
         self.server_sync_interval = self.record_length + self.capture_delay
 
         # Power on the soundcard, with phantom power off and gain set to 0dB
-        self.soundcard.enable()
+        self.soundcard.enable_external_channel()
         self.soundcard.set_gain(self.gain)
         self.soundcard.set_phantom(self.phantom_power)
 
         # Power on the internal microphone if required
         if self.enable_internal_mic:
-            self.pcmd3180.reset()
-            self.pcmd3180.send_configuration()
-
+            self.soundcard.enable_internal_channel()
+            
     @staticmethod
     def options():
         """
