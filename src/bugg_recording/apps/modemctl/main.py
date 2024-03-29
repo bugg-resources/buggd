@@ -69,6 +69,7 @@ def main():
     # Execute the function associated with the chosen command
     if hasattr(args, 'func'):
         modem = Modem()
+        modem.open_control_interface()
         args.func(logger, modem, args)
     else:
         parser.print_help()
