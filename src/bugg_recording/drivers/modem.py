@@ -4,6 +4,7 @@ import time
 from enum import Enum, auto
 import usb.core
 import usb.util
+import os
 import serial
 import RPi.GPIO as GPIO
 from .lock import Lock
@@ -178,6 +179,39 @@ class Modem:
         """ Check if the modem is enumerated on the USB bus """
         return usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID) is not None
 
+
+    def is_serial_port_in_use(port_device):
+        # Normalize the target device path (resolve any symlinks)
+        target_device = os.path.realpath(port_device)
+        
+        # Iterate over all processes in /proc
+        for pid in os.listdir('/proc'):
+            if pid.isdigit():
+                fds_path = f'/proc/{pid}/fd'
+                try:
+                    # List all file descriptors for the current process
+                    fds = os.listdir(fds_path)
+                except PermissionError:
+                    # Skip this process if we don't have permission to view its fds
+                    continue
+                except FileNotFoundError:
+                    # Process might have ended; move on to the next
+                    continue
+                
+                for fd in fds:
+                    fd_path = os.path.join(fds_path, fd)
+                    try:
+                        # Check if this fd is a symlink to our target device
+                        if os.path.realpath(fd_path) == target_device:
+                            print(f"Device {port_device} is in use by process {pid}")
+                            return True
+                    except FileNotFoundError:
+                        # The fd was closed; move on to the next
+                        continue
+        
+        # If we've checked all processes and found no link to the target device
+        print(f"Device {port_device} is not in use")
+        return False
     
     def send_at_command(self, command):
         """
@@ -188,7 +222,13 @@ class Modem:
         """
         response = bytes()
 
+
         try:
+            # Check port isn't already open. Some processes, like ModemManager, open in non-exclusive mode that pyserial can't detect
+            if is_serial_port_in_use(CONTROL_INTERFACE):
+                logger.error(f"Serial port {CONTROL_INTERFACE} is in use, probably by ModemManager.")
+                return None          
+
             # Open the serial port
             with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
                 ser.write(("ATE0\r\n").encode())
@@ -201,6 +241,7 @@ class Modem:
 
         except serial.SerialException as e:
             logger.error("Failed to send AT command: %s", e)
+            return None 
 
         logger.debug("AT command: %s, response: %s", command, response)
         s = response.decode('utf-8')
