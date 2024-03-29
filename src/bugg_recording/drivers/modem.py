@@ -199,7 +199,30 @@ class Modem:
             self.port.close()
             self.port = None
     
+    
     def send_at_command(self, command):
+        """
+        Sends an AT command to a modem and returns the response.
+
+        Returns:
+            str: The response from the modem.
+        """
+        response = ''
+
+        try:
+            # Open the serial port
+            with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+                ser.write((command + "\r\n").encode())
+                time.sleep(0.5)
+                ser.read_all()
+
+        except serial.SerialException as e:
+            logger.error("Failed to send AT command: %s", e)
+
+
+        return response
+    
+    def send_at_commandass(self, command):
         """
         Sends an AT command to a modem and returns the response.
 
