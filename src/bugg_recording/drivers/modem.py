@@ -186,7 +186,7 @@ class Modem:
             try:
                 logger.debug("Opening port...")
                 self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, exclusive=True, timeout=CONTROL_INTERFACE_TIMEOUT)
-                time.wait(2)
+                time.sleep(2)
                 self.port.write("ATE0\r\n".encode())  # Turn off echo   
                 time.sleep(0.5) 
                 self.port.read_all()  # Clear the input buffer
