@@ -186,7 +186,7 @@ class Modem:
         Returns:
             list: The response from the modem.
         """
-        response = ''
+        response = bytes()
 
         try:
             # Open the serial port
