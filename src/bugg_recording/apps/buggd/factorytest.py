@@ -2,11 +2,11 @@
 run if the trigger file is present. '''
 
 import logging
+import subprocess
+from smbus2 import SMBus
 from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
 from bugg_recording.drivers.pcmd3180 import PCMD3180
-import subprocess
-from smbus2 import SMBus
 
 def i2c_device_present(addr, bus_num=1, force=True):
     """
