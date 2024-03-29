@@ -98,7 +98,7 @@ class FactoryTest:
         self.all_passed = all(self.results.values())
 
         # Log the results
-        self.logger.info("%s", self.get_results_string())
+        self.logger.info("\n%s\n", self.get_results_string())
 
         return ret
         
