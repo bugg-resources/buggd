@@ -162,8 +162,10 @@ class FactoryTest:
         """ Return a formatted string of the test results, one per line """
         s = (
             "\nFactory Self-Test Results:\n"
+            + "--------------------------\n"
             + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
             + "\n"
+            + "-----------------------\n"
             + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
         )
         return s
