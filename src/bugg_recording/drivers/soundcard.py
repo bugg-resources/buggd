@@ -149,7 +149,7 @@ class Soundcard:
         fn_external = fn + '.1'
 
         try:
-            subprocess.run(['arecord', '--separate-channels' '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', '--file-type=raw', fn], check=True)
+            subprocess.run(['arecord', '--separate-channels', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', '--file-type=raw', fn], check=True)
 
             samples_internal = read_16bit_signed_pcm(fn_internal)
             samples_external = read_16bit_signed_pcm(fn_external)
