@@ -180,26 +180,6 @@ class Modem:
         """ Check if the modem is enumerated on the USB bus """
         return usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID) is not None
 
-    def open_control_interface(self):
-        """ Open the control interface for sending AT commands to the modem. """
-        if self.port is None:
-            try:
-                logger.debug("Opening port...")
-                self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
-                self.port.write("ATE0\r\n".encode())  # Turn off echo   
-                time.sleep(0.5) 
-                self.port.read_all()  # Clear the input buffer
-            except serial.SerialException as e:
-                logger.error("Failed to open control interface: %s", e)
-                raise
-        return True
-
-    def close_control_interface(self):
-        """ Close the control interface """
-        if self.port is not None:
-            self.port.close()
-            self.port = None
-    
     
     def send_at_command(self, command):
         """
@@ -242,12 +222,12 @@ class Modem:
         except (TypeError, ModemTimeoutException):
             return False
 
-    def get_signal_strength(self):
+    def get_rssi(self):
         """
         Get the signal strength of the modem.
         
         Returns:
-        - The signal strength in dBm.
+        - The signal strength.
         - None if the modem does not respond to the AT command.
         """
         response = self.send_at_command("AT+CSQ")
@@ -257,13 +237,30 @@ class Modem:
 
         logger.debug("Signal strength response: %s", response)
 
-        try:
-            return int(response[1].split(": ")[1].split(",")[0])
-        except:
-            return None
+        for item in response:
+            if "+CSQ" in item:
+                try:
+                    return int(item.split(": ")[1].split(",")[0])
+                except:
+                    return None
+
+    def get_rssi_dbm(self):
+        """
+        Get the signal strength of the modem in dBm.
+        
+        Returns:
+        - The signal strength in dBm.
+        - None if the modem does not respond to the AT command.
+        """
+        rssi = self.get_rssi()
+        if rssi is not None:
+            return -113 + 2 * rssi
+        return None
 
     def get_sim_ccid(self):
         """
+        TRY AS I MIGHT, SOMETIMES THE RESPONSE IS EMPTY
+        
         Get the SIM card's ICCID.
         
         Returns:

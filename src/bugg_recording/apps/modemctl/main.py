@@ -33,9 +33,9 @@ def handle_check_responding(logger, modem, args):
 
 def handle_get_signal_strength(logger, modem, args):
     """ Get the signal strength """
-    signal_strength = modem.get_signal_strength()
+    signal_strength = modem.get_rssi_dbm()
     if signal_strength:
-        logger.info(f"Signal strength: {signal_strength}")
+        logger.info(f"Signal strength: {signal_strength} dBm")
     else:
         logger.info("Failed to get signal strength.")
 
