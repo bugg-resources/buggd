@@ -66,7 +66,6 @@ class Modem:
     def __del__(self):
         """ Release the lock file when the object is deleted"""
         self.release_gpio()
-        self.close_control_interface()
         self.lock.release_lock()
 
     def configure_gpio(self):
