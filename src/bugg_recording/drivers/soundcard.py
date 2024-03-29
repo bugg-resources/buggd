@@ -38,7 +38,6 @@ class Soundcard:
         self.pcmd3180 = PCMD3180()
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False) # Squash warning if the pin is already in use
-        GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
         self.spi.max_speed_hz = 5_000_000
@@ -51,8 +50,12 @@ class Soundcard:
         self.state={'gain':0, 'phantom':0}
         self.load_state()
 
-    def __del__(self):
-        """ Release the lock file when the object is deleted"""
+    def close(self):
+        """ Release the lock file """
+        self.disable_external_channel()
+        self.disable_internal_channel()
+        GPIO.cleanup()
+        self.spi.close()
         self.lock.release_lock()
 
     def store_state(self):
@@ -80,6 +83,7 @@ class Soundcard:
 
     def enable_external_channel(self):
         """ Turn on the soundcard power rails, set gain to 0, and disable phantom power """
+        GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         GPIO.output(EXT_MIC_EN, 1)
         self.set_gain(0)
         self.set_phantom(self.NONE)
@@ -87,7 +91,7 @@ class Soundcard:
 
     def disable_external_channel(self):
         """ Turn off the soundcard power rails"""
-        GPIO.output(EXT_MIC_EN, 0)
+        GPIO.setup(EXT_MIC_EN, GPIO.IN) # Pulled down externally
 
     def enable_internal_channel(self):
         """ Turn on I2S bridge, initialise it """
