@@ -23,8 +23,6 @@ class PCMD3180:
         self.address = I2C_ADDRESS
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-        GPIO.setup(SHDNZ, GPIO.OUT)
-        self.power_off()
 
     def close(self):
         """ Clean up the GPIO """
@@ -33,12 +31,14 @@ class PCMD3180:
     def power_on(self):
         """ Turn on the PCMD3180 """
         logger.debug("Powering on PCMD3180")
+        GPIO.setup(SHDNZ, GPIO.OUT)
         GPIO.output(SHDNZ, GPIO.HIGH)
         time.sleep(0.5)
 
     def power_off(self):
         """ Turn off the PCMD3180"""
         logger.debug("Powering off PCMD3180")
+        GPIO.setup(SHDNZ, GPIO.OUT)
         GPIO.output(SHDNZ, GPIO.LOW)
         time.sleep(0.1)
 
