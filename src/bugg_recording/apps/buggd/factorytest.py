@@ -3,6 +3,7 @@ run if the trigger file is present. '''
 
 import logging
 import subprocess
+import os
 from smbus2 import SMBus
 from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
@@ -56,6 +57,9 @@ class FactoryTest:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+
+        self.results_file = "/home/bugg/factory_test_results.txt"
+        
         self.all_passed = False
         self.results = {
             "modem_enumerates": False,
@@ -206,3 +210,15 @@ class FactoryTest:
             + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
         )
         return s
+
+        
+    def write_results_to_disk(self):
+        """ Write the results string to the primary user's home directory """
+        with open(self.results_file, "w") as f:
+            f.write(self.get_results_string())
+
+        # Set permissions to globally-readable
+        os.chmod(self.results_file, 0o644)
+
+        # Link into /etc/issue.d
+        os.symlink(self.results_file, "/etc/issue.d/factory_test_results.txt")
