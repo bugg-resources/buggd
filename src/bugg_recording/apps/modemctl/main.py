@@ -24,6 +24,13 @@ def handle_sim_state(logger, modem, args):
     else:
         logger.info("No SIM card present.")
 
+def handle_check_enumerated(logger, modem, args):
+    """ Check if the modem is enumerated """
+    if modem.is_enumerated():
+        logger.info("Modem is enumerated.")
+    else:
+        logger.info("Modem is not enumerated.")
+
 def handle_check_responding(logger, modem, args):
     """ Check if the modem is responding """
     if modem.is_responding():
@@ -72,13 +79,17 @@ def main():
     power_parser.add_argument('parameter', choices=['on', 'off'], help='Power on or off')
     power_parser.set_defaults(func=handle_power_command)
 
-    # Check SIM card status command
-    get_sim_state_parser = subparsers.add_parser('get_sim_state', help='Get SIM card state')
-    get_sim_state_parser.set_defaults(func=handle_sim_state)
+    # Check the modem is enumerated
+    get_sim_ccid_parser = subparsers.add_parser('check_enumerated', help='Check if modem is enumerated')
+    get_sim_ccid_parser.set_defaults(func=handle_check_enumerated)
 
     # Check if modem is responding command
     check_responding_parser = subparsers.add_parser('check_responding', help='Check if modem is responding')
     check_responding_parser.set_defaults(func=handle_check_responding)
+
+    # Check SIM card status command
+    get_sim_state_parser = subparsers.add_parser('get_sim_state', help='Get SIM card state')
+    get_sim_state_parser.set_defaults(func=handle_sim_state)
 
     # Get signal strength command
     get_signal_strength_parser = subparsers.add_parser('get_signal_strength', help='Get signal strength')
