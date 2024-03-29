@@ -186,8 +186,9 @@ class Modem:
             try:
                 logger.debug("Opening port...")
                 self.port = serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT)
-                self.port.write("ATE0\r\n".encode())  # Turn off echo
-                time.sleep(1) 
+                self.port.write("ATE0\r\n".encode())  # Turn off echo   
+                time.sleep(0.5) 
+                self.port.read_all()  # Clear the input buffer
             except serial.SerialException as e:
                 logger.error("Failed to open control interface: %s", e)
                 raise
@@ -211,11 +212,11 @@ class Modem:
 
         try:
             # Open the serial port
-            with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
-                time.sleep(0.5)
-                ser.write((command + "\r\n").encode())
-                time.sleep(0.5)
-                response = ser.read_all()
+            # with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+            time.sleep(0.5)
+            self.port.write((command + "\r\n").encode())
+            time.sleep(0.5)
+            response = self.port.read_all()
 
         except serial.SerialException as e:
             logger.error("Failed to send AT command: %s", e)
