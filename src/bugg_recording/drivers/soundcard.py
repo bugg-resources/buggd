@@ -108,7 +108,7 @@ class Soundcard:
         """ Turn off the soundcard power rails"""
         logger.debug("Disabling external channel")
 
-        GPIO.setup(EXT_MIC_EN, GPIO.OUT) # Pulled down externally
+        GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         GPIO.output(EXT_MIC_EN, 0)
 
     def enable_internal_channel(self):
