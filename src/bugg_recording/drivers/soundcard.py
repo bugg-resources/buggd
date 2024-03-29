@@ -114,7 +114,7 @@ class Soundcard:
     def enable_internal_channel(self):
         """ Turn on I2S bridge, initialise it """
         logger.debug("Enabling internal channel")
-        
+        self.pcmd3180.power_on() 
         self.pcmd3180.reset()
         self.pcmd3180.send_configuration()
 
