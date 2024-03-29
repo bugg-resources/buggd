@@ -54,6 +54,7 @@ class FactoryTest:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.all_passed = False
         self.results = {
             "modem_enumerates": False,
             "modem_responsive": False,
@@ -61,7 +62,7 @@ class FactoryTest:
             "modem_towers_found": False,
             "i2s_bridge_responding": False,
             "rtc_responding": False,
-            "led_controller responding": False,
+            "led_controller_responding": False,
             "internal_microphone_signal_present": False,
             "external_microphone_signal_present": False,
         }
@@ -87,6 +88,8 @@ class FactoryTest:
         else:
             self.logger.warning("Some tests did not complete successfully. Check the results.")
             ret = False
+
+        self.all_passed = all(self.results)
 
         # Log the results
         self.logger.info("%s", self.get_results_string())
@@ -157,5 +160,10 @@ class FactoryTest:
 
     def get_results_string(self):
         """ Return a formatted string of the test results, one per line """
-        return "\nFactory Test Results:\n" + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
-    
+        s = (
+            "\nFactory Self-Test Results:\n"
+            + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
+            + "\n"
+            + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
+        )
+        return s
