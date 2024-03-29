@@ -76,7 +76,7 @@ class FactoryTest:
         completed = [] 
 
         self.logger.info("Testing modem.")
-        #completed.append(self.test_modem())
+        completed.append(self.test_modem())
 
         self.logger.info("Testing I2C devices.")
         completed.append(self.test_i2c_devices())
