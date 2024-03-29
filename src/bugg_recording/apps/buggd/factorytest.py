@@ -231,7 +231,7 @@ class FactoryTest:
         
     def write_results_to_disk(self):
         """ Write the results string to the primary user's home directory """
-        with open(self.results_file, "w") as f:
+        with open(self.results_file, 'w', encoding='utf-8') as f:
             f.write(self.get_results_string())
 
         # Set permissions to globally-readable
@@ -239,4 +239,7 @@ class FactoryTest:
 
         # Link into /etc/issue.d
         os.makedirs("/etc/issue.d", exist_ok=True)
-        os.symlink(self.results_file, "/etc/issue.d/factory_test_results.issue")
+        try:
+            os.symlink(self.results_file, "/etc/issue.d/factory_test_results.issue")
+        except FileExistsError:
+            pass
