@@ -180,9 +180,9 @@ class Modem:
         return usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID) is not None
 
 
-    def is_serial_port_in_use(port_device):
+    def is_serial_port_in_use(self, port):
         # Normalize the target device path (resolve any symlinks)
-        target_device = os.path.realpath(port_device)
+        target_device = os.path.realpath(port)
         
         # Iterate over all processes in /proc
         for pid in os.listdir('/proc'):
@@ -203,14 +203,14 @@ class Modem:
                     try:
                         # Check if this fd is a symlink to our target device
                         if os.path.realpath(fd_path) == target_device:
-                            print(f"Device {port_device} is in use by process {pid}")
+                            print(f"Device {port} is in use by process {pid}")
                             return True
                     except FileNotFoundError:
                         # The fd was closed; move on to the next
                         continue
         
         # If we've checked all processes and found no link to the target device
-        print(f"Device {port_device} is not in use")
+        print(f"Device {port} is not in use")
         return False
     
     def send_at_command(self, command):
@@ -225,7 +225,7 @@ class Modem:
 
         try:
             # Check port isn't already open. Some processes, like ModemManager, open in non-exclusive mode that pyserial can't detect
-            if is_serial_port_in_use(CONTROL_INTERFACE):
+            if self.is_serial_port_in_use(CONTROL_INTERFACE):
                 logger.error(f"Serial port {CONTROL_INTERFACE} is in use, probably by ModemManager.")
                 return None          
 
