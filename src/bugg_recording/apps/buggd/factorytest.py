@@ -221,4 +221,5 @@ class FactoryTest:
         os.chmod(self.results_file, 0o644)
 
         # Link into /etc/issue.d
+        os.makedirs("/etc/issue.d", exist_ok=True)
         os.symlink(self.results_file, "/etc/issue.d/factory_test_results.txt")
