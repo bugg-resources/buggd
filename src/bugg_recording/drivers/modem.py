@@ -212,6 +212,7 @@ class Modem:
         try:
             # Open the serial port
             with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
+                time.sleep(0.5)
                 ser.write((command + "\r\n").encode())
                 time.sleep(0.5)
                 response = ser.read_all()
