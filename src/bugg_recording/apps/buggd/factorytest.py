@@ -8,6 +8,7 @@ from smbus2 import SMBus
 from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
 from bugg_recording.drivers.pcmd3180 import PCMD3180
+from .utils import discover_serial
 
 def i2c_device_present(addr, bus_num=1, force=True):
     """
@@ -218,10 +219,11 @@ class FactoryTest:
         s = (
             "\nFactory Self-Test Results:\n"
             + "--------------------------\n"
+            + "Device Serial: " + discover_serial() + "\n"
             + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
             + "\n"
             + "-----------------------\n"
-            + ("Factory Self-Test PASS!" if self.all_passed else "Factory Self-Test FAIL!")
+            + ("Factory Self-Test PASS!" if self.test_passed() else "Factory Self-Test FAIL!")
             + "\n\n"
         )
         return s
