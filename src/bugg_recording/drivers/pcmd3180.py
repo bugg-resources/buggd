@@ -26,6 +26,10 @@ class PCMD3180:
         GPIO.setup(SHDNZ, GPIO.OUT)
         self.power_off()
 
+    def close(self):
+        """ Clean up the GPIO """
+        GPIO.cleanup()
+
     def power_on(self):
         """ Turn on the PCMD3180 """
         GPIO.output(SHDNZ, GPIO.HIGH)
