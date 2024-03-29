@@ -74,7 +74,20 @@ class FactoryTest:
         }
 
     def run(self):
-        """ Run test, log results. """
+        """
+        Run the full self-test procedure.
+        
+        Print the results to the log.
+        Write the results to disk, and symlink to /etc/issue.d for display on the console before login.
+
+        Returns:
+            bool: True if all tests ran successfully, False otherwise.
+
+            Note: A true result only means that the test ran, not that the hardware is functioning correctly.
+            Check the results dictionary for the actual results. 
+
+        """
+
         self.logger.info("Factory test running.")
 
         completed = [] 
@@ -95,10 +108,11 @@ class FactoryTest:
             self.logger.warning("Some tests did not complete successfully. Check the results.")
             ret = False
 
+        # Check if all tests passed - this indicates that all the hardware is functioning correctly 
         self.all_passed = all(self.results.values())
 
-        # Log the results
         self.logger.info("\n%s\n", self.get_results_string())
+        self.write_results_to_disk()
 
         return ret
         
@@ -211,6 +225,9 @@ class FactoryTest:
         )
         return s
 
+    def test_passed(self):
+        """ Return True if all harware tests passed """
+        return self.all_passed
         
     def write_results_to_disk(self):
         """ Write the results string to the primary user's home directory """
