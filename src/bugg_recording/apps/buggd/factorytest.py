@@ -63,8 +63,8 @@ class FactoryTest:
             "i2s_bridge_responding": False,
             "rtc_responding": False,
             "led_controller_responding": False,
-            "internal_microphone_signal_present": False,
-            "external_microphone_signal_present": False,
+            "internal_microphone_recording": False,
+            "external_microphone_recording": False,
         }
 
     def run(self):

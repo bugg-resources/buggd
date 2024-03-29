@@ -12,7 +12,7 @@ from .lock import Lock
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-P3V7_EN = 7
+P3V7_EN = 13 #7
 POWER_ON_N = 5
 RESET_IN_N = 6
 
