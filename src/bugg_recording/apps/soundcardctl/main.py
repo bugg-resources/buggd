@@ -4,14 +4,6 @@ import sys
 from ...drivers.soundcard import Soundcard
 
 
-def handle_power_commandMeh(logger, soundcard, args):
-    """ Turn the soundcard on / off """
-    logger.info(f"Turning soundcard {args.parameter}")
-    if args.parameter == 'on':
-        soundcard.enable()
-    elif args.parameter == 'off':
-        soundcard.disable()
-
 def handle_power_command(logger, soundcard, args):
     if args.channel == 'internal':
         if args.state == 'on':
