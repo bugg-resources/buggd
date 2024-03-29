@@ -219,7 +219,7 @@ class Modem:
         except serial.SerialException as e:
             logger.error("Failed to send AT command: %s", e)
 
-
+        logger.debug("AT command: %s, response: %s", command, response)
         return response
     
     def send_at_commandass(self, command):
