@@ -157,5 +157,5 @@ class FactoryTest:
 
     def get_results_string(self):
         """ Return a formatted string of the test results, one per line """
-        return "Factory Test Results:\n".join([f"{k}: {v}" for k, v in self.results.items()])
+        return "\nFactory Test Results:\n" + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
     
