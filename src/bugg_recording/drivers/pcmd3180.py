@@ -13,6 +13,7 @@ I2C_ADDRESS = 0x4c
 class PCMD3180:
     def __init__(self):
         self.address = I2C_ADDRESS
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(SHDNZ, GPIO.OUT)
         self.power_off()
 
