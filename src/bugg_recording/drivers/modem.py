@@ -213,6 +213,7 @@ class Modem:
             with serial.Serial(CONTROL_INTERFACE, CONTROL_INTERFACE_BAUD, timeout=CONTROL_INTERFACE_TIMEOUT) as ser:
                 # Flush input buffer
                 ser.reset_input_buffer()
+                time.sleep(0.2)
 
                 # Send the AT command
                 ser.write((command + '\r\n').encode())
