@@ -24,6 +24,13 @@ def handle_sim_state(logger, modem, args):
     else:
         logger.info("No SIM card present.")
 
+def handle_check_responding(logger, modem, args):
+    """ Check if the modem is responding """
+    if modem.is_responding():
+        logger.info("Modem is responding.")
+    else:
+        logger.info("Modem is not responding.")
+
 def main():
     """ 
     Standalone utility to control the modem's power state and check status
@@ -52,6 +59,10 @@ def main():
     # Check SIM card status command
     get_sim_state_parser = subparsers.add_parser('get_sim_state', help='Get SIM card state')
     get_sim_state_parser.set_defaults(func=handle_sim_state)
+
+    # Check if modem is responding command
+    check_responding_parser = subparsers.add_parser('check_responding', help='Check if modem is responding')
+    check_responding_parser.set_defaults(func=handle_check_responding)
 
     args = parser.parse_args()
 
