@@ -544,11 +544,13 @@ def main():
     run_factory_test = False
 
     if args.force_factory_test:
+        logging.setLevel(logging.INFO)
         logging.info('Factory test requested.')
         run_factory_test = True
 
     # If the trigger file exists, run the factory test
     if os.path.exists(FACTORY_TEST_TRIGGER):
+        logging.setLevel(logging.INFO)
         logging.info('Factory test trigger file found - running factory test.')
         run_factory_test = True
 
