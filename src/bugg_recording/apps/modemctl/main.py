@@ -33,12 +33,20 @@ def handle_check_responding(logger, modem, args):
 
 def handle_get_signal_strength(logger, modem, args):
     """ Get the signal strength """
-    signal_strength = modem.get_rssi_dbm()
+    signal_strength = modem.get_rssi()
     if signal_strength:
-        logger.info(f"Signal strength: {signal_strength} dBm")
+        logger.info(f"Signal strength: {signal_strength}")
     else:
         logger.info("Failed to get signal strength.")
 
+def handle_get_signal_strength_dbm(logger, modem, args):
+    """ Get the signal strength in dBm """
+    signal_strength_dbm = modem.get_rssi_dbm()
+    if signal_strength_dbm:
+        logger.info(f"Signal strength (dBm): {signal_strength_dbm}")
+    else:
+        logger.info("Failed to get signal strength in dBm.")
+        
 def main():
     """ 
     Standalone utility to control the modem's power state and check status
@@ -75,6 +83,10 @@ def main():
     # Get signal strength command
     get_signal_strength_parser = subparsers.add_parser('get_signal_strength', help='Get signal strength')
     get_signal_strength_parser.set_defaults(func=handle_get_signal_strength)
+
+    # Get signal strength in dBm command
+    get_signal_strength_dbm_parser = subparsers.add_parser('get_signal_strength_dbm', help='Get signal strength in dBm')
+    get_signal_strength_dbm_parser.set_defaults(func=handle_get_signal_strength_dbm)
     
 
     args = parser.parse_args()

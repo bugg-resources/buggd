@@ -227,7 +227,7 @@ class Modem:
         Get the signal strength of the modem.
         
         Returns:
-        - The signal strength.
+        - The signal strength. If 99, there is no signal.
         - None if the modem does not respond to the AT command.
         """
         response = self.send_at_command("AT+CSQ")
@@ -240,7 +240,9 @@ class Modem:
         for item in response:
             if "+CSQ" in item:
                 try:
-                    return int(item.split(": ")[1].split(",")[0])
+                    rssi = int(item.split(": ")[1].split(",")[0])
+                    if rssi == 99:
+                        logger.warning("No signal - missing antenna?")
                 except:
                     return None
 
@@ -253,6 +255,10 @@ class Modem:
         - None if the modem does not respond to the AT command.
         """
         rssi = self.get_rssi()
+
+        if rssi == 99:
+            return None 
+
         if rssi is not None:
             return -113 + 2 * rssi
         return None
