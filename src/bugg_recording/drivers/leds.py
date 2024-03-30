@@ -39,7 +39,7 @@ class Driver():
             pass
 
 class LED:
-    def __init__(self, driver, ch_r: int, ch_g: int, ch_b: int):
+    def __init__(self, driver, ch_r, ch_g, ch_b):
         self.driver = driver
         self.channel = {
             'red': ch_r,
@@ -49,6 +49,13 @@ class LED:
 
     def set(self, colour: Colour):
         r, g, b = COLOUR_THEORY[colour]
+
+        # Check if any of the channels are stuck
+        for index, element in enumerate(self.channel.items()):
+            if isinstance(element[1], bool):
+                if not element[1] == colour[index]:
+                    raise ValueError(f"Colour {colour} cannot be displayed on this LED because channel {element[0]} is hard-wired to {element[1]}")
+        
         self.driver.set(self.channel['red'], r)
         self.driver.set(self.channel['green'], g)
         self.driver.set(self.channel['blue'], b)
@@ -59,4 +66,4 @@ class LEDs():
 
         self.top = LED(self.driver, 7, 6, 5)
         self.middle = LED(self.driver, 4, 3, 2)
-        self.bottom = LED(self.driver, None, 1, 0)
+        self.bottom = LED(self.driver, True, 1, 0)
