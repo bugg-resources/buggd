@@ -8,6 +8,8 @@ from smbus2 import SMBus
 from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
 from bugg_recording.drivers.pcmd3180 import PCMD3180
+from bugg_recording.drivers.leds import LEDs, Colour
+
 from .utils import discover_serial
 
 class FactoryTest:
@@ -85,6 +87,16 @@ class FactoryTest:
 
         # Check if all tests passed - this indicates that all the hardware is functioning correctly 
         self.all_passed = all(self.results.values())
+
+        leds = LEDs()
+        if self.all_passed:
+            leds.top.set(Colour.GREEN)
+            leds.middle.set(Colour.BLACK)
+            leds.bottom.set(Colour.RED)
+        else:
+            leds.top.set(Colour.RED)
+            leds.middle.set(Colour.CYAN)
+            leds.bottom.set(Colour.RED)
 
         self.logger.info("\n%s", self.get_results_string())
         self.write_results_to_disk()
@@ -214,7 +226,7 @@ class FactoryTest:
         # Set permissions to globally-readable
         os.chmod(self.results_file, 0o644)
 
-        # Link into /etc/issue.d
+        # Link into /etc/issue.dgg
         os.makedirs("/etc/issue.d", exist_ok=True)
         try:
             os.symlink(self.results_file, "/etc/issue.d/factory_test_results.issue")
