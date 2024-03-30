@@ -6,6 +6,7 @@ USER_LED_PIN = 13
 class LED():
     """
     Class to control the user LED on the main PCB
+    or, if a pin is provided, any other LED connected to a GPIO pin
     """
     def __init__(self, pin=USER_LED_PIN):
         self.pin = pin
