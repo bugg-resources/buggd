@@ -41,24 +41,25 @@ class Driver():
 class LED:
     def __init__(self, driver, ch_r, ch_g, ch_b):
         self.driver = driver
-        self.channel = {
+        self.channels = {
             'red': ch_r,
             'green': ch_g,
             'blue': ch_b
         }
 
     def set(self, colour: Colour):
-        r, g, b = COLOUR_THEORY[colour]
+        col = COLOUR_THEORY[colour]
+        r, g, b = col
 
-        # Check if any of the channels are stuck
-        for index, element in enumerate(self.channel.items()):
+        # Check if any of the channels are stuck in hardware
+        for index, element in enumerate(self.channels.items()):
             if isinstance(element[1], bool):
-                if not element[1] == colour[index]:
-                    raise ValueError(f"Colour {colour} cannot be displayed on this LED because channel {element[0]} is hard-wired to {element[1]}")
+                if not element[1] == col[index]:
+                    raise ValueError(f"{col} cannot be displayed on this LED because it's colour {element[0]} is hard-wired to {element[1]}")
         
-        self.driver.set(self.channel['red'], r)
-        self.driver.set(self.channel['green'], g)
-        self.driver.set(self.channel['blue'], b)
+        self.driver.set(self.channels['red'], r)
+        self.driver.set(self.channels['green'], g)
+        self.driver.set(self.channels['blue'], b)
 
 class LEDs():
     def __init__(self):
