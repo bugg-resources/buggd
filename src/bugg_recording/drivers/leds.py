@@ -55,7 +55,8 @@ class LED:
         for index, element in enumerate(self.channels.items()):
             if isinstance(element[1], bool):
                 if not element[1] == col[index]:
-                    raise ValueError(f"{col} cannot be displayed on this LED because it's colour {element[0]} is hard-wired to {element[1]}")
+                    inv_map = {v: k for k, v in COLOUR_THEORY.items()}
+                    raise ValueError(f"{inv_map.get(col)} cannot be displayed on this LED because it's colour {element[0]} is hard-wired to {element[1]}")
         
         self.driver.set(self.channels['red'], r)
         self.driver.set(self.channels['green'], g)
