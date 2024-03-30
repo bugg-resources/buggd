@@ -57,6 +57,6 @@ class LEDs():
     def __init__(self):
         self.driver = Driver(BUS, ADDRESS)
 
-        self.top = LED(self.driver, 0, 1, 2)
-        self.middle = LED(self.driver, 3, 4, 5)
-        self.bottom = LED(self.driver, None, 6, 7)
+        self.top = LED(self.driver, 7, 6, 5)
+        self.middle = LED(self.driver, 4, 3, 2)
+        self.bottom = LED(self.driver, None, 1, 0)
