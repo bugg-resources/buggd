@@ -55,8 +55,8 @@ PWR_LED_ON = (0, 0)
 CONFIG_FNAME = 'config.json'
 
 SD_MNT_LOC = '/mnt/sd/'
-FACTORY_TEST_TRIGGER_FULL = '/mnt/sd/factory-test-assembled.txt'
-FACTORY_TEST_TRIGGER_BARE_BOARD = '/mnt/sd/factory-test-bare-board.txt'
+FACTORY_TEST_TRIGGER_FULL = '/mnt/sd/factory-test-full.txt'
+FACTORY_TEST_TRIGGER_BARE_BOARD = '/mnt/sd/factory-test-bare.txt'
 
 GLOB_no_sd_mode = False
 GLOB_is_connected = False
