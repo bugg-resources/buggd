@@ -13,8 +13,6 @@ from bugg_recording.drivers.leds import LEDs, Colour
 
 from .utils import discover_serial
 
-logging.getLogger(__name__).setLevel(logging.DEBUG)
-
 class FactoryTest:
     """ 
     This class runs a series of tests on the hardware in the factory.
@@ -37,6 +35,7 @@ class FactoryTest:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
 
         self.results_file = "/home/bugg/factory_test_results.txt"
         
@@ -70,15 +69,10 @@ class FactoryTest:
 
         self.logger.info("Factory test running.")
 
+        # Run the tests
         completed = [] 
-
-        self.logger.info("Testing modem.")
         completed.append(self.test_modem())
-
-        self.logger.info("Testing I2C devices.")
         completed.append(self.test_i2c_devices())
-
-        self.logger.info("Testing recording.")
         completed.append(self.test_recording())
 
         if all(completed):
@@ -130,7 +124,7 @@ class FactoryTest:
             tries = 6
             while tries > 0:
                 rssi = modem.get_rssi()
-                logging.debug("RSSI: %s", rssi)
+                self.logger.debug("RSSI: %s", rssi)
                 time.sleep(1)
                 tries -= 1
                 if rssi:
@@ -148,6 +142,8 @@ class FactoryTest:
         """
         Check the I2C devices are all present
         """
+        self.logger.info("Testing I2C devices.")
+
         try:
             pcf8574_addr = 0x23 # LED controller
             pcmd3180_addr = 0x4c # I2S bridge
@@ -176,6 +172,7 @@ class FactoryTest:
         Check for hiss on both the internal and external microphones
         Do this by recording a second of audio and checking the variance
         """
+        self.logger.info("Testing recording.")
 
         try:
             soundcard = Soundcard()
