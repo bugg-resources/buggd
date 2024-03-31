@@ -555,6 +555,7 @@ def main():
     args = parser.parse_args()
 
     logging.getLogger().setLevel(logging.INFO)
+    logging.info('Starting buggd')
 
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):

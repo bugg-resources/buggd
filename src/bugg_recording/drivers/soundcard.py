@@ -10,7 +10,6 @@ from .lock import Lock
 from .pcmd3180 import PCMD3180
 
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.INFO)
 
 EXT_MIC_EN = 12
 

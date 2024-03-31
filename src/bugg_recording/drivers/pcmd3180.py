@@ -6,7 +6,6 @@ from smbus2 import SMBus
 import RPi.GPIO as GPIO
 
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.INFO)
 
 SHDNZ = 0
 
