@@ -262,6 +262,7 @@ class FactoryTest:
                 leds.top.set(Colour.RED)
 
                 failed_key = next((k for k, v in results.items() if v), None)
+                logging.info("Failed test: %s", failed_key)
 
                 match failed_key:
                     case "modem_enumerates":
