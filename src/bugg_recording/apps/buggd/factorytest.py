@@ -177,6 +177,8 @@ class FactoryTest:
         try:
             soundcard = Soundcard()
 
+            soundcard.disable_internal_channel()
+            soundcard.disable_external_channel()
             soundcard.enable_internal_channel()
             soundcard.enable_external_channel()
 
