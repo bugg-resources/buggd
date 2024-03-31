@@ -566,6 +566,7 @@ def main():
     # takes precedence.
     if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
         test = FactoryTest()
+        test.run_bare_board()
         sys.exit(0)
 
     # Initialise LED driver and turn all channels off
