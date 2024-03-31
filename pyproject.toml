@@ -3,9 +3,9 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bugg_recording"
+name = "buggd"
 version = "0.1.0"
-description = "Bugg userspace recording firmware, including the buggd daemon and various configuration tools."
+description = "Bugg userspace recording firmware; including hardware drivers, the buggd daemon and various configuration tools."
 authors = [
     { name = "Jeff Gough", email = "j@monad.is" },
     { name = "Sarab Sethi", email = "sarab.sethi@imperial.ac.uk" },
@@ -27,6 +27,6 @@ dependencies = [
 ]
 
 [project.scripts]
-buggd = "bugg_recording.apps.buggd.main:main"
-modemctl = "bugg_recording.apps.modemctl.main:main"
-soundcardctl = "bugg_recording.apps.soundcardctl.main:main"
+buggd = "buggd.apps.buggd.main:main"
+modemctl = "buggd.apps.modemctl.main:main"
+soundcardctl = "buggd.apps.soundcardctl.main:main"

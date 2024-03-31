@@ -1,7 +1,7 @@
 import argparse
 import logging
 import sys
-from bugg_recording.drivers.soundcard import Soundcard
+from buggd.drivers.soundcard import Soundcard
 
 def handle_power_command(logger, soundcard, args):
     """ Set power state of either the internal or external mic interface """
@@ -48,7 +48,12 @@ def handle_variance_command(logger, soundcard, args):
         print(f"Signal variances: Internal = {variances['internal']:.2f}, External = {variances['external']:.2f}")
 
 def main():
-    """ Tool to set power, gain and phantom power of the soundcard."""
+    """ 
+    Standalone utility to control the soundcard's power state, gain and phantom power mode.
+    This allows the user to control the soundcard without running the recording application.
+    It's mainly intended for use during debugging.  
+    """
+
     # Create a StreamHandler for stdout
     stdout_handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

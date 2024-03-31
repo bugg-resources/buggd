@@ -11,8 +11,8 @@ import argparse
 from google.cloud import storage
 from pcf8574 import PCF8574
 
-from bugg_recording import sensors
-from bugg_recording.drivers.modem import Modem
+from buggd import sensors
+from buggd.drivers.modem import Modem
 
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due

@@ -6,11 +6,11 @@ import subprocess
 import os
 import time
 from smbus2 import SMBus
-from bugg_recording.drivers.modem import Modem
-from bugg_recording.drivers.soundcard import Soundcard
-from bugg_recording.drivers.pcmd3180 import PCMD3180
-from bugg_recording.drivers.leds import LEDs, Colour
-from bugg_recording.drivers.userled import UserLED
+from buggd.drivers.modem import Modem
+from buggd.drivers.soundcard import Soundcard
+from buggd.drivers.pcmd3180 import PCMD3180
+from buggd.drivers.leds import LEDs, Colour
+from buggd.drivers.userled import UserLED
 
 from .utils import discover_serial
 

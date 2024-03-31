@@ -2,8 +2,8 @@ import os
 import shutil
 import logging
 import datetime
-from bugg_recording.apps.buggd.utils import call_cmd_line
-from bugg_recording.drivers.soundcard import Soundcard
+from buggd.apps.buggd.utils import call_cmd_line
+from buggd.drivers.soundcard import Soundcard
 from .option import set_option
 from .sensorbase import SensorBase
 
