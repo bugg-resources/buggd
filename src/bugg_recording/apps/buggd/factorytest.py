@@ -67,7 +67,7 @@ class FactoryTest:
 
         """
 
-        self.logger.info("Factory test running.")
+        self.logger.info("Full factory test running.")
 
         # Run the tests
         completed = [] 
@@ -92,6 +92,16 @@ class FactoryTest:
         self.write_results_to_disk()
 
         return ret
+
+    def run_bare_board(self):
+        """
+        Run the bare-board test.
+        
+        This just turns on the power rails, modem, soundcard, etc.
+        so the assembly technician can measure voltages on the test points. 
+        """
+
+        self.logger.info("Running factory bare-board test.")
         
 
     def test_modem(self):
