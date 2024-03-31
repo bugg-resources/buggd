@@ -4,6 +4,7 @@ run if the trigger file is present. '''
 import logging
 import subprocess
 import os
+import time
 from smbus2 import SMBus
 from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
@@ -123,14 +124,17 @@ class FactoryTest:
             self.results["modem_enumerates"] = modem.power_off() and modem.power_on() and modem.is_enumerated()
             self.results["modem_responsive"] = modem.is_responding()
             self.results["modem_sim_readable"] = modem.sim_present()
-            modem.get_rssi() # sometimes the first call to get_rssi fails
-            rssi = modem.get_rssi()
+            # Sometimes the modem takes a while to get a signal
+            tries = 6
+            while tries > 0:
+                rssi = modem.get_rssi()
+                time.sleep(1)
+                tries -= 1
+                if rssi:
+                    break
             self.results["modem_towers_found"] = rssi is not None and rssi != 99
 
-
-
             modem.power_off()
-
             return True
 
         except Exception as e:
