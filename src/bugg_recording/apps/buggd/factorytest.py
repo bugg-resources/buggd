@@ -127,7 +127,7 @@ class FactoryTest:
                 self.logger.debug("RSSI: %s", rssi)
                 time.sleep(1)
                 tries -= 1
-                if rssi:
+                if rssi and rssi != 99:
                     break
             self.results["modem_towers_found"] = rssi is not None and rssi != 99
 
