@@ -140,6 +140,7 @@ class Soundcard:
 
     def set_gain(self, gain):
         """ Set the gain of the soundcard """
+        logger.info("Setting gain to %d", gain)
         if gain < 0 or gain > 20:
             raise ValueError("Gain must be between 0 and 20")
 
@@ -148,6 +149,7 @@ class Soundcard:
 
     def set_phantom(self, mode):
         """ Set the phantom power mode """
+        logger.info("Setting phantom power to %s", mode)
         match mode:
             case self.NONE:
                 self.phantom_mode = 0
