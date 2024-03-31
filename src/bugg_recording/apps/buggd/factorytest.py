@@ -13,6 +13,8 @@ from bugg_recording.drivers.leds import LEDs, Colour
 
 from .utils import discover_serial
 
+logging.get_logger(__name__).setLevel(logging.DEBUG)
+
 class FactoryTest:
     """ 
     This class runs a series of tests on the hardware in the factory.
@@ -128,6 +130,7 @@ class FactoryTest:
             tries = 6
             while tries > 0:
                 rssi = modem.get_rssi()
+                logging.debug("RSSI: %s", rssi)
                 time.sleep(1)
                 tries -= 1
                 if rssi:
