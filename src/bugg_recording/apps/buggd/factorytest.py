@@ -70,6 +70,11 @@ class FactoryTest:
 
         self.logger.info("Full factory test running.")
 
+        leds = LEDs()
+        leds.top.set(Colour.MAGENTA)
+        leds.middle.set(Colour.BLACK) 
+        
+
         # Run the tests
         completed = [] 
         completed.append(self.test_modem())
@@ -78,22 +83,21 @@ class FactoryTest:
 
         if all(completed):
             self.logger.info("All tests completed.")
-            ret = True
+
+            # Check if all tests passed - this indicates that all the hardware is functioning correctly 
+            self.all_passed = all(self.results.values())
+
+            self.display_results_on_leds(leds)
+
+            self.logger.info("\n%s", self.get_results_string())
+            self.write_results_to_disk()
+            return True
+
         else:
             self.logger.warning("Some tests did not complete successfully. Check the results.")
-            ret = False
-
-        # Check if all tests passed - this indicates that all the hardware is functioning correctly 
-        self.all_passed = all(self.results.values())
-
-        leds = LEDs()
-        self.display_results_on_leds(leds)
-
-        self.logger.info("\n%s", self.get_results_string())
-        self.write_results_to_disk()
-
-        return ret
-
+            leds.top.set(Colour.MAGENTA)
+            leds.middle.set(Colour.RED)
+            return False
 
     def run_bare_board(self):
         """
