@@ -8,6 +8,7 @@ import datetime as dt
 import json
 import logging
 import argparse
+import pkg_resources
 from google.cloud import storage
 from pcf8574 import PCF8574
 
@@ -552,6 +553,7 @@ def main():
                         help='Run factory test, even if trigger file is not present.')
     parser.add_argument('--force-factory-test-bare', action='store_true',
                         help='Run factory test in bare-board mode, even if trigger file is not present.')
+    parser.add_argument('--version', action='version', version=pkg_resources.require('buggd')[0].version)
     args = parser.parse_args()
 
     logging.getLogger().setLevel(logging.INFO)
