@@ -10,6 +10,7 @@ from bugg_recording.drivers.modem import Modem
 from bugg_recording.drivers.soundcard import Soundcard
 from bugg_recording.drivers.pcmd3180 import PCMD3180
 from bugg_recording.drivers.leds import LEDs, Colour
+from bugg_recording.drivers.userled import UserLED
 
 from .utils import discover_serial
 
@@ -93,16 +94,30 @@ class FactoryTest:
 
         return ret
 
+
     def run_bare_board(self):
         """
-        Run the bare-board test.
-        
-        This just turns on the power rails, modem, soundcard, etc.
+        Run the bare-board test. This just turns on the power rails, modem, soundcard, etc.
         so the assembly technician can measure voltages on the test points. 
         """
 
         self.logger.info("Running factory bare-board test.")
-        
+
+        modem = Modem()
+        modem.turn_on_rail()
+
+        soundcard = Soundcard()
+        soundcard.enable_external_channel()
+        soundcard.set_phantom(soundcard.P48)
+
+        led = UserLED()
+        while True:
+            led.on()
+            time.sleep(0.5)
+            led.off()
+            time.sleep(0.5)
+            # This runs forever until the factory technician turns off the power
+
 
     def test_modem(self):
         """
