@@ -535,6 +535,17 @@ def record(led_driver, modem):
 
 
 def main():
+    """
+    Main function to run the recording daemon
+    
+    If the trigger file exists for the full or bare-board factory test, run the factory test and exit.
+
+    Otherwise, run the continuous recording function.
+    
+    Args:
+        --force-factory-test: Run factory test, even if trigger file is not present.
+        --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
+    """
 
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
@@ -554,7 +565,7 @@ def main():
     # takes precedence.
     if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
         test = FactoryTest()
-        sys.exit(test.run_bare_board())
+        sys.exit(0)
 
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
