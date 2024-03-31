@@ -212,7 +212,7 @@ class FactoryTest:
             if variances is None:
                 return False
             
-            logging.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
+            self.logger.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
 
             self.results["internal_microphone_recording"] = variances['internal'] > 100
             self.results["external_microphone_recording"] = variances['external'] > 100
