@@ -124,8 +124,14 @@ class ExternalMic(SensorBase):
         start_time = start_time.replace(':','_') # Replace colons with dots (can't have colon in filenames)
         uncomp_f_name = '{}'.format(start_time)
 
+        # Create appropriate message for the log
+        if self.enable_internal_mic:
+            what = 'stereo from internal and external microphones'
+        else:
+            what = 'mono from external microphone'
         # Record for a specific duration
-        logger.info('Started recording from I2S mic at {} for {}s'.format(start_time, self.record_length))
+
+        logger.info('Started recording {} at {} for {}s'.format(what, start_time, self.record_length))
         wfile = os.path.join(self.working_dir, self.working_file)
         wfile_trimmed = os.path.join(self.working_dir, 'trimmed_{}'.format(self.working_file))
 

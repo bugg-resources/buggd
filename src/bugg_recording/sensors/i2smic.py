@@ -102,7 +102,7 @@ class I2SMic(SensorBase):
         uncomp_f_name = '{}'.format(start_time)
 
         # Record for a specific duration
-        logger.info('Started recording from I2S mic at {} for {}s'.format(start_time, self.record_length))
+        logger.info('Started recording mono from internal mic at {} for {}s'.format(start_time, self.record_length))
         wfile = os.path.join(self.working_dir, self.working_file)
         wfile_trimmed = os.path.join(self.working_dir, 'trimmed_{}'.format(self.working_file))
 
