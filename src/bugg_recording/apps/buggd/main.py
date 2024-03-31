@@ -55,7 +55,8 @@ PWR_LED_ON = (0, 0)
 CONFIG_FNAME = 'config.json'
 
 SD_MNT_LOC = '/mnt/sd/'
-FACTORY_TEST_TRIGGER = '/mnt/sd/factory.txt'
+FACTORY_TEST_TRIGGER_FULL = '/mnt/sd/factory-test-assembled.txt'
+FACTORY_TEST_TRIGGER_BARE_BOARD = '/mnt/sd/factory-test-bare-board.txt'
 
 GLOB_no_sd_mode = False
 GLOB_is_connected = False
@@ -538,25 +539,22 @@ def main():
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
                         help='Run factory test, even if trigger file is not present.')
-
+    parser.add_argument('--force-factory-test-bare', action='store_true',
+                        help='Run factory test in bare-board mode, even if trigger file is not present.')
     args = parser.parse_args()
 
-    run_factory_test = False
-
-    if args.force_factory_test:
-        logging.getLogger().setLevel(logging.INFO)
-        logging.info('Factory test requested.')
-        run_factory_test = True
+    logging.getLogger().setLevel(logging.INFO)
 
     # If the trigger file exists, run the factory test
-    if os.path.exists(FACTORY_TEST_TRIGGER):
-        logging.getLogger().setLevel(logging.INFO)
-        logging.info('Factory test trigger file found - running factory test.')
-        run_factory_test = True
-
-    if run_factory_test:
-        test = FactoryTest() 
+    if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
+        test = FactoryTest()
         sys.exit(test.run())
+
+    # If the bare-board trigger file exists, run the factory test. Full test
+    # takes precedence.
+    if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
+        test = FactoryTest()
+        sys.exit(test.run_bare_board())
 
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
