@@ -21,6 +21,10 @@ override_dh_install:
 	dh_install
 	echo "Your custom installation commands here"
 
+# Don't strip debug symbols from ELF binaries - it's breaking the build
+override_dh_dwz:
+
+
 # dh_make generated override targets.
 # This is an example for Cmake (see <https://bugs.debian.org/641051>).
 #override_dh_auto_configure:
