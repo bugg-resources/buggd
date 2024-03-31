@@ -90,15 +90,6 @@ class FactoryTest:
 
         leds = LEDs()
         self.display_results_on_leds(leds)
-        
-        if self.all_passed:
-            leds.top.set(Colour.GREEN)
-            leds.middle.set(Colour.BLACK)
-            leds.bottom.set(Colour.RED)
-        else:
-            leds.top.set(Colour.RED)
-            leds.middle.set(Colour.CYAN)
-            leds.bottom.set(Colour.RED)
 
         self.logger.info("\n%s", self.get_results_string())
         self.write_results_to_disk()
