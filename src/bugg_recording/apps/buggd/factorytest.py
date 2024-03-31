@@ -13,7 +13,7 @@ from bugg_recording.drivers.leds import LEDs, Colour
 
 from .utils import discover_serial
 
-logging.get_logger(__name__).setLevel(logging.DEBUG)
+logging.getLogger(__name__).setLevel(logging.DEBUG)
 
 class FactoryTest:
     """ 
