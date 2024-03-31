@@ -1,19 +1,24 @@
 Source: buggd
 Section: unknown
 Priority: optional
-Maintainer: root <root@unknown>
+Maintainer: Jeff Gough <j@monad.is>
 Rules-Requires-Root: no
 Build-Depends:
  debhelper-compat (= 13),
 Standards-Version: 4.6.2
-Homepage: <insert the upstream URL, if relevant>
+Homepage: <https://bugg.xyz>
 #Vcs-Browser: https://salsa.debian.org/debian/buggd
 #Vcs-Git: https://salsa.debian.org/debian/buggd.git
 
 Package: buggd
 Architecture: any
 Depends:
+ python3,
  ${shlibs:Depends},
  ${misc:Depends},
-Description: <insert up to 60 chars description>
- <Insert long description, indented with spaces.>
+Description: Audio recording daemon for the Bugg project
+ This python package provides a userspace recording service for the Bugg project.
+ In addition to hardware drivers, it provides
+ buggd - the recording daemon
+ soundcardctl - a tool for controlling the soundcard
+ modemctl - a tool for controlling the modem
