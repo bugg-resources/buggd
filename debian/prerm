@@ -19,6 +19,12 @@ set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
+    LINK_DIR="/usr/local/bin"
+
+    # Remove symlinks for your scripts
+    rm -f "$LINK_DIR/buggd"
+    rm -f "$LINK_DIR/modemctl"
+    rm -f "$LINK_DIR/soundcardctl"
     ;;
 
     failed-upgrade)
