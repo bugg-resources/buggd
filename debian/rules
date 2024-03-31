@@ -18,8 +18,8 @@
 	dh $@ --with python-virtualenv
 
 override_dh_install:
-    dh_install
-    echo "Your custom installation commands here"
+	dh_install
+	echo "Your custom installation commands here"
 
 # dh_make generated override targets.
 # This is an example for Cmake (see <https://bugs.debian.org/641051>).
