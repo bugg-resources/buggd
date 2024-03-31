@@ -245,54 +245,71 @@ class FactoryTest:
         else:
             results = self.get_results()
 
-            failed_count = sum(not v for v in results.values())
+            # Split the results into the different categories
+            modem_results = {k: v for k, v in results.items() if "modem" in k} 
+            i2c_results = {k: v for k, v in results.items() if "responding" in k}
+            recording_results = {k: v for k, v in results.items() if "recording" in k}
+            
+            # Create lists of the failed tests in each category
+            modem_failures = [k for k, v in modem_results.items() if not v]
+            i2c_failures = [k for k, v in i2c_results.items() if not v]
+            recording_failures = [k for k, v in recording_results.items() if not v]
+            
+            if sum(bool(failures) for failures in [modem_failures, i2c_failures, recording_failures]) > 1:
+                # Failures in multiple categories
+                leds.top.set(Colour.WHITE)
+                leds.middle.set(Colour.BLACK)
+                
+            elif bool(modem_failures):
+                # Modem failures, indicate which ones
+                leds.top.set(Colour.YELLOW)
 
-            if failed_count > 1:
-                # White indicates multiple failures
+                # Multiple failures, indicate that
+                if len(modem_failures) > 1:
+                    leds.middle.set(Colour.WHITE)
+                
+                else:
+                    match modem_failures[0]:
+                        case "modem_enumerates":
+                            leds.middle.set(Colour.RED)
+                        case "modem_responsive":
+                            leds.middle.set(Colour.MAGENTA)
+                        case "modem_sim_readable":
+                            leds.middle.set(Colour.BLUE)
+                        case "modem_towers_found":
+                            leds.middle.set(Colour.YELLOW)
+                            
+            elif bool(i2c_failures):
+                # I2C failures, indicate which ones
                 leds.top.set(Colour.RED)
-                leds.middle.set(Colour.WHITE)
 
-            else:
-                # Single failure, indicate which one
-                leds.top.set(Colour.RED)
+                # Multiple failures, indicate that
+                if len(i2c_failures) > 1:
+                    leds.middle.set(Colour.WHITE)
+                
+                else:
+                    match i2c_failures[0]:
+                        case "i2s_bridge_responding":
+                            leds.middle.set(Colour.RED)
+                        case "rtc_responding":
+                            leds.middle.set(Colour.CYAN)
+                        case "led_controller_responding":
+                            leds.middle.set(Colour.MAGENTA) 
 
-                failed_key = next((k for k, v in results.items() if not v), None)
-                logging.info("Failed test: %s", failed_key)
+            elif bool(recording_failures):
+                # Recording failures, indicate which ones
+                leds.top.set(Colour.BLUE)
 
-                match failed_key:
-                    case "modem_enumerates":
-                        leds.top.set(Colour.YELLOW)
-                        leds.middle.set(Colour.RED)
-                    case "modem_responsive":
-                        leds.top.set(Colour.YELLOW)
-                        leds.middle.set(Colour.MAGENTA)
-                    case "modem_sim_readable":
-                        leds.top.set(Colour.YELLOW)
-                        leds.middle.set(Colour.BLUE)
-                    case "modem_towers_found":
-                        leds.top.set(Colour.YELLOW)
-                        leds.middle.set(Colour.YELLOW)
-
-                    case "i2s_bridge_responding":
-                        leds.top.set(Colour.RED)
-                        leds.middle.set(Colour.RED)
-                    case "rtc_responding":
-                        leds.top.set(Colour.RED)
-                        leds.middle.set(Colour.CYAN)
-                    case "led_controller_responding":
-                        leds.top.set(Colour.RED)
-                        leds.middle.set(Colour.MAGENTA)
-
-                    case "internal_microphone_recording":
-                        leds.top.set(Colour.RED)
-                        leds.middle.set(Colour.YELLOW)
-                    case "external_microphone_recording":
-                        leds.top.set(Colour.RED)
-                        leds.middle.set(Colour.BLUE)
-
-                    # Default case
-                    case _:
-                        logging.error("Unknown test failed: %s", failed_key)
+                # Multiple failures, indicate that
+                if len(recording_failures) > 1:
+                    leds.middle.set(Colour.WHITE)
+                
+                else:
+                    match recording_failures[0]:
+                        case "internal_microphone_recording":
+                            leds.middle.set(Colour.RED)
+                        case "external_microphone_recording":
+                            leds.middle.set(Colour.YELLOW)
 
 
 def i2c_device_present(addr, bus_num=1, force=True):
