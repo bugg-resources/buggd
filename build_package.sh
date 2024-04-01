@@ -17,6 +17,7 @@ GITHUB_PAGES_DIR=${GIT_REPO_ROOT}/docs
 DIST_DIR=${GITHUB_PAGES_DIR}/dists
 APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
+RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
@@ -29,6 +30,7 @@ if [ $DEBUG -eq 1 ]; then
     echo "DIST_DIR=$DIST_DIR"
     echo "APT_REPO_DIR=$APT_REPO_DIR"
     echo "PACKAGE_DIR=$PACKAGE_DIR"
+    echo "RELEASE_FILE=$RELEASE_FILE"
 fi
 
 
@@ -71,8 +73,8 @@ mkdir -p $APT_REPO_DIR
 cd $GITHUB_PAGES_DIR    # Required to prevent the github pages part of the path from being included in the Packages file Filename field.
 dpkg-scanpackages . /dev/null | gzip -9c > ${APT_REPO_DIR}/Packages.gz
 dpkg-scanpackages . /dev/null > ${APT_REPO_DIR}/Packages
+cd $GIT_REPO_ROOT 
 
-RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 # Generate Release file (example; adjust as needed)
 cat > $RELEASE_FILE << EOF
 Archive: ${TARGET_CODENAME}
