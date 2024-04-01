@@ -87,24 +87,26 @@ Label: ${LABEL}
 Architecture: all # Indicate that the repository contains architecture-independent packages
 EOF
 
-
-
-do_hash() {
-    HASH_NAME=$1
-    HASH_CMD=$2
-    echo "${HASH_NAME}:"
-    for f in $(find -type f); do
-        f=$(echo $f | cut -c3-) # remove ./ prefix
-        if [ "$f" = "Release" ]; then
-            continue
-        fi
-        echo " $(${HASH_CMD} ${f}  | cut -d" " -f1) $(wc -c $f)"
-    done
-}
-
-do_hash MD5Sum md5sum >> $RELEASE_FILE
-do_hash SHA1 sha1sum >> $RELEASE_FILE
-do_hash SHA256 sha256sum >> $RELEASE_FILE
+# Loop through the files and calculate hashes
+for file in "${APT_REPO_DIR}/Packages" "${APT_REPO_DIR}/Packages.gz"; do
+    echo "Calculating hashes for $file..."
+    
+    # Calculate file size
+    filesize=$(stat -c %s "$file")
+    
+    # Calculate hashes
+    md5hash=$(md5sum "$file" | awk '{print $1}')
+    sha1hash=$(sha1sum "$file" | awk '{print $1}')
+    sha256hash=$(sha256sum "$file" | awk '{print $1}')
+    
+    # Write the hashes and file size to the Release file
+    echo " $(basename "$file"): " >> "$RELEASE_FILE"
+    echo "  MD5sum: $md5hash" >> "$RELEASE_FILE"
+    echo "  SHA1: $sha1hash" >> "$RELEASE_FILE"
+    echo "  SHA256: $sha256hash" >> "$RELEASE_FILE"
+    echo "  Size: $filesize" >> "$RELEASE_FILE"
+    echo "" >> "$RELEASE_FILE"
+done
 
 exit 0
 
