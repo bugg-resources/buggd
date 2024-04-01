@@ -4,14 +4,14 @@ Binary: buggd
 Architecture: all
 Version: 1.0.0-1
 Checksums-Md5:
- 1e1454b1a10dacbfb6285e1e1ecb1ec3 6457708 buggd_1.0.0-1_all.deb
+ 247fbbc604a956e9c37b3a0fd664429f 6458484 buggd_1.0.0-1_all.deb
 Checksums-Sha1:
- 4aee301e50a0a6032a9da9f620d85c8e2ce5fa96 6457708 buggd_1.0.0-1_all.deb
+ d5f6f22d3e620b145ae6e4e1f86a2c107005aba6 6458484 buggd_1.0.0-1_all.deb
 Checksums-Sha256:
- dc58c3138a593216168e2f5e09643af777234821d6841fd36a972a65fe07c5ba 6457708 buggd_1.0.0-1_all.deb
+ 530d157004a1019c0b6b42385a43ec69735c2c719e4a34eed1c4415029fd1fc0 6458484 buggd_1.0.0-1_all.deb
 Build-Origin: Debian
 Build-Architecture: arm64
-Build-Date: Mon, 01 Apr 2024 16:48:52 +0000
+Build-Date: Mon, 01 Apr 2024 17:22:06 +0000
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
  usr-local-has-programs
@@ -173,4 +173,4 @@ Installed-Build-Depends:
 Environment:
  DEB_BUILD_OPTIONS="parallel=4"
  LANG="en_GB.UTF-8"
- SOURCE_DATE_EPOCH="1711990040"
+ SOURCE_DATE_EPOCH="1711992000"
