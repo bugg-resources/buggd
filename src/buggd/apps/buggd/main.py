@@ -15,6 +15,7 @@ from pcf8574 import PCF8574
 from buggd import sensors
 from buggd.drivers.modem import Modem
 from buggd.drivers.userled import UserLED
+from buggd.drivers.leds import LEDs, Colour
 
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
@@ -548,6 +549,12 @@ def main():
         --force-factory-test: Run factory test, even if trigger file is not present.
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
+
+    # Set the LEDs to magenta to indicate the program is starting
+    leds = LEDs()
+    leds.top = Colour.MAGENTA
+    leds.middle = Colour.MAGENTA
+    leds.close()
 
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
