@@ -18,6 +18,20 @@ DIST_DIR=${GITHUB_PAGES_DIR}/dists
 APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
 
+DEBUG=1
+if [ $DEBUG -eq 1 ]; then
+    echo "PACKAGE_NAME=$PACKAGE_NAME"
+    echo "ORIGIN=$ORIGIN"
+    echo "LABEL=$LABEL"
+    echo "TARGET_CODENAME=$TARGET_CODENAME"
+    echo "GIT_REPO_ROOT=$GIT_REPO_ROOT"
+    echo "GITHUB_PAGES_DIR=$GITHUB_PAGES_DIR"
+    echo "DIST_DIR=$DIST_DIR"
+    echo "APT_REPO_DIR=$APT_REPO_DIR"
+    echo "PACKAGE_DIR=$PACKAGE_DIR"
+fi
+
+
 if [ -z "$PACKAGE_NAME" ]; then
     echo "Package name is not set. Please edit the script and set the PACKAGE_NAME variable."
     exit 1
