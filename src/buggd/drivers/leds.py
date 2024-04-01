@@ -38,6 +38,9 @@ class Driver():
         except AssertionError:
             pass
 
+def close(self):
+    self.driver.io_expander.close()
+
 class LED:
     def __init__(self, driver, ch_r, ch_g, ch_b):
         self.driver = driver
