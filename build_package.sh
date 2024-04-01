@@ -39,7 +39,7 @@ if [ $DEBUG -eq 1 ]; then
     echo "APT_REPO_DIR=$APT_REPO_DIR"
     echo "PACKAGE_DIR=$PACKAGE_DIR"
     echo "RELEASE_FILE=$RELEASE_FILE"
-    echo "PACKAGE_FILE=$PACKAGE_FILE"
+    echo "PACKAGES_FILE=$PACKAGES_FILE"
 fi
 
 
