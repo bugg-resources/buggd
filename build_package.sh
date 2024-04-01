@@ -26,7 +26,7 @@ mkdir -p $DIST_DIR
 mkdir -p $APT_REPO_DIR
 mkdir -p $PACKAGE_DIR
 
-SKIP_BUILD=0 # Set to 1 to skip the build step, useful for testing
+SKIP_BUILD=1 # Set to 1 to skip the build step, useful for testing
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
     echo "PACKAGE_NAME=$PACKAGE_NAME"
@@ -69,6 +69,8 @@ dch -v "${VERSION}-1" "Version $VERSION released" -D stable --force-distribution
 echo "Building the package..."
 if [ $SKIP_BUILD -eq 0 ]; then
     dpkg-buildpackage -us -uc -b
+else
+    echo "WARNING: Skipping the build step."
 fi
 
 echo "Creating the Packages file..."
