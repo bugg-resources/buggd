@@ -76,7 +76,7 @@ fi
 echo "Creating the Packages file..."
 # Create the Packages and Packages.gz files
 apt-ftparchive packages ${GITHUB_PAGES_DIR}/pool > ${PACKAGES_FILE}
-gzip -k ${PACKAGES_FILE} 
+gzip -f -k ${PACKAGES_FILE} 
 
 echo "Creating the Release file..."
 # Create the Release file
