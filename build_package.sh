@@ -71,12 +71,12 @@ if [ $SKIP_BUILD -eq 0 ]; then
     dpkg-buildpackage -us -uc -b
 fi
 
-echo "Updating the repository..."
-
+echo "Creating the Packages file..."
 # Create the Packages and Packages.gz files
-apt-ftparchive packages ${DIST_DIR}/pool > ${PACKAGES_FILE}
+apt-ftparchive packages ${GITHUB_PAGES_DIR}/pool > ${PACKAGES_FILE}
 gzip -k ${PACKAGES_FILE} 
 
+echo "Creating the Release file..."
 # Create the Release file
 apt-ftparchive release ${DIST_DIR}/${TARGET_CODENAME} > ${RELEASE_FILE}
 
