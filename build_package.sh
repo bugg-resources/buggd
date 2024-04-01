@@ -87,6 +87,8 @@ Label: ${LABEL}
 Architecture: all # Indicate that the repository contains architecture-independent packages
 EOF
 
+
+echo "MD5Sum:" >> "$RELEASE_FILE"
 md5_section=$(echo -e "MD5Sum:\n")
 sha1_section=$(echo -e "\nSHA1:\n")
 sha256_section=$(echo -e "\nSHA256:\n")
