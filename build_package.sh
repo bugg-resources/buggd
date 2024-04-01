@@ -44,6 +44,7 @@ mv ../${PACKAGE_NAME}_* $DEB_DIR/
 
 # Now proceed to generate the APT repository structure and Packages file
 # Assuming you are in the root of your repo after moving the files
+mkdir -p "dists"
 cd $DEB_DIR
 dpkg-scanpackages . /dev/null | gzip -9c > ../dists/stable/main/binary-all/Packages.gz
 dpkg-scanpackages . /dev/null > ../dists/stable/main/binary-all/Packages
@@ -55,4 +56,8 @@ cd ../dists
 # [The rest of the Release file generation process goes here, as previously described]
 
 echo "Repository updated successfully."
+
+# Remove the build tree - we don't need it
+echo "Cleaning"
+debian/rules clean
 
