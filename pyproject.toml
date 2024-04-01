@@ -18,7 +18,6 @@ dependencies = [
     "RPi.GPIO",
     "pcf8574",
     "spidev",
-    "systemd-python",
     "filelock",
     "pyusb",
     "pyserial",
