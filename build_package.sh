@@ -26,7 +26,7 @@ mkdir -p $DIST_DIR
 mkdir -p $APT_REPO_DIR
 mkdir -p $PACKAGE_DIR
 
-SKIP_BUILD=1 # Set to 1 to skip the build step, useful for testing
+SKIP_BUILD=0 # Set to 1 to skip the build step, useful for testing
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
     echo "PACKAGE_NAME=$PACKAGE_NAME"
