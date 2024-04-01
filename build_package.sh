@@ -54,6 +54,7 @@ mv ${GIT_REPO_ROOT}/../${PACKAGE_NAME}_* $PACKAGE_DIR/
 
 mkdir -p $DIST_DIR
 mkdir -p $APT_REPO_DIR
+cd $GITHUB_PAGES_DIR    # Required to prevent the github pages part of the path from being included in the Packages file Filename field.
 dpkg-scanpackages . /dev/null | gzip -9c > ${APT_REPO_DIR}/Packages.gz
 dpkg-scanpackages . /dev/null > ${APT_REPO_DIR}/Packages
 
