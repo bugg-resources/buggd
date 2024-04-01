@@ -30,21 +30,20 @@ if [ -z "$EMAIL" ]; then
 fi
 
 # Update debian/changelog
-dch -v "$VERSION-1" "Version $VERSION released" -D stable --force-distribution
+dch -v "${VERSION}-1" "Version $VERSION released" -D stable --force-distribution
 
 # Build the package
 echo WARNING: skipping
 #dpkg-buildpackage -us -uc -b
 
 # Directory for storing the .deb package and related files
-DEB_DIR=$PACKAGE_ROOT/packages
+DEB_DIR=${PACKAGE_ROOT}/packages
 # Create the packages directory if it doesn't already exist
-mkdir -p "$DEB_DIR"
+mkdir -p $DEB_DIR
 
 # dpkg-buildpackage creates the .deb package in the parent directory
 # Move the built .deb package and related files to the DEB_DIR directory
-echo ${PACKAGE_ROOT}../${PACKAGE_NAME}_* $DEB_DIR/
-mv ${PACKAGE_ROOT}../${PACKAGE_NAME}_* $DEB_DIR/
+mv ${PACKAGE_ROOT}/../${PACKAGE_NAME}_* $DEB_DIR/
 
 # Now proceed to generate the APT repository structure and Packages file
 DIST_DIR=${PACKAGE_ROOT}/dists
