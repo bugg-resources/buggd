@@ -33,8 +33,7 @@ fi
 dch -v "${VERSION}-1" "Version $VERSION released" -D stable --force-distribution
 
 # Build the package
-echo WARNING: skipping
-#dpkg-buildpackage -us -uc -b
+dpkg-buildpackage -us -uc -b
 
 # Directory for storing the .deb package and related files
 DEB_DIR=${PACKAGE_ROOT}/packages
