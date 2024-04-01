@@ -12,6 +12,8 @@ Homepage: <https://bugg.xyz>
 
 Package: buggd
 Architecture: all
+# These are the system packages that buggd depends on; not its python dependencies.
+# Its python dependencies are listed in the pyproject.toml file.
 Depends:
  ${misc:Depends},
  python3,
@@ -20,6 +22,7 @@ Depends:
  alsa-utils,
  ntpdate,
  libsystemd-dev,
+
 Description: Audio recording daemon for the Bugg project
  This python package provides a userspace recording service for the Bugg project.
  In addition to hardware drivers, it provides
