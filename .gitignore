@@ -10,3 +10,6 @@ config.json
 test.*
 *.pyc
 *.dtbo
+build/
+src/buggd.egg-info/
+
