@@ -14,6 +14,7 @@ from pcf8574 import PCF8574
 
 from buggd import sensors
 from buggd.drivers.modem import Modem
+from buggd.drivers.userled import UserLED
 
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
@@ -575,11 +576,15 @@ def main():
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
     modem = Modem()
 
+    # Initialise the LED on the main board
+    led = UserLED()
     try:
         # run continuous recording function
+        led.on()
         record(led_driver, modem)
     except Exception as e:
         logging.error('Caught exception on main record() function: {}'.format(str(e)))
+        led.off()
 
         # Blink error code on LEDs
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
