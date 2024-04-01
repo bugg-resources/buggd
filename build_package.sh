@@ -19,7 +19,7 @@ APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
 RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 
-SKIP_BUILD=1 # Set to 1 to skip the build step, useful for testing
+SKIP_BUILD=0 # Set to 1 to skip the build step, useful for testing
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
     echo "PACKAGE_NAME=$PACKAGE_NAME"
@@ -88,51 +88,34 @@ Architecture: all # Indicate that the repository contains architecture-independe
 EOF
 
 
-echo "MD5Sum:" >> "$RELEASE_FILE"
-md5_section=$(echo -e "MD5Sum:\n")
-sha1_section=$(echo -e "\nSHA1:\n")
-sha256_section=$(echo -e "\nSHA256:\n")
 
+md5_section=""
+sha1_section=""
+sha256_section=""
 # Loop through the files and calculate hashes
 for file in "${APT_REPO_DIR}/Packages" "${APT_REPO_DIR}/Packages.gz"; do
     echo "Calculating hashes for $file..."
     
-    # Extract the relative path for the file, adjust according to your repo structure
-    relative_path="main/binary-amd64/$(basename "$file")"
-    
     # Calculate file size
-    filesize=$(stat -c %s "$file")
+    size=$(stat -c %s "$file")
     
     # Calculate hashes and append them to their respective sections
     md5hash=$(md5sum "$file" | awk '{print $1}')
     sha1hash=$(sha1sum "$file" | awk '{print $1}')
     sha256hash=$(sha256sum "$file" | awk '{print $1}')
     
-    md5_section+="$md5hash $filesize $relative_path\n"
-    sha1_section+="$sha1hash $filesize $relative_path\n"
-    sha256_section+="$sha256hash $filesize $relative_path\n"
+    md5_section+="$md5hash $size $file\n"
+    sha1_section+="$sha1hash $size $file\n"
+    sha256_section+="$sha256hash $size $file\n"
 done
 
 # Write the formatted sections to the Release file
+echo -e "MD5Sum:" >> "$RELEASE_FILE"
 echo -e "$md5_section" >> "$RELEASE_FILE"
+echo -e "SHA1:" >> "$RELEASE_FILE"
 echo -e "$sha1_section" >> "$RELEASE_FILE"
+echo -e "SHA256:" >> "$RELEASE_FILE"
 echo -e "$sha256_section" >> "$RELEASE_FILE"
-
-echo "Hashes written"
-exit 0
-
-# Append the hash sums to the Release file
-echo -e "\nMD5Sum:" >> $RELEASE_FILE
-md5sum ${APT_REPO_DIR}/Packages >> $RELEASE_FILE
-md5sum ${APT_REPO_DIR}/Packages.gz >> $RELEASE_FILE
-
-echo -e "\nSHA1:" >> $RELEASE_FILE
-sha1sum ${APT_REPO_DIR}/Packages >> $RELEASE_FILE
-sha1sum ${APT_REPO_DIR}/Packages.gz >> $RELEASE_FILE
-
-echo -e "\nSHA256:" >> $RELEASE_FILE
-sha256sum ${APT_REPO_DIR}/Packages >> $RELEASE_FILE
-sha256sum ${APT_REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
 # Sign the Release file (optional, but recommended for public repositories)
 # gpg --default-key "YourEmail" --output stable/Release.gpg --detach-sign stable/Release
