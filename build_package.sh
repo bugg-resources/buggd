@@ -46,14 +46,38 @@ mv ../${PACKAGE_NAME}_* $DEB_DIR/
 # Assuming you are in the root of your repo after moving the files
 mkdir -p "dists"
 cd $DEB_DIR
+echo `pwd`
+echo `ls ../dists`
 dpkg-scanpackages . /dev/null | gzip -9c > ../dists/stable/main/binary-all/Packages.gz
 dpkg-scanpackages . /dev/null > ../dists/stable/main/binary-all/Packages
 
 # Go to the dists directory to prepare the Release file
 cd ../dists
 
-# Generate Release file
-# [The rest of the Release file generation process goes here, as previously described]
+# Generate Release file (example; adjust as needed)
+cat > stable/Release << EOF
+Archive: stable
+Component: main
+Origin: YourNameOrOrganization
+Label: YourLabel
+Architecture: all # Indicate that the repository contains architecture-independent packages
+EOF
+
+# Append the hash sums to the Release file
+echo -e "\nMD5Sum:" >> stable/Release
+md5sum stable/main/binary-all/Packages >> stable/Release
+md5sum stable/main/binary-all/Packages.gz >> stable/Release
+
+echo -e "\nSHA1:" >> stable/Release
+sha1sum stable/main/binary-all/Packages >> stable/Release
+sha1sum stable/main/binary-all/Packages.gz >> stable/Release
+
+echo -e "\nSHA256:" >> stable/Release
+sha256sum stable/main/binary-all/Packages >> stable/Release
+sha256sum stable/main/binary-all/Packages.gz >> stable/Release
+
+# Sign the Release file (optional, but recommended for public repositories)
+# gpg --default-key "YourEmail" --output stable/Release.gpg --detach-sign stable/Release
 
 echo "Repository updated successfully."
 
