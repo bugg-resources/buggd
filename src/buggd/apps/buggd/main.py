@@ -534,6 +534,12 @@ def record(led_driver, modem):
         if not GLOB_offline_mode:
             sync_thread.join()
 
+        # Turn off leds
+        leds = LEDs()
+        leds.top = Colour.BLACK
+        leds.middle = Colour.BLACK
+        leds.close()
+        
         logging.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
 
