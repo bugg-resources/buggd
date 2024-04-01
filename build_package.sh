@@ -32,3 +32,27 @@ dch -v "$VERSION-1" "Version $VERSION released" -D stable --force-distribution
 # Build the package
 dpkg-buildpackage -us -uc -b
 
+# Directory for storing the .deb package and related files
+DEB_DIR="packages"
+# Create the packages directory if it doesn't already exist
+mkdir -p "$DEB_DIR"
+
+# Move the built .deb package and related files to the DEB_DIR directory
+# This assumes the parent directory of the current script is the root of your repo
+# Adjust the pattern as necessary to match your package naming scheme
+mv ../${PACKAGE_NAME}_* $DEB_DIR/
+
+# Now proceed to generate the APT repository structure and Packages file
+# Assuming you are in the root of your repo after moving the files
+cd $DEB_DIR
+dpkg-scanpackages . /dev/null | gzip -9c > ../dists/stable/main/binary-all/Packages.gz
+dpkg-scanpackages . /dev/null > ../dists/stable/main/binary-all/Packages
+
+# Go to the dists directory to prepare the Release file
+cd ../dists
+
+# Generate Release file
+# [The rest of the Release file generation process goes here, as previously described]
+
+echo "Repository updated successfully."
+
