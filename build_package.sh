@@ -13,7 +13,7 @@ GIT_REPO_ROOT="$(dirname "$O")" # buggd git repo root directory
 # Now proceed to generate the APT repository structure and Packages file
 # See Debian Repo Format specification section 1.1 for more details
 # https://wiki.debian.org/DebianRepository/Format
-GITHUB_PAGES_DIR=${GIT_REPO_ROOT}/pages
+GITHUB_PAGES_DIR=${GIT_REPO_ROOT}/docs
 DIST_DIR=${GITHUB_PAGES_DIR}/dists
 APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
