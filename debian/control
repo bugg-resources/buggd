@@ -22,7 +22,6 @@ Depends:
  alsa-utils,
  ntpdate,
  libsystemd-dev,
-
 Description: Audio recording daemon for the Bugg project
  This python package provides a userspace recording service for the Bugg project.
  In addition to hardware drivers, it provides
