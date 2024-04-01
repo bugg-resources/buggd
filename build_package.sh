@@ -87,27 +87,36 @@ Label: ${LABEL}
 Architecture: all # Indicate that the repository contains architecture-independent packages
 EOF
 
+md5_section=$(echo -e "MD5Sum:\n")
+sha1_section=$(echo -e "\nSHA1:\n")
+sha256_section=$(echo -e "\nSHA256:\n")
+
 # Loop through the files and calculate hashes
 for file in "${APT_REPO_DIR}/Packages" "${APT_REPO_DIR}/Packages.gz"; do
     echo "Calculating hashes for $file..."
     
+    # Extract the relative path for the file, adjust according to your repo structure
+    relative_path="main/binary-amd64/$(basename "$file")"
+    
     # Calculate file size
     filesize=$(stat -c %s "$file")
     
-    # Calculate hashes
+    # Calculate hashes and append them to their respective sections
     md5hash=$(md5sum "$file" | awk '{print $1}')
     sha1hash=$(sha1sum "$file" | awk '{print $1}')
     sha256hash=$(sha256sum "$file" | awk '{print $1}')
     
-    # Write the hashes and file size to the Release file
-    echo " $(basename "$file"): " >> "$RELEASE_FILE"
-    echo "  MD5sum: $md5hash" >> "$RELEASE_FILE"
-    echo "  SHA1: $sha1hash" >> "$RELEASE_FILE"
-    echo "  SHA256: $sha256hash" >> "$RELEASE_FILE"
-    echo "  Size: $filesize" >> "$RELEASE_FILE"
-    echo "" >> "$RELEASE_FILE"
+    md5_section+="$md5hash $filesize $relative_path\n"
+    sha1_section+="$sha1hash $filesize $relative_path\n"
+    sha256_section+="$sha256hash $filesize $relative_path\n"
 done
 
+# Write the formatted sections to the Release file
+echo -e "$md5_section" >> "$RELEASE_FILE"
+echo -e "$sha1_section" >> "$RELEASE_FILE"
+echo -e "$sha256_section" >> "$RELEASE_FILE"
+
+echo "Hashes written"
 exit 0
 
 # Append the hash sums to the Release file
