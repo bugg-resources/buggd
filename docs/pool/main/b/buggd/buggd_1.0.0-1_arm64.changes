@@ -1,5 +1,5 @@
 Format: 1.8
-Date: Mon, 01 Apr 2024 17:20:00 +0000
+Date: Mon, 01 Apr 2024 19:09:32 +0000
 Source: buggd
 Binary: buggd
 Architecture: all
@@ -15,11 +15,11 @@ Changes:
  .
    * Version 1.0.0 released
 Checksums-Sha1:
- d5f6f22d3e620b145ae6e4e1f86a2c107005aba6 6458484 buggd_1.0.0-1_all.deb
- a6bb9b5f7e075264e4b02ee0bd47abdd9da47e22 4933 buggd_1.0.0-1_arm64.buildinfo
+ 84232efe29de8edcc42af93a3f77b790d5ddd082 6458000 buggd_1.0.0-1_all.deb
+ e66b99541b70066b7a0a621a9abb510e981a68ba 4933 buggd_1.0.0-1_arm64.buildinfo
 Checksums-Sha256:
- 530d157004a1019c0b6b42385a43ec69735c2c719e4a34eed1c4415029fd1fc0 6458484 buggd_1.0.0-1_all.deb
- 8f63e576023dcca56ec3ef57be267d44bda938dc0a197c1494d74de84de31688 4933 buggd_1.0.0-1_arm64.buildinfo
+ 3088a6a1e5572d445d7ef737149e7de50195280e2db6fe14d66b933ccf8d5836 6458000 buggd_1.0.0-1_all.deb
+ ace6f464872b4307337ea3ae26433675fae16a0ea2ca54863f4d4382996a0356 4933 buggd_1.0.0-1_arm64.buildinfo
 Files:
- 247fbbc604a956e9c37b3a0fd664429f 6458484 unknown optional buggd_1.0.0-1_all.deb
- d3ab1339bb50da71512da0c9d61c19a9 4933 unknown optional buggd_1.0.0-1_arm64.buildinfo
+ 1c6130351acdb4e936ffb9cc41a71374 6458000 unknown optional buggd_1.0.0-1_all.deb
+ c56ccc9b9631b4bdfd16fa3da7511bf0 4933 unknown optional buggd_1.0.0-1_arm64.buildinfo

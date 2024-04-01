@@ -5,10 +5,10 @@ Maintainer: Jeff Gough <j@monad.is>
 Installed-Size: 36561
 Depends: python3, network-manager, ffmpeg, alsa-utils, ntpdate, libsystemd-dev
 Filename: ./pool/main/b/buggd/buggd_1.0.0-1_all.deb
-Size: 6458484
-MD5sum: 247fbbc604a956e9c37b3a0fd664429f
-SHA1: d5f6f22d3e620b145ae6e4e1f86a2c107005aba6
-SHA256: 530d157004a1019c0b6b42385a43ec69735c2c719e4a34eed1c4415029fd1fc0
+Size: 6458000
+MD5sum: 1c6130351acdb4e936ffb9cc41a71374
+SHA1: 84232efe29de8edcc42af93a3f77b790d5ddd082
+SHA256: 3088a6a1e5572d445d7ef737149e7de50195280e2db6fe14d66b933ccf8d5836
 Section: unknown
 Priority: optional
 Homepage: <https://bugg.xyz>
