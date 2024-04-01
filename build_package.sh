@@ -72,11 +72,11 @@ echo -e "\nMD5Sum:" >> $RELEASE_FILE
 md5sum ${APT_REPO_DIR}/Packages >> $RELEASE_FILE
 md5sum ${APT_REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
-echo -e "\nMD5Sum:" >> $RELEASE_FILE
+echo -e "\nSHA1:" >> $RELEASE_FILE
 sha1sum ${APT_REPO_DIR}/Packages >> $RELEASE_FILE
 sha1sum ${APT_REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
-echo -e "\nMD5Sum:" >> $RELEASE_FILE
+echo -e "\nSHA256:" >> $RELEASE_FILE
 sha256sum ${APT_REPO_DIR}/Packages >> $RELEASE_FILE
 sha256sum ${APT_REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
