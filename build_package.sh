@@ -8,7 +8,7 @@ ORIGIN="Bugg Project"
 LABEL="buggd daemon package"
 TARGET_CODENAME="bookworm" # Debian codename for the target distribution
 
-GIT_REPO_ROOT="$(dirname "$O")" # buggd git repo root directory
+GIT_REPO_ROOT="realpath $(dirname "$O")" # buggd git repo root directory
 
 # Now proceed to generate the APT repository structure and Packages file
 # See Debian Repo Format specification section 1.1 for more details
