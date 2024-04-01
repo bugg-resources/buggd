@@ -1,0 +1,21 @@
+Package: buggd
+Version: 1.0.0-1
+Architecture: all
+Maintainer: Jeff Gough <j@monad.is>
+Installed-Size: 36561
+Depends: python3, network-manager, ffmpeg, alsa-utils, ntpdate, libsystemd-dev
+Filename: ./pages/pool/main/b/buggd/buggd_1.0.0-1_all.deb
+Size: 6457768
+MD5sum: 014e85a69b4dd61f07fc4c4d6d00290f
+SHA1: 29550e90ab209fe080ec63662f1d0db736e35c7b
+SHA256: 34bc1bc465894d036db2e3b63a0eca2ea1bbfa66d03e016efa555579a8476e52
+Section: unknown
+Priority: optional
+Homepage: <https://bugg.xyz>
+Description: Audio recording daemon for the Bugg project
+ This python package provides a userspace recording service for the Bugg project.
+ In addition to hardware drivers, it provides
+ buggd - the recording daemon
+ soundcardctl - a tool for controlling the soundcard
+ modemctl - a tool for controlling the modem
+

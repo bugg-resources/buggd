@@ -1,0 +1,17 @@
+Archive: bookworm
+Component: main
+Origin: Bugg Project
+Label: buggd daemon package
+Architecture: all # Indicate that the repository contains architecture-independent packages
+
+MD5Sum:
+eee6d96659e278fc63a832984be17514  ./pages/dists/bookworm/main/binary-all/Packages
+5239b0b990b2e069924b882c56dbaaf3  ./pages/dists/bookworm/main/binary-all/Packages.gz
+
+MD5Sum:
+e956a3b5415822006f6dd133c961fcf91e5f59ac  ./pages/dists/bookworm/main/binary-all/Packages
+58f268ded7b46c38df7b601a22b4ab33f27a0eb3  ./pages/dists/bookworm/main/binary-all/Packages.gz
+
+MD5Sum:
+300ddd04e7b596ac997837dced6e54182acdd2166e2c85ecd33d891389f3366e  ./pages/dists/bookworm/main/binary-all/Packages
+f388c7e3fa6fd24d9c872ee14717e2e62cbfe1f8262d2e40bf7c7de117caa7b3  ./pages/dists/bookworm/main/binary-all/Packages.gz
