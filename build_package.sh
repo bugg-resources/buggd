@@ -50,8 +50,6 @@ mkdir -p $DIST_DIR
 # See Debian Repo Format specification section 1.1 for more details
 REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 mkdir -p $REPO_DIR
-cd $DEB_DIR
-echo `realpath .`
 dpkg-scanpackages . /dev/null | gzip -9c > ${REPO_DIR}/Packages.gz
 dpkg-scanpackages . /dev/null > ${REPO_DIR}/Packages
 
