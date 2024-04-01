@@ -19,7 +19,7 @@ APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
 RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 
-SKIP_BUILD=0 # Set to 1 to skip the build step, useful for testing
+SKIP_BUILD=1 # Set to 1 to skip the build step, useful for testing
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
     echo "PACKAGE_NAME=$PACKAGE_NAME"
