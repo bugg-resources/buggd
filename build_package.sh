@@ -3,8 +3,11 @@
 # Exit on error
 set -e
 
+ORIGIN="Bugg Project"
+LABEL="buggd daemon package"
+TARGET_CODENAME="bookworm" # Debian codename for the target distribution
+
 PACKAGE_ROOT="$(dirname "$O")"
-TARGET_CODENAME="bookworm"
 
 # Ensure package name is provided
 PACKAGE_NAME="buggd"
@@ -45,9 +48,10 @@ mkdir -p $DEB_DIR
 mv ${PACKAGE_ROOT}/../${PACKAGE_NAME}_* $DEB_DIR/
 
 # Now proceed to generate the APT repository structure and Packages file
+# See Debian Repo Format specification section 1.1 for more details
+# https://wiki.debian.org/DebianRepository/Format
 DIST_DIR=${PACKAGE_ROOT}/dists
 mkdir -p $DIST_DIR
-# See Debian Repo Format specification section 1.1 for more details
 REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 mkdir -p $REPO_DIR
 dpkg-scanpackages . /dev/null | gzip -9c > ${REPO_DIR}/Packages.gz
@@ -56,10 +60,10 @@ dpkg-scanpackages . /dev/null > ${REPO_DIR}/Packages
 RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 # Generate Release file (example; adjust as needed)
 cat > $RELEASE_FILE << EOF
-Archive: stable
+Archive: ${TARGET_CODENAME}
 Component: main
-Origin: YourNameOrOrganization
-Label: YourLabel
+Origin: ${ORIGIN}
+Label: ${LABEL}
 Architecture: all # Indicate that the repository contains architecture-independent packages
 EOF
 
