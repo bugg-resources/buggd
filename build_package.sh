@@ -19,7 +19,7 @@ APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
 RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 
-SKIP_BUILD=0 # Set to 1 to skip the build step, useful for testing
+SKIP_BUILD=1 # Set to 1 to skip the build step, useful for testing
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
     echo "PACKAGE_NAME=$PACKAGE_NAME"
@@ -74,9 +74,9 @@ cp ${GIT_REPO_ROOT}/../${PACKAGE_NAME}_* $PACKAGE_DIR/
 mkdir -p $DIST_DIR
 mkdir -p $APT_REPO_DIR
 cd $GITHUB_PAGES_DIR    # Required to prevent the github pages part of the path from being included in the Packages file Filename field.
-dpkg-scanpackages . /dev/null | gzip -9c > ${APT_REPO_DIR}/Packages.gz
-dpkg-scanpackages . /dev/null > ${APT_REPO_DIR}/Packages
-cd $GIT_REPO_ROOT 
+dpkg-scanpackages . /dev/null | gzip -9c > ../${APT_REPO_DIR}/Packages.gz
+dpkg-scanpackages . /dev/null > ../${APT_REPO_DIR}/Packages
+cd -
 
 # Generate Release file (example; adjust as needed)
 cat > $RELEASE_FILE << EOF
