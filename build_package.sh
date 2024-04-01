@@ -8,7 +8,7 @@ ORIGIN="Bugg Project"
 LABEL="buggd daemon package"
 TARGET_CODENAME="bookworm" # Debian codename for the target distribution
 
-GIT_REPO_ROOT=`realpath $(dirname "$O")` # buggd git repo root directory
+GIT_REPO_ROOT="$(dirname "$O")" # buggd git repo root directory
 
 # Now proceed to generate the APT repository structure and Packages file
 # See Debian Repo Format specification section 1.1 for more details
@@ -19,6 +19,7 @@ APT_REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
 PACKAGE_DIR=${GITHUB_PAGES_DIR}/pool/main/b/${PACKAGE_NAME}
 RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 
+SKIP_BUILD=0 # Set to 1 to skip the build step, useful for testing
 DEBUG=1
 if [ $DEBUG -eq 1 ]; then
     echo "PACKAGE_NAME=$PACKAGE_NAME"
@@ -59,7 +60,9 @@ fi
 dch -v "${VERSION}-1" "Version $VERSION released" -D stable --force-distribution
 
 # Build the package
-dpkg-buildpackage -us -uc -b
+if [ $SKIP_BUILD -eq 0 ]; then
+    dpkg-buildpackage -us -uc -b
+fi
 
 # Create the packages directory if it doesn't already exist
 mkdir -p $PACKAGE_DIR
@@ -83,6 +86,27 @@ Origin: ${ORIGIN}
 Label: ${LABEL}
 Architecture: all # Indicate that the repository contains architecture-independent packages
 EOF
+
+
+
+do_hash() {
+    HASH_NAME=$1
+    HASH_CMD=$2
+    echo "${HASH_NAME}:"
+    for f in $(find -type f); do
+        f=$(echo $f | cut -c3-) # remove ./ prefix
+        if [ "$f" = "Release" ]; then
+            continue
+        fi
+        echo " $(${HASH_CMD} ${f}  | cut -d" " -f1) $(wc -c $f)"
+    done
+}
+
+do_hash MD5Sum md5sum >> $RELEASE_FILE
+do_hash SHA1 sha1sum >> $RELEASE_FILE
+do_hash SHA256 sha256sum >> $RELEASE_FILE
+
+exit 0
 
 # Append the hash sums to the Release file
 echo -e "\nMD5Sum:" >> $RELEASE_FILE
