@@ -3,6 +3,9 @@
 # Exit on error
 set -e
 
+PACKAGE_ROOT="$(dirname "$O")"
+TARGET_CODENAME="bookworm"
+
 # Ensure package name is provided
 PACKAGE_NAME="buggd"
 if [ -z "$PACKAGE_NAME" ]; then
@@ -33,29 +36,28 @@ dch -v "$VERSION-1" "Version $VERSION released" -D stable --force-distribution
 dpkg-buildpackage -us -uc -b
 
 # Directory for storing the .deb package and related files
-DEB_DIR="packages"
+DEB_DIR=$PACKAGE_ROOT/packages
 # Create the packages directory if it doesn't already exist
 mkdir -p "$DEB_DIR"
 
+# dpkg-buildpackage creates the .deb package in the parent directory
 # Move the built .deb package and related files to the DEB_DIR directory
-# This assumes the parent directory of the current script is the root of your repo
-# Adjust the pattern as necessary to match your package naming scheme
-mv ../${PACKAGE_NAME}_* $DEB_DIR/
+mv ${PACKAGE_ROOT}../${PACKAGE_NAME}_* $DEB_DIR/
 
 # Now proceed to generate the APT repository structure and Packages file
-# Assuming you are in the root of your repo after moving the files
-mkdir -p "dists"
+DIST_DIR=${PACKAGE_ROOT}/dists
+mkdir -p $DIST_DIR
+# See Debian Repo Format specification section 1.1 for more details
+REPO_DIR=${DIST_DIR}/${TARGET_CODENAME}/main/binary-all
+mkdir -p $REPO_DIR
 cd $DEB_DIR
-echo `pwd`
-echo `ls ../dists`
-dpkg-scanpackages . /dev/null | gzip -9c > ../dists/stable/main/binary-all/Packages.gz
-dpkg-scanpackages . /dev/null > ../dists/stable/main/binary-all/Packages
+echo `realpath .`
+dpkg-scanpackages . /dev/null | gzip -9c > ${REPO_DIR}/Packages.gz
+dpkg-scanpackages . /dev/null > ${REPO_DIR}/Packages
 
-# Go to the dists directory to prepare the Release file
-cd ../dists
-
+RELEASE_FILE=${DIST_DIR}/${TARGET_CODENAME}/Release
 # Generate Release file (example; adjust as needed)
-cat > stable/Release << EOF
+cat > $RELEASE_FILE << EOF
 Archive: stable
 Component: main
 Origin: YourNameOrOrganization
@@ -64,17 +66,17 @@ Architecture: all # Indicate that the repository contains architecture-independe
 EOF
 
 # Append the hash sums to the Release file
-echo -e "\nMD5Sum:" >> stable/Release
-md5sum stable/main/binary-all/Packages >> stable/Release
-md5sum stable/main/binary-all/Packages.gz >> stable/Release
+echo -e "\nMD5Sum:" >> $RELEASE_FILE
+md5sum ${REPO_DIR}/Packages >> $RELEASE_FILE
+md5sum ${REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
-echo -e "\nSHA1:" >> stable/Release
-sha1sum stable/main/binary-all/Packages >> stable/Release
-sha1sum stable/main/binary-all/Packages.gz >> stable/Release
+echo -e "\nMD5Sum:" >> $RELEASE_FILE
+sha1sum ${REPO_DIR}/Packages >> $RELEASE_FILE
+sha1sum ${REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
-echo -e "\nSHA256:" >> stable/Release
-sha256sum stable/main/binary-all/Packages >> stable/Release
-sha256sum stable/main/binary-all/Packages.gz >> stable/Release
+echo -e "\nMD5Sum:" >> $RELEASE_FILE
+sha256sum ${REPO_DIR}/Packages >> $RELEASE_FILE
+sha256sum ${REPO_DIR}/Packages.gz >> $RELEASE_FILE
 
 # Sign the Release file (optional, but recommended for public repositories)
 # gpg --default-key "YourEmail" --output stable/Release.gpg --detach-sign stable/Release
