@@ -69,7 +69,7 @@ mkdir -p $PACKAGE_DIR
 
 # dpkg-buildpackage creates the .deb package in the parent directory
 # Move the built .deb package and related files to the PACKAGE_DIR directory
-mv ${GIT_REPO_ROOT}/../${PACKAGE_NAME}_* $PACKAGE_DIR/
+cp ${GIT_REPO_ROOT}/../${PACKAGE_NAME}_* $PACKAGE_DIR/
 
 mkdir -p $DIST_DIR
 mkdir -p $APT_REPO_DIR
