@@ -33,7 +33,8 @@ fi
 dch -v "$VERSION-1" "Version $VERSION released" -D stable --force-distribution
 
 # Build the package
-dpkg-buildpackage -us -uc -b
+echo WARNING: skipping
+#dpkg-buildpackage -us -uc -b
 
 # Directory for storing the .deb package and related files
 DEB_DIR=$PACKAGE_ROOT/packages
@@ -42,6 +43,7 @@ mkdir -p "$DEB_DIR"
 
 # dpkg-buildpackage creates the .deb package in the parent directory
 # Move the built .deb package and related files to the DEB_DIR directory
+echo ${PACKAGE_ROOT}../${PACKAGE_NAME}_* $DEB_DIR/
 mv ${PACKAGE_ROOT}../${PACKAGE_NAME}_* $DEB_DIR/
 
 # Now proceed to generate the APT repository structure and Packages file
