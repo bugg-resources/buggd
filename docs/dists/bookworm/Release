@@ -3,15 +3,15 @@ Component: main
 Origin: Bugg Project
 Label: buggd daemon package
 Architecture: all # Indicate that the repository contains architecture-independent packages
+
 MD5Sum:
-6869f06ed5a13a53561dab3d9356cac2 793 ./docs/dists/bookworm/main/binary-all/Packages
-eb6f82cde317ef85bdd16e7d0a1dfd7b 522 ./docs/dists/bookworm/main/binary-all/Packages.gz
+990eb178758389c6b3ae7caa86c10190  ./docs/dists/bookworm/main/binary-all/Packages
+cacbe6e0014320e8f77a3fe11782297f  ./docs/dists/bookworm/main/binary-all/Packages.gz
 
 SHA1:
-d795b1c7483e92efa7918107272bb00ef9ccfed8 793 ./docs/dists/bookworm/main/binary-all/Packages
-1cb34b15b9eeca3f1693e1f067bb11c524b795bb 522 ./docs/dists/bookworm/main/binary-all/Packages.gz
+94b6b38a132211d3777a0b9c610f713e8e66dd48  ./docs/dists/bookworm/main/binary-all/Packages
+4a6d5d8ee6f805f40de2d5236939696de2fa918f  ./docs/dists/bookworm/main/binary-all/Packages.gz
 
 SHA256:
-5ed59bd9501ed9413c8132124aa82ca07e28c0192f9336716a01b515861e5ed2 793 ./docs/dists/bookworm/main/binary-all/Packages
-987a1778d808fc813beeb1692839bbbe04ec9635d0ce6cc17e1e792f70384ae6 522 ./docs/dists/bookworm/main/binary-all/Packages.gz
-
+5e12ee41c723efb389b184fde8bbcf89a8f3b248297824c111197cec967a70d4  ./docs/dists/bookworm/main/binary-all/Packages
+70108e72ccab290bde45ea0f4db6929a182d8be2a3994d444bdb03d7e1a4c19b  ./docs/dists/bookworm/main/binary-all/Packages.gz
