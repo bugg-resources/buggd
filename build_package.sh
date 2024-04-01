@@ -87,8 +87,7 @@ Label: ${LABEL}
 Architecture: all # Indicate that the repository contains architecture-independent packages
 EOF
 
-
-
+# Compute hashes for the Packages and Packages.gz files
 md5_section=""
 sha1_section=""
 sha256_section=""
