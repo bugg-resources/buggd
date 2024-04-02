@@ -8,6 +8,10 @@ ORIGIN="Bugg Project"
 LABEL="buggd daemon package"
 TARGET_CODENAME="bookworm" # Debian codename for the target distribution
 
+# Package maintainer information
+export DEBFULLNAME="Jeff Gough"
+export DEBEMAIL="j@monad.is"
+
 GIT_REPO_ROOT="$(dirname "$O")" # buggd git repo root directory
 
 # Now proceed to generate the APT repository structure and Packages file
@@ -56,12 +60,6 @@ if [ -z "$VERSION" ]; then
     echo "Version could not be extracted from pyproject.toml. Exiting."
     exit 1
 fi
-# Extract email from git configuration
-# export EMAIL=$(git config --get user.email)
-# if [ -z "$EMAIL" ]; then
-#     echo "Git email is not set. Please set it or modify the script to hardcode the EMAIL variable."
-#     exit 1
-# fi
 
 # Update debian/changelog
 dch -v "${VERSION}-1" "Version $VERSION released" -D stable --force-distribution
