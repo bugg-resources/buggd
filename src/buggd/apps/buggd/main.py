@@ -577,7 +577,10 @@ def main():
         leds.middle.set(Colour.GREEN)
     else:
         leds.middle.set(Colour.RED)
-    time.sleep(2)
+    time.sleep(4)
+    # Turn off test status leds before beginning recording, just so it's a bit clearer what's happening
+    leds.middle.set(Colour.BLACK)
+    leds.top.set(Colour.BLACK)
 
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
