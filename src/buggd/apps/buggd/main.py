@@ -563,8 +563,17 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
     logging.info('Starting buggd')
 
-
     test = FactoryTest()
+
+    # If the trigger file exists, run the factory test
+    if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
+        sys.exit(test.run())
+
+    # If the bare-board trigger file exists, run the factory test. Full test
+    # takes precedence.
+    if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
+        test.run_bare_board()
+        sys.exit(0)
 
     # On boot, set the LEDs to show the status of the factory test
     leds = LEDs()
@@ -577,17 +586,7 @@ def main():
     time.sleep(4)
     # Turn off test status leds before beginning recording, just so it's a bit clearer what's happening
     leds.all_off()
-
-    # If the trigger file exists, run the factory test
-    if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
-        sys.exit(test.run())
-
-    # If the bare-board trigger file exists, run the factory test. Full test
-    # takes precedence.
-    if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
-        test.run_bare_board()
-        sys.exit(0)
-
+    
     # TODO: replace this old way of handling the LED's with the new LED driver
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
