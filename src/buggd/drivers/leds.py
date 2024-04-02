@@ -85,3 +85,9 @@ class LEDs():
         self.top = LED(self.driver, 7, 6, 5)
         self.middle = LED(self.driver, 4, 3, 2)
         self.bottom = LED(self.driver, True, 1, 0)
+
+    def all_off(self):
+        """ Turns off all LEDs """
+        self.top.set(Colour.OFF)
+        self.middle.set(Colour.OFF)
+        self.bottom.set(Colour.RED)
