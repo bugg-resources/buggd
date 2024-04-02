@@ -550,6 +550,7 @@ def main():
         --force-factory-test: Run factory test, even if trigger file is not present.
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
+    atexit.register(cleanup)
 
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
@@ -609,6 +610,9 @@ def cleanup():
     """
     Cleanup function to turn off the LEDs on exit
     """
+    logging.info('At-exit handler called')
+    print("At-exit handler called")
+
     leds = LEDs()
     leds.all_off()
 
@@ -616,6 +620,4 @@ def cleanup():
     led.off()
 
 if __name__ == "__main__":
-    atexit.register(cleanup)
     main()
-
