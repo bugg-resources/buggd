@@ -57,11 +57,12 @@ if [ -z "$VERSION" ]; then
     exit 1
 fi
 # Extract email from git configuration
-export EMAIL=$(git config --get user.email)
-if [ -z "$EMAIL" ]; then
-    echo "Git email is not set. Please set it or modify the script to hardcode the EMAIL variable."
-    exit 1
-fi
+# export EMAIL=$(git config --get user.email)
+# if [ -z "$EMAIL" ]; then
+#     echo "Git email is not set. Please set it or modify the script to hardcode the EMAIL variable."
+#     exit 1
+# fi
+
 # Update debian/changelog
 dch -v "${VERSION}-1" "Version $VERSION released" -D stable --force-distribution
 
