@@ -567,13 +567,13 @@ def main():
 
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
-        sys.exit(test.run())
+        quit_deliberately(test.run())
 
     # If the bare-board trigger file exists, run the factory test. Full test
     # takes precedence.
     if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
         test.run_bare_board()
-        sys.exit(0)
+        quit_deliberately(0)
 
     # On boot, set the LEDs to show the status of the factory test
     leds = LEDs()
@@ -606,6 +606,17 @@ def main():
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
 
 
+exit_status = None
+def quit_deliberately(status=0):
+    """
+    Function to exit deliberately, and set the exit code
+    """
+    global exit_status
+    exit_status = status
+
+    sys.exit(exit_status)
+
+
 def cleanup():
     """
     Cleanup function to turn off the LEDs on exit
@@ -618,14 +629,21 @@ def cleanup():
     led = UserLED()
     led.off()
 
-    leds = LEDs()
-    leds.all_off()
-
     if exc_type is not None:
         logging.warning("Exiting due to exception: %s", exc_type.__name__)
-        leds.bottom.set(Colour.YELLOW)
+        colour = Colour.MAGENTA
+    elif exit_status is not None:
+        logging.info("Exiting deliberately with status %d", exit_status)
+        colour = Colour.YELLOW
     else:
-        logging.info("Exiting without exception.")
+        # This should never happen, since we're a daemon
+        logging.warning("Exiting normally without exception.")
+        colour = Colour.RED
+
+    leds = LEDs()
+    leds.top.set(Colour.BLACK)
+    leds.middle.set(Colour.BLACK)
+    leds.bottom.set(colour)
 
 
 if __name__ == "__main__":
