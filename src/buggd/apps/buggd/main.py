@@ -605,18 +605,28 @@ def main():
         # Blink error code on LEDs
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
 
+
 def cleanup():
     """
     Cleanup function to turn off the LEDs on exit
     """
+    exc_type, _, _ = sys.exc_info()
+
     logging.info('At-exit handler called')
     print("At-exit handler called")
+
+    led = UserLED()
+    led.off()
 
     leds = LEDs()
     leds.all_off()
 
-    led = UserLED()
-    led.off()
+    if exc_type is not None:
+        logging.warning("Exiting due to exception: %s",exc_type.__name__)
+        leds.bottom.set(Colour.YELLOW)
+    else:
+        logging.info("Exiting without exception.")
+
 
 if __name__ == "__main__":
     main()
