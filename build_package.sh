@@ -50,7 +50,7 @@ fi
 
 ### Update the changelog with the current version, from pyproject.toml.
 # Extract version from pyproject.toml
-VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+VERSION=$(python3 -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
 # Check if VERSION is empty
 if [ -z "$VERSION" ]; then
     echo "Version could not be extracted from pyproject.toml. Exiting."
