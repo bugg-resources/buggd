@@ -123,6 +123,22 @@ class FactoryTest:
             # This runs forever until the factory technician turns off the power
 
 
+    def passed_at_factory(self):
+        """ Check if the factory test has run before. Used on boot to set the LEDs """
+        try:
+            with open(self.results_file, 'r', encoding='utf-8') as file:
+                for line in file:
+                    if 'all_tests_passed' in line:
+                        # Split the line into key and value, strip whitespace, convert to bool
+                        _, value = line.split(':')
+                        passed = value.strip().lower() == 'true'
+                        return passed
+        except FileNotFoundError:
+            return False
+        except Exception as e:
+            self.logger.error("An error occurred checking the results file: %s", e)
+            return False
+
     def test_modem(self):
         """
         Run a series of tests on the modem.
@@ -240,6 +256,7 @@ class FactoryTest:
             + "--------------------------\n"
             + "Device Serial: " + discover_serial() + "\n"
             + "\n".join([f"{k}: {v}" for k, v in self.results.items()])
+            + "\nall_tests_passed: " + str(self.test_passed())
             + "\n"
             + "-----------------------\n"
             + ("Factory Self-Test PASS!" if self.test_passed() else "Factory Self-Test FAIL!")
