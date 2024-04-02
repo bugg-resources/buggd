@@ -624,7 +624,7 @@ def cleanup():
         logging.warning("Exiting due to exception: %s", exc_type.__name__)
         colour = Colour.YELLOW
     else:
-        logging.warning("Exiting normally without exception.")
+        logging.info("Exiting normally without exception.")
         colour = Colour.RED
 
     leds = LEDs()
