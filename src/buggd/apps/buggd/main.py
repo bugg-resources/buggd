@@ -622,7 +622,7 @@ def cleanup():
     leds.all_off()
 
     if exc_type is not None:
-        logging.warning("Exiting due to exception: %s",exc_type.__name__)
+        logging.warning("Exiting due to exception: %s", exc_type.__name__)
         leds.bottom.set(Colour.YELLOW)
     else:
         logging.info("Exiting without exception.")
