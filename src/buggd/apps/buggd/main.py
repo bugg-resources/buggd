@@ -8,6 +8,7 @@ import datetime as dt
 import json
 import logging
 import argparse
+import atexit
 from importlib import metadata 
 from google.cloud import storage
 from pcf8574 import PCF8574
@@ -534,11 +535,6 @@ def record(led_driver, modem):
         if not GLOB_offline_mode:
             sync_thread.join()
 
-        # Turn off leds
-        leds = LEDs()
-        leds.top.set(Colour.BLACK)
-        leds.middle.set(Colour.BLACK)
-        
         logging.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
 
@@ -579,8 +575,7 @@ def main():
         leds.middle.set(Colour.RED)
     time.sleep(4)
     # Turn off test status leds before beginning recording, just so it's a bit clearer what's happening
-    leds.middle.set(Colour.BLACK)
-    leds.top.set(Colour.BLACK)
+    leds.all_off()
 
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
@@ -610,5 +605,17 @@ def main():
         # Blink error code on LEDs
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
 
+def cleanup():
+    """
+    Cleanup function to turn off the LEDs on exit
+    """
+    leds = LEDs()
+    leds.all_off()
+
+    led = UserLED()
+    led.off()
+
 if __name__ == "__main__":
+    atexit.register(cleanup)
     main()
+
