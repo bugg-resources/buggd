@@ -9,7 +9,7 @@ from smbus2 import SMBus
 from buggd.drivers.modem import Modem
 from buggd.drivers.soundcard import Soundcard
 from buggd.drivers.pcmd3180 import PCMD3180
-from buggd.drivers.leds import LEDs, Colour
+from buggd.drivers.leds import Colour
 from buggd.drivers.userled import UserLED
 
 from .utils import discover_serial
@@ -34,11 +34,13 @@ class FactoryTest:
     on the console before login.
     """
 
-    def __init__(self):
+    def __init__(self, leds):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
         self.results_file = "/home/bugg/factory_test_results.txt"
+
+        self.leds = leds
         
         self.all_passed = False
         self.results = {
@@ -70,9 +72,8 @@ class FactoryTest:
 
         self.logger.info("Full factory test running.")
 
-        leds = LEDs()
-        leds.top.set(Colour.MAGENTA)
-        leds.middle.set(Colour.BLACK) 
+        self.leds.top.set(Colour.MAGENTA)
+        self.leds.middle.set(Colour.BLACK) 
         
 
         # Run the tests
@@ -87,7 +88,7 @@ class FactoryTest:
             # Check if all tests passed - this indicates that all the hardware is functioning correctly 
             self.all_passed = all(self.results.values())
 
-            self.display_results_on_leds(leds)
+            self.display_results_on_leds()
 
             self.logger.info("\n%s", self.get_results_string())
             self.write_results_to_disk()
@@ -95,8 +96,8 @@ class FactoryTest:
 
         else:
             self.logger.warning("Some tests did not complete successfully. Check the results.")
-            leds.top.set(Colour.MAGENTA)
-            leds.middle.set(Colour.RED)
+            self.leds.top.set(Colour.MAGENTA)
+            self.leds.middle.set(Colour.RED)
             return False
 
     def run_bare_board(self):
@@ -282,12 +283,12 @@ class FactoryTest:
             self.logger.error("Failed to write results to disk. %s", e)
 
 
-    def display_results_on_leds(self, leds):
+    def display_results_on_leds(self):
         """ Display the results of the factory test on the LEDs """
 
         if self.test_passed():
-            leds.top.set(Colour.GREEN)
-            leds.middle.set(Colour.BLACK)
+            self.leds.top.set(Colour.GREEN)
+            self.leds.middle.set(Colour.BLACK)
 
         else:
             results = self.get_results()
@@ -304,59 +305,59 @@ class FactoryTest:
             
             if sum(bool(failures) for failures in [modem_failures, i2c_failures, recording_failures]) > 1:
                 # Failures in multiple categories
-                leds.top.set(Colour.WHITE)
-                leds.middle.set(Colour.BLACK)
+                self.leds.top.set(Colour.WHITE)
+                self.leds.middle.set(Colour.BLACK)
                 
             elif bool(modem_failures):
                 # Modem failures, indicate which ones
-                leds.top.set(Colour.YELLOW)
+                self.leds.top.set(Colour.YELLOW)
 
                 # Multiple failures, indicate that
                 if len(modem_failures) > 1:
-                    leds.middle.set(Colour.WHITE)
+                    self.leds.middle.set(Colour.WHITE)
                 
                 else:
                     match modem_failures[0]:
                         case "modem_enumerates":
-                            leds.middle.set(Colour.RED)
+                            self.leds.middle.set(Colour.RED)
                         case "modem_responsive":
-                            leds.middle.set(Colour.MAGENTA)
+                            self.leds.middle.set(Colour.MAGENTA)
                         case "modem_sim_readable":
-                            leds.middle.set(Colour.BLUE)
+                            self.leds.middle.set(Colour.BLUE)
                         case "modem_towers_found":
-                            leds.middle.set(Colour.YELLOW)
+                            self.leds.middle.set(Colour.YELLOW)
                             
             elif bool(i2c_failures):
                 # I2C failures, indicate which ones
-                leds.top.set(Colour.RED)
+                self.leds.top.set(Colour.RED)
 
                 # Multiple failures, indicate that
                 if len(i2c_failures) > 1:
-                    leds.middle.set(Colour.WHITE)
+                    self.leds.middle.set(Colour.WHITE)
                 
                 else:
                     match i2c_failures[0]:
                         case "i2s_bridge_responding":
-                            leds.middle.set(Colour.RED)
+                            self.leds.middle.set(Colour.RED)
                         case "rtc_responding":
-                            leds.middle.set(Colour.CYAN)
+                            self.leds.middle.set(Colour.CYAN)
                         case "led_controller_responding":
-                            leds.middle.set(Colour.MAGENTA) 
+                            self.leds.middle.set(Colour.MAGENTA) 
 
             elif bool(recording_failures):
                 # Recording failures, indicate which ones
-                leds.top.set(Colour.BLUE)
+                self.leds.top.set(Colour.BLUE)
 
                 # Multiple failures, indicate that
                 if len(recording_failures) > 1:
-                    leds.middle.set(Colour.WHITE)
+                    self.leds.middle.set(Colour.WHITE)
                 
                 else:
                     match recording_failures[0]:
                         case "internal_microphone_recording":
-                            leds.middle.set(Colour.RED)
+                            self.leds.middle.set(Colour.RED)
                         case "external_microphone_recording":
-                            leds.middle.set(Colour.YELLOW)
+                            self.leds.middle.set(Colour.YELLOW)
 
 
 def i2c_device_present(addr, bus_num=1, force=True):

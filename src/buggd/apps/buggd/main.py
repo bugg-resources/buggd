@@ -67,6 +67,8 @@ GLOB_is_connected = False
 #TODO: make offline mode a configurable parameter from the config.json file
 GLOB_offline_mode = False
 
+leds = LEDs() # Make the LEDs object global so it can be accessed by the cleanup function
+
 """
 Running the recording process uses the following functions, which users
 might want to repackage in bespoke code, or which it is useful to isolate
@@ -550,6 +552,7 @@ def main():
         --force-factory-test: Run factory test, even if trigger file is not present.
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
+    global leds
     atexit.register(cleanup)
 
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
@@ -563,8 +566,7 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
     logging.info('Starting buggd')
 
-    test = FactoryTest()
-    leds = LEDs()
+    test = FactoryTest(leds)
 
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
@@ -612,6 +614,7 @@ def cleanup():
     """
     Cleanup function to turn off the LEDs on exit
     """
+    global leds
     exc_type, _, _ = sys.exc_info()
 
     logging.info('At-exit handler called')
@@ -627,7 +630,6 @@ def cleanup():
         logging.info("Exiting normally without exception.")
         colour = Colour.RED
 
-    leds = LEDs()
     leds.bottom.set(colour)
     leds.at_exit()
 
