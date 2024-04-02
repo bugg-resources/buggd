@@ -55,6 +55,7 @@ class LED:
             'green': ch_g,
             'blue': ch_b
         }
+        self.stay_on_at_exit = False
 
     def set(self, colour: Colour):
         """
@@ -86,8 +87,25 @@ class LEDs():
         self.middle = LED(self.driver, 4, 3, 2)
         self.bottom = LED(self.driver, True, 1, 0)
 
+        self.bottom.stay_on_at_exit = True
+
+
     def all_off(self):
         """ Turns off all LEDs """
         self.top.set(Colour.OFF)
         self.middle.set(Colour.OFF)
         self.bottom.set(Colour.RED)
+
+
+    def at_exit(self):
+        """
+        Turns off all LEDs when the program exits,
+        unless they are set to stay on, e.g. for use by the self-test or exit status
+        """
+        if not self.top.stay_on_at_exit:
+            self.top.set(Colour.OFF)
+        if not self.middle.stay_on_at_exit:
+            self.middle.set(Colour.OFF)
+        if not self.bottom.stay_on_at_exit:
+            self.bottom.set(Colour.RED)
+
