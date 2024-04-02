@@ -85,7 +85,3 @@ class LEDs():
         self.top = LED(self.driver, 7, 6, 5)
         self.middle = LED(self.driver, 4, 3, 2)
         self.bottom = LED(self.driver, True, 1, 0)
-
-    def close(self):
-        """ Closes the IO expander """
-        self.driver.io_expander.close()

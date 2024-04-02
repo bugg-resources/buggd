@@ -538,7 +538,6 @@ def record(led_driver, modem):
         leds = LEDs()
         leds.top = Colour.BLACK
         leds.middle = Colour.BLACK
-        leds.close()
         
         logging.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
@@ -579,7 +578,6 @@ def main():
     else:
         leds.middle = Colour.RED
     time.sleep(2)
-    leds.close()
 
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
