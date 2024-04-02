@@ -556,12 +556,6 @@ def main():
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
 
-    # Set the LEDs to magenta to indicate the program is starting
-    leds = LEDs()
-    leds.top = Colour.MAGENTA
-    leds.middle = Colour.MAGENTA
-    leds.close()
-
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
                         help='Run factory test, even if trigger file is not present.')
@@ -573,18 +567,31 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
     logging.info('Starting buggd')
 
+
+    test = FactoryTest()
+
+    # On boot, set the LEDs to show the status of the factory test
+    leds = LEDs()
+    leds.top = Colour.MAGENTA
+    leds.bottom = Colour.RED
+    if test.passed_at_factory():
+        leds.middle = Colour.GREEN
+    else:
+        leds.middle = Colour.RED
+    time.sleep(2)
+    leds.close()
+
     # If the trigger file exists, run the factory test
     if args.force_factory_test or os.path.exists(FACTORY_TEST_TRIGGER_FULL):
-        test = FactoryTest()
         sys.exit(test.run())
 
     # If the bare-board trigger file exists, run the factory test. Full test
     # takes precedence.
     if args.force_factory_test_bare or os.path.exists(FACTORY_TEST_TRIGGER_BARE_BOARD):
-        test = FactoryTest()
         test.run_bare_board()
         sys.exit(0)
 
+    # TODO: replace this old way of handling the LED's with the new LED driver
     # Initialise LED driver and turn all channels off
     led_driver = PCF8574(PCF8574_I2C_BUS, PCF8574_I2C_ADD)
     modem = Modem()
