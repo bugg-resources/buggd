@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Jeff Gough <j@monad.is>
 Rules-Requires-Root: no
 Build-Depends:
- debhelper-compat (= 13),
+ debhelper-compat (= 13), debhelper, devscripts, dpkg-dev, python3
 Standards-Version: 4.6.2
 Homepage: <https://bugg.xyz>
 #Vcs-Browser: https://salsa.debian.org/debian/buggd
