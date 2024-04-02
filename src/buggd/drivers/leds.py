@@ -5,6 +5,7 @@ ADDRESS = 0x23
 BUS = 1
 
 class Colour(Enum):
+    """ Possible colours for an LED """
     RED = auto()
     GREEN = auto()
     BLUE = auto()
@@ -15,6 +16,7 @@ class Colour(Enum):
     BLACK = auto()
     OFF = BLACK
 
+# Maps colours to RGB values
 COLOUR_THEORY = {
     Colour.RED: (1, 0, 0),
     Colour.GREEN: (0, 1, 0),
@@ -27,21 +29,25 @@ COLOUR_THEORY = {
 }
 
 class Driver():
+    """ This class is responsible for interfacing with the PCF8574 IO expander """
     def __init__(self, bus, address):
         self.bus = bus
         self.address = address
         self.io_expander = PCF8574(self.bus, self.address)
 
     def set(self, channel, value):
+        """
+        Turns on one channel of the IO expander (one LED within an RGB LED)
+        Channels are active low
+        """
         try:
             self.io_expander.port[channel] = not value
         except AssertionError:
             pass
 
-def close(self):
-    self.driver.io_expander.close()
 
 class LED:
+    """ This class represents an RGB LED """
     def __init__(self, driver, ch_r, ch_g, ch_b):
         self.driver = driver
         self.channels = {
@@ -51,6 +57,11 @@ class LED:
         }
 
     def set(self, colour: Colour):
+        """
+        Sets the colour of the LED
+        An LED, like the Power LED, can have a colour hard-wired to a specific channel, so 
+        check for that and raise an error if we try to set a colour that can't be displayed
+        """
         col = COLOUR_THEORY[colour]
         r, g, b = col
 
@@ -59,16 +70,22 @@ class LED:
             if isinstance(element[1], bool):
                 if not element[1] == col[index]:
                     inv_map = {v: k for k, v in COLOUR_THEORY.items()}
-                    raise ValueError(f"{inv_map.get(col)} cannot be displayed on this LED because it's colour {element[0]} is hard-wired to {element[1]}")
-        
+                    raise ValueError(f"{inv_map.get(col)} cannot be displayed on this LED because \
+                                     it's colour {element[0]} is hard-wired to {element[1]}")
+
         self.driver.set(self.channels['red'], r)
         self.driver.set(self.channels['green'], g)
         self.driver.set(self.channels['blue'], b)
 
 class LEDs():
+    """ This class contains the three user-facing LEDs on the product """
     def __init__(self):
         self.driver = Driver(BUS, ADDRESS)
 
         self.top = LED(self.driver, 7, 6, 5)
         self.middle = LED(self.driver, 4, 3, 2)
         self.bottom = LED(self.driver, True, 1, 0)
+
+    def close(self):
+        """ Closes the IO expander """
+        self.driver.io_expander.close()
