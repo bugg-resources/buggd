@@ -264,24 +264,23 @@ class FactoryTest:
         )
         return s
 
+
     def test_passed(self):
         """ Return True if all harware tests passed """
         return self.all_passed
-        
+
+
     def write_results_to_disk(self):
         """ Write the results string to the primary user's home directory """
-        with open(self.results_file, 'w', encoding='utf-8') as f:
-            f.write(self.get_results_string())
-
-        # Set permissions to globally-readable
-        os.chmod(self.results_file, 0o644)
-
-        # Link into /etc/issue.dgg
-        os.makedirs("/etc/issue.d", exist_ok=True)
         try:
-            os.symlink(self.results_file, "/etc/issue.d/factory_test_results.issue")
-        except FileExistsError:
-            pass
+            with open(self.results_file, 'w', encoding='utf-8') as f:
+                f.write(self.get_results_string())
+
+            # Set permissions to globally-readable
+            os.chmod(self.results_file, 0o644)
+        except Exception as e:
+            self.logger.error("Failed to write results to disk. %s", e)
+
 
     def display_results_on_leds(self, leds):
         """ Display the results of the factory test on the LEDs """
