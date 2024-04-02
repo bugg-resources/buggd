@@ -536,8 +536,8 @@ def record(led_driver, modem):
 
         # Turn off leds
         leds = LEDs()
-        leds.top = Colour.BLACK
-        leds.middle = Colour.BLACK
+        leds.top.set(Colour.BLACK)
+        leds.middle.set(Colour.BLACK)
         
         logging.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
@@ -571,12 +571,12 @@ def main():
 
     # On boot, set the LEDs to show the status of the factory test
     leds = LEDs()
-    leds.top = Colour.MAGENTA
-    leds.bottom = Colour.RED
+    leds.top.set(Colour.MAGENTA)
+    leds.bottom.set(Colour.RED)
     if test.passed_at_factory():
-        leds.middle = Colour.GREEN
+        leds.middle.set(Colour.GREEN)
     else:
-        leds.middle = Colour.RED
+        leds.middle.set(Colour.RED)
     time.sleep(2)
 
     # If the trigger file exists, run the factory test
