@@ -28,6 +28,7 @@ REBOOT_ALLOWED = True
 
 # set a global name for a common logging for functions using this module
 LOG = 'bugg-recording'
+LOG_DIR = '/home/buggd/logs/'
 
 # How many times to try for an internet connection before starting recording
 BOOT_INTERNET_RETRIES = 30
@@ -398,6 +399,7 @@ def record(led_driver, modem):
     global GLOB_no_sd_mode
     global GLOB_is_connected
     global GLOB_offline_mode
+    global LOG_DIR
 
     # Get the unique CPU ID of the device
     cpu_serial = discover_serial()
@@ -407,7 +409,7 @@ def record(led_driver, modem):
     start_time = time.strftime('%Y%m%d_%H%M')
 
     # Create the logs directory and file if needed
-    log_dir = 'logs'
+    log_dir = LOG_DIR
     logfile_name = 'rpi_eco_{}_{}.log'.format(cpu_serial,start_time)
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
