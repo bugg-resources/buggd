@@ -13,6 +13,7 @@ import time
 import sys
 from importlib import metadata
 from .utils import discover_serial
+from .log import setup_logging
 
 
 # The log_dir can't be included in config because we're
