@@ -71,6 +71,9 @@ GLOB_offline_mode = False
 
 leds = LEDs() # Make the LEDs object global so it can be accessed by the cleanup function
 
+logger = logging.getLogger().setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
+
 """
 Running the recording process uses the following functions, which users
 might want to repackage in bespoke code, or which it is useful to isolate
