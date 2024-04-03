@@ -426,6 +426,8 @@ def record(led_driver, modem):
     hdlr = logging.FileHandler(filename=logfile)
     logging.getLogger().addHandler(hdlr)
 
+    logging.info("Saving logs to %s", logfile)
+
     logging.info('Start of buggd at {}'.format(start_time))
 
     # Log current git commit information
