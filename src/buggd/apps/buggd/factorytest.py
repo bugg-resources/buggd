@@ -30,8 +30,8 @@ class FactoryTest:
     The results can be printed as a formatted string using the get_results_string() method.
     
     This formatted string is intended to be printed to the console or logged.
-    There is also a mechanism to write the results string to /etc/issue to be displayed 
-    on the console before login.
+    There is also a mechanism to write the results string to disk. This file is symlinked into
+    /etc/issue.d by buggOS to be displayed on the console before login.
     """
 
     def __init__(self, leds):
@@ -60,7 +60,7 @@ class FactoryTest:
         Run the full self-test procedure.
         
         Print the results to the log.
-        Write the results to disk, and symlink to /etc/issue.d for display on the console before login.
+        Write the results to disk.
 
         Returns:
             bool: True if all tests ran successfully, False otherwise.
