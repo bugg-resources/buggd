@@ -72,6 +72,7 @@ class Modem:
 
     def release_gpio(self):
         """ Set GPIO pins HIGH-Z """
+        GPIO.setmode(GPIO.BCM)  # In case release is called before configure
         GPIO.setup(RESET_IN_N, GPIO.IN)
 
     def turn_on_rail(self):
