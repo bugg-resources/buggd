@@ -2,6 +2,7 @@
 
 # CAUTION: This document needs re-writing to reflect the bifurcation of bugg-cm4-firmware into bugg-recording and the new bugg-os project. 
 
+
 This document needs heavy editing - some of what follows below has been deprecated or is misleading as things currently stand, but as of March 2024 I haven't edited any of it yet, as there are some important details relevant for completing the firmware development. 
 
 # bugg-cm4-firmware
