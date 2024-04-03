@@ -21,6 +21,7 @@ from buggd.drivers.leds import LEDs, Colour
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
 from .factorytest import FactoryTest
+from .log import setup_logging
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
