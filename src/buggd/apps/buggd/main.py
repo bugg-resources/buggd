@@ -640,7 +640,13 @@ def cleanup():
 
 if __name__ == "__main__":
     setup_logging()
+
+    # Get the unique CPU ID of the device
+    cpu_serial = discover_serial()
+    # Get the current time - this is the time buggd was started
+    start_time = time.strftime('%Y%m%d_%H%M')
+
     logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
-    logger.info("Saving logs to %s", logfile)
+    logger.info("Saving logs to bee%s", logfile)
 
     main()
