@@ -5,18 +5,24 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+ENABLE_TRACEBACKS = True
+
 def write_traceback_to_log(exception):
     """
     Print detailed information about an exception, including the file, class, and line number where it occurred, 
     along with a stack trace.
     """
+    if not ENABLE_TRACEBACKS:
+        logger.debug('Tracebacks are disabled')
+        return
+
     # Fetching the current exception information
     exc_type, exc_value, exc_traceback = sys.exc_info()
 
     # Extracting the stack trace
     tb_lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-    print('Detailed Exception Traceback:')
-    print(''.join(tb_lines))
+    logger.debug('Detailed Exception Traceback:')
+    logger.debug(''.join(tb_lines))
 
     # Extract the last traceback object which points to where the exception was raised
     while exc_traceback.tb_next:
@@ -30,11 +36,11 @@ def write_traceback_to_log(exception):
     # Attempting to extract the class name, if any
     class_name = frame.f_locals.get('self', None).__class__.__name__ if 'self' in frame.f_locals else None
 
-    # Printing extracted details
-    print(f'Exception occurred in file: {file_name}')
+    # logger.debuging extracted details
+    logger.debug(f'Exception occurred in file: {file_name}')
     if class_name:
-        print(f'Exception occurred in class: {class_name}')
-    print(f'Exception occurred at line: {line_number}')
+        logger.debug(f'Exception occurred in class: {class_name}')
+    logger.debug(f'Exception occurred at line: {line_number}')
 
 
 def divide_by_zero():
