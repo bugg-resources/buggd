@@ -14,6 +14,9 @@ from buggd.drivers.userled import UserLED
 
 from .utils import discover_serial
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class FactoryTest:
     """ 
     This class runs a series of tests on the hardware in the factory.
@@ -35,8 +38,6 @@ class FactoryTest:
     """
 
     def __init__(self, leds):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
 
         self.results_file = "/home/bugg/factory_test_results.txt"
 
@@ -70,7 +71,7 @@ class FactoryTest:
 
         """
 
-        self.logger.info("Full factory test running.")
+        logger.info("Full factory test running.")
 
         self.leds.top.set(Colour.MAGENTA)
         self.leds.middle.set(Colour.BLACK) 
@@ -83,19 +84,19 @@ class FactoryTest:
         completed.append(self.test_recording())
 
         if all(completed):
-            self.logger.info("All tests completed.")
+            logger.info("All tests completed.")
 
             # Check if all tests passed - this indicates that all the hardware is functioning correctly 
             self.all_passed = all(self.results.values())
 
             self.display_results_on_leds()
 
-            self.logger.info("\n%s", self.get_results_string())
+            logger.info("\n%s", self.get_results_string())
             self.write_results_to_disk()
             return True
 
         else:
-            self.logger.warning("Some tests did not complete successfully. Check the results.")
+            logger.warning("Some tests did not complete successfully. Check the results.")
             self.leds.top.set(Colour.MAGENTA)
             self.leds.middle.set(Colour.RED)
             return False
@@ -106,7 +107,7 @@ class FactoryTest:
         so the assembly technician can measure voltages on the test points. 
         """
 
-        self.logger.info("Running factory bare-board test.")
+        logger.info("Running factory bare-board test.")
 
         modem = Modem()
         modem.turn_on_rail()
@@ -137,7 +138,7 @@ class FactoryTest:
         except FileNotFoundError:
             return False
         except Exception as e:
-            self.logger.error("An error occurred checking the results file: %s", e)
+            logger.error("An error occurred checking the results file: %s", e)
             return False
 
     def test_modem(self):
@@ -149,7 +150,7 @@ class FactoryTest:
             NOTE: A true result does not necessarily mean the modem is functioning correctly
             check the results dictionary for more information.
         """
-        self.logger.info("Testing modem.")
+        logger.info("Testing modem.")
 
         try:
 
@@ -157,7 +158,7 @@ class FactoryTest:
             try:
                 subprocess.run(["sudo", "systemctl", "stop", "ModemManager"], check=True)
             except subprocess.CalledProcessError as e:
-                self.logger.warning("Failed to stop ModemManager: %s", e)
+                logger.warning("Failed to stop ModemManager: %s", e)
                 return False
 
             modem = Modem()
@@ -170,7 +171,7 @@ class FactoryTest:
             tries = 6
             while tries > 0:
                 rssi = modem.get_rssi()
-                self.logger.debug("RSSI: %s", rssi)
+                logger.debug("RSSI: %s", rssi)
                 time.sleep(1)
                 tries -= 1
                 if rssi and rssi != 99:
@@ -181,14 +182,14 @@ class FactoryTest:
             return True
 
         except Exception as e:
-            self.logger.error("Error during modem test: %s", e)
+            logger.error("Error during modem test: %s", e)
             return False 
 
     def test_i2c_devices(self):
         """
         Check the I2C devices are all present
         """
-        self.logger.info("Testing I2C devices.")
+        logger.info("Testing I2C devices.")
 
         try:
             pcf8574_addr = 0x23 # LED controller
@@ -210,7 +211,7 @@ class FactoryTest:
             return True
 
         except Exception as e:
-            self.logger.error("Error during I2C device test: %s", e)
+            logger.error("Error during I2C device test: %s", e)
             return False
 
     def test_recording(self):
@@ -218,7 +219,7 @@ class FactoryTest:
         Check for hiss on both the internal and external microphones
         Do this by recording a second of audio and checking the variance
         """
-        self.logger.info("Testing recording.")
+        logger.info("Testing recording.")
 
         try:
             soundcard = Soundcard()
@@ -233,7 +234,7 @@ class FactoryTest:
             if variances is None:
                 return False
             
-            self.logger.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
+            logger.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
 
             self.results["internal_microphone_recording"] = variances['internal'] > 100
             self.results["external_microphone_recording"] = variances['external'] > 100
@@ -243,7 +244,7 @@ class FactoryTest:
             return True
 
         except Exception as e:
-            self.logger.error("Error during recording test: %s", e)
+            logger.error("Error during recording test: %s", e)
             return False
 
     def get_results(self):
@@ -280,7 +281,7 @@ class FactoryTest:
             # Set permissions to globally-readable
             os.chmod(self.results_file, 0o644)
         except Exception as e:
-            self.logger.error("Failed to write results to disk. %s", e)
+            logger.error("Failed to write results to disk. %s", e)
 
 
     def display_results_on_leds(self):
