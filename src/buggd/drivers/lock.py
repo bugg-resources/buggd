@@ -4,7 +4,7 @@ import logging
 from filelock import FileLock, Timeout
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 class Lock:
     """
