@@ -36,7 +36,7 @@ class FactoryTest:
 
     def __init__(self, leds):
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
 
         self.results_file = "/home/bugg/factory_test_results.txt"
 
