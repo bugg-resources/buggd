@@ -16,11 +16,11 @@ class DebugClass:
 
     def hello_logger(self):
         """ Method that demonstrates logging at different levels"""
-        logger.debug('Hello from DebugClass')
-        logger.info('Hello from DebugClass')
-        logger.warning('Hello from DebugClass')
-        logger.error('Hello from DebugClass')
-        logger.critical('Hello from DebugClass')
+        logger.debug('logging.DEBUG from DebugClass')
+        logger.info('logging.INFO from DebugClass')
+        logger.warning('logging.WARNING from DebugClass')
+        logger.error('logging.ERROR from DebugClass')
+        logger.critical('logging.CRITICAL from DebugClass')
 
 
 def write_traceback_to_log(exception):
