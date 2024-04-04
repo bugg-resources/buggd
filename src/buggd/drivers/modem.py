@@ -7,9 +7,10 @@ import usb.util
 import os
 import serial
 import RPi.GPIO as GPIO
+from buggd.log import Log
 from .lock import Lock
 
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 P3V7_EN = 7
