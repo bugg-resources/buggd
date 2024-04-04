@@ -11,9 +11,10 @@ import RPi.GPIO as GPIO
 from datetime import datetime
 import time
 import requests
+from .log import Log
 
 # Create a logger for this module and set its level
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 def set_led(led_driver, channels_arr, col_arr):
