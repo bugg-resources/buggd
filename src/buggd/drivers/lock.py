@@ -2,8 +2,9 @@
 
 import logging
 from filelock import FileLock, Timeout
+from buggd.log import Log
 
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 logger.setLevel(logging.WARNING)
 
 class Lock:
