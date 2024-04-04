@@ -11,8 +11,8 @@ from buggd.drivers.soundcard import Soundcard
 from buggd.drivers.pcmd3180 import PCMD3180
 from buggd.drivers.leds import Colour
 from buggd.drivers.userled import UserLED
+from buggd.utility.cpuserial import discover_serial
 
-from .utils import discover_serial
 from .log import Log
 
 logger = Log.get_logger(__name__)

@@ -13,7 +13,7 @@ import os
 import time
 import sys
 import shutil
-from .utils import discover_serial
+from buggd.utility.cpuserial import discover_serial
 
 
 # The log_dir can't be included in config because we're
