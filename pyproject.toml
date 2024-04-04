@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "buggd"
-version = "1.6.14"
+version = "1.8.1"
 description = "Bugg userspace recording firmware; including hardware drivers, the buggd daemon and various configuration tools."
 authors = [
     { name = "Jeff Gough", email = "j@monad.is" },
