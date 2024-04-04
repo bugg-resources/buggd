@@ -345,7 +345,7 @@ def continuous_recording(sensor, working_dir, data_dir, led_driver, die):
             logger.info('GLOB_no_sd_mode: {}, GLOB_is_connected: {}, GLOB_offline_mode: {}'.format(GLOB_no_sd_mode, GLOB_is_connected, GLOB_offline_mode))
             record_sensor(sensor, working_dir, data_dir, led_driver)
     except Exception as e:
-        logging.error('Caught exception on continuous_recording() function: {}'.format(str(e)))
+        logger.error('Caught exception on continuous_recording() function: {}'.format(str(e)))
 
         # Blink error code on LEDs
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
@@ -496,7 +496,7 @@ def record(led_driver, modem):
             logger.info('Moved {} to upload'.format(log))
     except OSError:
         # not critical - can leave logs in the log_dir
-        logging.error('Could not move existing logs to upload.')
+        logger.error('Could not move existing logs to upload.')
 
     # Now get the sensor
     sensor = auto_configure_sensor()
@@ -607,7 +607,7 @@ def main():
         led.on()
         record(led_driver, modem)
     except Exception as e:
-        logging.error('Caught exception on main record() function: {}'.format(str(e)))
+        logger.error('Caught exception on main record() function: {}'.format(str(e)))
         led.off()
 
         # Blink error code on LEDs
