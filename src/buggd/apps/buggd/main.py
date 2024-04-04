@@ -21,15 +21,11 @@ from buggd.drivers.leds import LEDs, Colour
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
 from .factorytest import FactoryTest
-from .log import setup_logging
+from .log import setup_logging, LOG_DIR
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
 REBOOT_ALLOWED = True
-
-# set a global name for a common logging for functions using this module
-LOG = 'bugg-recording'
-LOG_DIR = '/home/buggd/logs/'
 
 # How many times to try for an internet connection before starting recording
 BOOT_INTERNET_RETRIES = 30
@@ -125,7 +121,7 @@ def auto_sys_config(sd_mnt_dir, use_sd_card):
     if os.path.exists(CONFIG_FNAME):
         dev_config = json.load(open(CONFIG_FNAME))['device']
         proj_id = dev_config['project_id']
-        conf_id = dev_config['config_id']
+        conf_id = dev_config['config_id'],
 
     # Make the various levels to get to the data_directory level
     proj_dir = os.path.join(upload_dir, 'proj_{}'.format(proj_id))
@@ -404,36 +400,6 @@ def record(led_driver, modem):
     global GLOB_no_sd_mode
     global GLOB_is_connected
     global GLOB_offline_mode
-    global LOG_DIR
-
-    # Get the unique CPU ID of the device
-    cpu_serial = discover_serial()
-
-    # Start logging immediately. The log_dir can't be included in config
-    # because we're not loading config until after logging has started.
-    start_time = time.strftime('%Y%m%d_%H%M')
-
-    # # Create the logs directory and file if needed
-    # log_dir = LOG_DIR
-    # logfile_name = 'rpi_eco_{}_{}.log'.format(cpu_serial,start_time)
-    # if not os.path.exists(log_dir):
-    #     os.makedirs(log_dir)
-    # logfile = os.path.join(log_dir,logfile_name)
-    # if not os.path.exists(logfile):
-    #     open(logfile, 'w+')
-
-    # # Add handlers to logging so logs are sent to stdout and the file
-    # logging.getLogger().setLevel(logging.INFO)
-    # fmter = logging.Formatter('{} - %(message)s'.format(cpu_serial))
-    # ch = logging.StreamHandler(sys.stdout)
-    # ch.setFormatter(fmter)
-    # logging.getLogger().addHandler(ch)
-    # hdlr = logging.FileHandler(filename=logfile)
-    # logging.getLogger().addHandler(hdlr)
-
-    # logger.info("Saving logs to %s", logfile)
-
-    # logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
 
     if not GLOB_offline_mode:
         # Enable the modem for a mobile network connection. If no modem set recorder to offline mode
@@ -488,6 +454,8 @@ def record(led_driver, modem):
         upload_dir_logs = os.path.join(upload_dir, 'logs')
         if not os.path.exists(upload_dir_logs):
             os.makedirs(upload_dir_logs)
+
+        log_dir = LOG_DIR
 
         existing_logs = [f for f in os.listdir(log_dir) if f.endswith('.log') and f != logfile_name]
         for log in existing_logs:
@@ -642,13 +610,4 @@ def cleanup():
     leds.at_exit()
 
 if __name__ == "__main__":
-
-    # Get the unique CPU ID of the device
-    cpu_serial = discover_serial()
-    # Get the current time - this is the time buggd was started
-    start_time = time.strftime('%Y%m%d_%H%M')
-
-    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
-    logger.info("Saving logs to bee%s", logfile)
-
     main()
