@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-import shutil
 import signal
 import threading
 import datetime as dt
@@ -21,15 +20,11 @@ from buggd.drivers.leds import LEDs, Colour
 from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_serial, clean_dirs, check_sd_not_corrupt, merge_dirs
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
 from .factorytest import FactoryTest
-from .log import setup_logging
+from .log import Log
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
 REBOOT_ALLOWED = True
-
-# set a global name for a common logging for functions using this module
-LOG = 'bugg-recording'
-LOG_DIR = '/home/buggd/logs/'
 
 # How many times to try for an internet connection before starting recording
 BOOT_INTERNET_RETRIES = 30
@@ -390,12 +385,12 @@ def blink_error_leds(led_driver, error_e, dur=None):
         call_cmd_line('sudo reboot')
 
 
-def record(led_driver, modem):
+def record(led_driver, modem, log):
 
     """
     Function to setup, run and log continuous sampling from the sensor.
 
-    Args:
+    Notable variables:
         logfile_name: The filename that the logs from this run should be stored to
         log_dir: A directory to be used for logging. Existing log files
         found in will be moved to upload.
@@ -404,36 +399,6 @@ def record(led_driver, modem):
     global GLOB_no_sd_mode
     global GLOB_is_connected
     global GLOB_offline_mode
-    global LOG_DIR
-
-    # Get the unique CPU ID of the device
-    cpu_serial = discover_serial()
-
-    # Start logging immediately. The log_dir can't be included in config
-    # because we're not loading config until after logging has started.
-    start_time = time.strftime('%Y%m%d_%H%M')
-
-    # Create the logs directory and file if needed
-    log_dir = LOG_DIR
-    logfile_name = 'rpi_eco_{}_{}.log'.format(cpu_serial,start_time)
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    logfile = os.path.join(log_dir,logfile_name)
-    if not os.path.exists(logfile):
-        open(logfile, 'w+')
-
-    # Add handlers to logging so logs are sent to stdout and the file
-    logging.getLogger().setLevel(logging.INFO)
-    fmter = logging.Formatter('{} - %(message)s'.format(cpu_serial))
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setFormatter(fmter)
-    logging.getLogger().addHandler(ch)
-    hdlr = logging.FileHandler(filename=logfile)
-    logging.getLogger().addHandler(hdlr)
-
-    logger.info("Saving logs to %s", logfile)
-
-    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
 
     if not GLOB_offline_mode:
         # Enable the modem for a mobile network connection. If no modem set recorder to offline mode
@@ -483,20 +448,8 @@ def record(led_driver, modem):
     # Clean data directories
     clean_dirs(working_dir,upload_dir,data_dir)
 
-    # move any existing logs into the upload folder for this pi
-    try:
-        upload_dir_logs = os.path.join(upload_dir, 'logs')
-        if not os.path.exists(upload_dir_logs):
-            os.makedirs(upload_dir_logs)
-
-        existing_logs = [f for f in os.listdir(log_dir) if f.endswith('.log') and f != logfile_name]
-        for log in existing_logs:
-            shutil.move(os.path.join(log_dir, log),
-                      os.path.join(upload_dir_logs, log))
-            logger.info('Moved {} to upload'.format(log))
-    except OSError:
-        # not critical - can leave logs in the log_dir
-        logging.error('Could not move existing logs to upload.')
+    # Move archived logs to the upload directory
+    log.move_archived_to_dir(upload_dir)
 
     # Now get the sensor
     sensor = auto_configure_sensor()
@@ -556,6 +509,13 @@ def main():
         --force-factory-test: Run factory test, even if trigger file is not present.
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
+    # Set up the logger
+    log = Log()
+    log.rotate_log()
+
+    start_time = time.strftime('%Y%m%d_%H%M')
+    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
+
     global leds
     atexit.register(cleanup)
 
@@ -606,7 +566,7 @@ def main():
     try:
         # run continuous recording function
         led.on()
-        record(led_driver, modem)
+        record(led_driver, modem, log)
     except Exception as e:
         logging.error('Caught exception on main record() function: {}'.format(str(e)))
         led.off()
@@ -639,8 +599,4 @@ def cleanup():
     leds.at_exit()
 
 if __name__ == "__main__":
-    setup_logging()
-    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
-    logger.info("Saving logs to %s", logfile)
-
     main()
