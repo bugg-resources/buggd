@@ -9,7 +9,7 @@ import json
 import logging
 import argparse
 import atexit
-from importlib import metadata 
+from importlib import metadata
 from google.cloud import storage
 from pcf8574 import PCF8574
 
@@ -640,4 +640,7 @@ def cleanup():
 
 if __name__ == "__main__":
     setup_logging()
+    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
+    logger.info("Saving logs to %s", logfile)
+
     main()
