@@ -146,35 +146,35 @@ def auto_configure_sensor():
         config = json.load(open(CONFIG_FNAME))
         sensor_config = config['sensor']
         sensor_type = sensor_config['sensor_type']
-        logging.info('Found local config file - configuring {} with settings from file'.format(sensor_type))
+        logger.info('Found local config file - configuring {} with settings from file'.format(sensor_type))
 
     else:
         # Otherwise fallback to I2SMic default settings
-        logging.info('No local config file - falling back to I2SMic with default configuration')
+        logger.info('No local config file - falling back to I2SMic with default configuration')
         sensor_type = 'I2SMic'
         sensor_config = None
 
     try:
         sensor_class = getattr(sensors, sensor_type)
-        logging.info('Sensor type {} being configured.'.format(sensor_type))
+        logger.info('Sensor type {} being configured.'.format(sensor_type))
     except AttributeError as ate:
-        logging.critical('Sensor type {} not found.'.format(sensor_type))
+        logger.critical('Sensor type {} not found.'.format(sensor_type))
         raise ate
 
     # get a configured instance of the sensor - all options set to default values
     # TODO - not sure of exception classes here?
     try:
         sensor = sensor_class(sensor_config)
-        logging.info('Sensor config succeeded.'.format(sensor_type))
+        logger.info('Sensor config succeeded.'.format(sensor_type))
     except ValueError as e:
-        logging.critical('Sensor config failed.'.format(sensor_type))
+        logger.critical('Sensor config failed.'.format(sensor_type))
         raise e
 
     # If it passes config, does it pass setup.
     if sensor.setup():
-        logging.info('Sensor setup succeeded')
+        logger.info('Sensor setup succeeded')
     else:
-        logging.critical('Sensor setup failed')
+        logger.critical('Sensor setup failed')
         raise Exception('Sensor setup failed')
 
     return sensor
@@ -193,7 +193,7 @@ def record_sensor(sensor, working_dir, data_dir, led_driver):
     """
 
     # Capture data from the sensor
-    logging.info('Capturing data from sensor')
+    logger.info('Capturing data from sensor')
     set_led(led_driver, REC_LED_CHS, REC_LED_REC)
 
     uncomp_f = sensor.capture_data(working_dir=working_dir, data_dir=data_dir)
@@ -220,7 +220,7 @@ def exit_handler(signal, frame):
     :return:
     """
 
-    logging.info('SIGINT detected, shutting down')
+    logger.info('SIGINT detected, shutting down')
     # set the event to signal threads
     raise StopMonitoring
 
@@ -253,7 +253,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
     # Sleep the thread and keep updating the data LED until the first upload cycle
     start_t = time.time()
     start_offs = sync_interval/2
-    logging.info('Sleeping data upload thread for {} secs before first upload'.format(start_offs))
+    logger.info('Sleeping data upload thread for {} secs before first upload'.format(start_offs))
 
     # Check for internet conn to update LED
     GLOB_is_connected = check_internet_conn(led_driver, DATA_LED_CHS, col_succ=DATA_LED_CONN, col_fail=DATA_LED_NO_CONN)
@@ -278,7 +278,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
             # Update time from internet
             update_time()
 
-            logging.info('Started GCS sync at {} to upload_dir {}'.format(dt.datetime.utcnow(), upload_dir))
+            logger.info('Started GCS sync at {} to upload_dir {}'.format(dt.datetime.utcnow(), upload_dir))
 
             # Set the LED to uploading colour
             set_led(led_driver, DATA_LED_CHS, DATA_LED_UPLOADING)
@@ -297,31 +297,31 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
                     for local_f in files:
                         local_path = os.path.join(root, local_f)
                         remote_path = local_path[len(upload_dir)+1:]
-                        logging.info('Uploading {} to {}'.format(local_path, remote_path))
+                        logger.info('Uploading {} to {}'.format(local_path, remote_path))
                         upload_f = bucket.blob(remote_path)
                         upload_f.upload_from_filename(filename=local_path)
 
                         # If the file did not upload successfully an Exception will be thrown
                         # by upload_from_filename, so if we're here it's safe to delete the local file
-                        logging.info('Upload complete. Deleting local file at {}'.format(local_path))
+                        logger.info('Upload complete. Deleting local file at {}'.format(local_path))
                         os.remove(local_path)
 
             except Exception as e:
-                logging.info('Exception caught in gcs_server_sync: {}'.format(str(e)))
+                logger.info('Exception caught in gcs_server_sync: {}'.format(str(e)))
 
             # Done uploading so set LED back to connected mode
             set_led(led_driver, DATA_LED_CHS, DATA_LED_CONN)
 
         else:
-            logging.info('No internet connection available, so not trying GCS sync')
+            logger.info('No internet connection available, so not trying GCS sync')
 
         # Disable the modem to save power
-        logging.info('Disabling modem until next server sync (to save power)')
+        logger.info('Disabling modem until next server sync (to save power)')
         modem.power_off()
 
         # Sleep the thread until the next upload cycle
         sync_wait = sync_interval - (time.time() - start_t)
-        logging.info('Waiting {} secs to next sync'.format(sync_wait))
+        logger.info('Waiting {} secs to next sync'.format(sync_wait))
         time.sleep(max(0, sync_wait))
 
 
@@ -341,7 +341,7 @@ def continuous_recording(sensor, working_dir, data_dir, led_driver, die):
     try:
         # Start recording
         while not die.is_set():
-            logging.info('GLOB_no_sd_mode: {}, GLOB_is_connected: {}, GLOB_offline_mode: {}'.format(GLOB_no_sd_mode, GLOB_is_connected, GLOB_offline_mode))
+            logger.info('GLOB_no_sd_mode: {}, GLOB_is_connected: {}, GLOB_offline_mode: {}'.format(GLOB_no_sd_mode, GLOB_is_connected, GLOB_offline_mode))
             record_sensor(sensor, working_dir, data_dir, led_driver)
     except Exception as e:
         logging.error('Caught exception on continuous_recording() function: {}'.format(str(e)))
@@ -385,7 +385,7 @@ def blink_error_leds(led_driver, error_e, dur=None):
 
     # Reboot unit
     if REBOOT_ALLOWED:
-        logging.info('Rebooting device to try recover from error')
+        logger.info('Rebooting device to try recover from error')
         call_cmd_line('sudo reboot')
 
 
@@ -430,9 +430,9 @@ def record(led_driver, modem):
     hdlr = logging.FileHandler(filename=logfile)
     logging.getLogger().addHandler(hdlr)
 
-    logging.info("Saving logs to %s", logfile)
+    logger.info("Saving logs to %s", logfile)
 
-    logging.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
+    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
 
     if not GLOB_offline_mode:
         # Enable the modem for a mobile network connection. If no modem set recorder to offline mode
@@ -444,7 +444,7 @@ def record(led_driver, modem):
         check_sd_not_corrupt(SD_MNT_LOC)
     except Exception as e:
         GLOB_no_sd_mode = True
-        logging.info('Couldn\'t mount external SD card: {}'.format(str(e)))
+        logger.info('Couldn\'t mount external SD card: {}'.format(str(e)))
 
     # Try to load the config files from the SD card
     try:
@@ -452,13 +452,13 @@ def record(led_driver, modem):
     except Exception as e:
         # Check if there's a local config file we can fall back to
         if os.path.exists(CONFIG_FNAME):
-            logging.info('Couldn\'t copy SD card config, but a config file already exists so continuing ({})'.format(str(e)))
+            logger.info('Couldn\'t copy SD card config, but a config file already exists so continuing ({})'.format(str(e)))
         else:
-            logging.info('Couldn\'t copy SD card config, and no config already exists... ({})'.format(str(e)))
+            logger.info('Couldn\'t copy SD card config, and no config already exists... ({})'.format(str(e)))
 
             if GLOB_no_sd_mode:
                 # If there's no SD card too then there's no point in continuing
-                logging.info('GLOB_no_sd_mode also activated - can\'t fallback as offline recorder so bailing')
+                logger.info('GLOB_no_sd_mode also activated - can\'t fallback as offline recorder so bailing')
                 raise e
             else:
                 # If there is an SD card we can just run as an offline recorder saving to the SD
@@ -467,7 +467,7 @@ def record(led_driver, modem):
     if GLOB_offline_mode:
         # Set LEDs to offline mode
         set_led(led_driver, DATA_LED_CHS, DATA_LED_NO_CONN_OFFL)
-        logging.info('Recorder is in offline mode saving to SD card')
+        logger.info('Recorder is in offline mode saving to SD card')
     else:
         # Waiting for internet connection
         GLOB_is_connected = wait_for_internet_conn(BOOT_INTERNET_RETRIES, led_driver, DATA_LED_CHS, col_succ=DATA_LED_CONN, col_fail=DATA_LED_NO_CONN)
@@ -492,7 +492,7 @@ def record(led_driver, modem):
         for log in existing_logs:
             shutil.move(os.path.join(log_dir, log),
                       os.path.join(upload_dir_logs, log))
-            logging.info('Moved {} to upload'.format(log))
+            logger.info('Moved {} to upload'.format(log))
     except OSError:
         # not critical - can leave logs in the log_dir
         logging.error('Could not move existing logs to upload.')
@@ -517,15 +517,15 @@ def record(led_driver, modem):
     # errors but don't exit.
     try:
         # start the recorder
-        logging.info('Starting continuous recording at {}'.format(dt.datetime.utcnow()))
+        logger.info('Starting continuous recording at {}'.format(dt.datetime.utcnow()))
         record_thread.start()
 
         if GLOB_offline_mode:
-            logging.info('Running in offline mode - no GCS synchronisation')
+            logger.info('Running in offline mode - no GCS synchronisation')
         else:
             # start the GCS sync thread
             sync_thread.start()
-            logging.info('Starting GCS server sync every {} seconds at {}'.format(sensor.server_sync_interval, dt.datetime.utcnow()))
+            logger.info('Starting GCS server sync every {} seconds at {}'.format(sensor.server_sync_interval, dt.datetime.utcnow()))
 
         # now run a loop that will continue with a small grain until
         # an interrupt arrives, this is necessary to keep the program live
@@ -540,7 +540,7 @@ def record(led_driver, modem):
         if not GLOB_offline_mode:
             sync_thread.join()
 
-        logging.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
+        logger.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
 
 def main():
@@ -567,7 +567,7 @@ def main():
     args = parser.parse_args()
 
     logging.getLogger().setLevel(logging.INFO)
-    logging.info('Starting buggd')
+    logger.info('Starting buggd')
 
     test = FactoryTest(leds)
 
@@ -620,7 +620,7 @@ def cleanup():
     global leds
     exc_type, _, _ = sys.exc_info()
 
-    logging.info('At-exit handler called')
+    logger.info('At-exit handler called')
     print("At-exit handler called")
 
     led = UserLED()
@@ -630,7 +630,7 @@ def cleanup():
         logging.warning("Exiting due to exception: %s", exc_type.__name__)
         colour = Colour.YELLOW
     else:
-        logging.info("Exiting normally without exception.")
+        logger.info("Exiting normally without exception.")
         colour = Colour.RED
 
     leds.bottom.set(colour)
