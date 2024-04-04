@@ -519,7 +519,6 @@ def main():
     global leds
     atexit.register(cleanup)
 
-    print("main logger.name", logger.name)
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
                         help='Run factory test, even if trigger file is not present.')
