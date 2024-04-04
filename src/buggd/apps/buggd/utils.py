@@ -1,3 +1,6 @@
+"""
+TODO: This is a dumping ground for a lot of random stuff
+"""
 import subprocess
 import os
 import logging
@@ -9,6 +12,9 @@ from datetime import datetime
 import time
 import requests
 
+# Create a logger for this module and set its level
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def set_led(led_driver, channels_arr, col_arr):
     """
@@ -54,7 +60,7 @@ def call_cmd_line(args, use_shell=True, print_output=False, run_in_bg=False):
             break
         if output:
             res = res + output.strip()
-            if print_output: logging.info(output.strip())
+            if print_output: logger.info(output.strip())
 
     rc = p.poll()
 
@@ -68,17 +74,17 @@ def update_time():
 
     # (Not needed if RTC properly set-up)
     # Read time from real-time clock module
-    # logging.info('Reading time from RTC')
+    # logger.info('Reading time from RTC')
     # call_cmd_line('sudo hwclock -r')
 
     # Update time from internet
-    logging.info('Updating time from internet before GCS sync')
+    logger.info('Updating time from internet before GCS sync')
     cmd_res = call_cmd_line('sudo timeout 180s ntpdate ntp.ubuntu.com')
 
     # Check if ntpdate was successful
     if 'adjust time server' in cmd_res:
         # Update time on real-time clock module
-        logging.info('Writing updated time to RTC')
+        logger.info('Writing updated time to RTC')
         call_cmd_line('sudo hwclock -w')
 
 
@@ -94,14 +100,14 @@ def check_internet_conn(led_driver=[], led_driver_chs=[], col_succ=[], col_fail=
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
             content_length = len(response.content)  # Get the number of bytes in the response content
-            logging.debug("Successfully fetched Google's homepage. Content size: %s bytes.", content_length)
+            logger.debug("Successfully fetched Google's homepage. Content size: %s bytes.", content_length)
             if led_driver:
                 set_led(led_driver, led_driver_chs, col_succ)
             return True
         else:
-            logging.debug("Failed to fetch Google's homepage. Status code: %s", response.status_code)
+            logger.debug("Failed to fetch Google's homepage. Status code: %s", response.status_code)
     except Exception as e:
-        logging.debug("An error occurred: %s", e)
+        logger.debug("An error occurred: %s", e)
         if led_driver:
             set_led(led_driver, led_driver_chs, col_fail)
         return False
@@ -114,7 +120,7 @@ def wait_for_internet_conn(n_tries, led_driver, led_driver_chs, col_succ, col_fa
 
     is_conn = False
 
-    logging.info('Waiting for internet connection...')
+    logger.info('Waiting for internet connection...')
 
     for n_try in range(n_tries):
         # Try to connect to the internet
@@ -127,14 +133,14 @@ def wait_for_internet_conn(n_tries, led_driver, led_driver_chs, col_succ, col_fa
         # Otherwise sleep for a second and try again
         else:
             if verbose:
-                logging.info('No internet connection on try {}/{}'.format(n_try+1, n_tries))
+                logger.info('No internet connection on try {}/{}'.format(n_try+1, n_tries))
             time.sleep(1)
 
     if is_conn:
-        logging.info('Connected to the Internet')
+        logger.info('Connected to the Internet')
         set_led(led_driver, led_driver_chs, col_succ)
     else:
-        logging.info('No connection to internet after {} tries'.format(n_tries))
+        logger.info('No connection to internet after {} tries'.format(n_tries))
         set_led(led_driver, led_driver_chs, col_fail)
 
     return is_conn
@@ -160,7 +166,7 @@ def add_network_profile(name, apn, username, password):
             details = dict(line.split(':', 1) for line in details_output.splitlines() if ':' in line)
             if details.get('gsm.apn') == apn and details.get('gsm.username') == username and details.get('gsm.password') == password:
                 exists = True
-                logging.info("Skipping: connection with these details already exists.")
+                logger.info("Skipping: connection with these details already exists.")
                 break
     
         # If the connection does not exist, add it using the provided name
@@ -174,10 +180,10 @@ def add_network_profile(name, apn, username, password):
                 add_command.append(password)
         
             if subprocess.run(add_command, check=True):
-                logging.info("New connection added with name: %s", name)
+                logger.info("New connection added with name: %s", name)
                 
     except subprocess.CalledProcessError as e:
-        logging.info("Failed to add new connection: %s", e)
+        logger.info("Failed to add new connection: %s", e)
 
 
 def copy_sd_card_config(sd_mount_loc, config_fname):
@@ -194,17 +200,17 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
         # Try to load the config file on the SD card as JSON to validate it works
         config = json.load(open(sd_config_path))
     except Exception as e:
-        logging.info('Couldn\'t parse {} as valid JSON'.format(sd_config_path))
+        logger.info('Couldn\'t parse {} as valid JSON'.format(sd_config_path))
         raise e
 
     # Check it's not just the same as the one we're already using
     if os.path.exists(local_config_path) and filecmp.cmp(sd_config_path, local_config_path):
-        logging.info('SD card config file ({}) matches existing config ({})'.format(sd_config_path, local_config_path))
+        logger.info('SD card config file ({}) matches existing config ({})'.format(sd_config_path, local_config_path))
         return
 
     # Copy the SD config file and reboot
     # TODO: Indicate with LEDs / buzzer a new config has been found
-    logging.info('Copied config from SD to local')
+    logger.info('Copied config from SD to local')
     shutil.copyfile(sd_config_path, local_config_path)
 
     # Try to configure modem, but it's not required so escape any errors
@@ -221,11 +227,11 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
         m_pwd = m_pwd.strip()
 
         # Add the profile to the network manager
-        logging.info('Adding network connection profile from config file')
+        logger.info('Adding network connection profile from config file')
         add_network_profile(m_conname, m_host, m_uname, m_pwd)
 
     except Exception as e:
-        logging.info('Couldn\'t add network manager profile from config file: {}'.format(str(e)))
+        logger.info('Couldn\'t add network manager profile from config file: {}'.format(str(e)))
 
 
 def mount_ext_sd(sd_mount_loc, dev_file_str='mmcblk1p'):
@@ -237,7 +243,7 @@ def mount_ext_sd(sd_mount_loc, dev_file_str='mmcblk1p'):
 
     # Check if SD card already mounted
     if os.path.exists(sd_mount_loc) and os.path.ismount(sd_mount_loc):
-        logging.info('Device already mounted to {}. Assuming SD card, but warning - might not be!'.format(sd_mount_loc))
+        logger.info('Device already mounted to {}. Assuming SD card, but warning - might not be!'.format(sd_mount_loc))
         return
 
     # Make sure sd_mount_loc is an empty directory
@@ -249,17 +255,17 @@ def mount_ext_sd(sd_mount_loc, dev_file_str='mmcblk1p'):
 
     for dev_f in potential_dev_fs:
         # Try to mount each partition in turn
-        logging.info('Trying to mount device {} to {}'.format(dev_f, sd_mount_loc))
+        logger.info('Trying to mount device {} to {}'.format(dev_f, sd_mount_loc))
         call_cmd_line('sudo mount -orw /dev/{} {}'.format(dev_f, sd_mount_loc))
 
         # Check if device mounted successfully
         if os.path.ismount(sd_mount_loc):
-            logging.info('Successfully mounted {} to {}'.format(dev_f, sd_mount_loc))
+            logger.info('Successfully mounted {} to {}'.format(dev_f, sd_mount_loc))
             break
 
     # If unable to mount SD then raise an exception
     if not os.path.ismount(sd_mount_loc):
-        logging.critical('ERROR: Could not mount external SD card to {}'.format(sd_mount_loc))
+        logger.critical('ERROR: Could not mount external SD card to {}'.format(sd_mount_loc))
         raise Exception('Could not mount external SD card to {}'.format(sd_mount_loc))
 
 
@@ -285,7 +291,7 @@ def check_sd_not_corrupt(sd_mnt_dir):
             f.close()
             os.remove(dummy_f_path)
 
-    logging.info('check_sd_not_corrupt passed with no issues - SD should be OK')
+    logger.info('check_sd_not_corrupt passed with no issues - SD should be OK')
 
     return True
 
@@ -380,14 +386,14 @@ def clean_dirs(working_dir, upload_dir, data_dir):
     ### CLEAN EMPTY DIRECTORIES
 
     if os.path.exists(working_dir):
-        logging.info('Cleaning up working directory')
+        logger.info('Cleaning up working directory')
         shutil.rmtree(working_dir, ignore_errors=True)
 
     if os.path.exists(upload_dir):
         # Remove empty directories in the upload directory, from bottom up
         for subdir, dirs, files in os.walk(upload_dir, topdown=False):
             if not os.listdir(subdir):
-                logging.info('Removing empty upload directory: {}'.format(subdir))
+                logger.info('Removing empty upload directory: {}'.format(subdir))
                 shutil.rmtree(subdir, ignore_errors=True)
 
 
@@ -395,21 +401,21 @@ def clean_dirs(working_dir, upload_dir, data_dir):
 
     # Check for / create working directory (where temporary files will be stored)
     if os.path.exists(working_dir) and os.path.isdir(working_dir):
-        logging.info('Using {} as working directory'.format(working_dir))
+        logger.info('Using {} as working directory'.format(working_dir))
     else:
         os.makedirs(working_dir)
-        logging.info('Created {} as working directory'.format(working_dir))
+        logger.info('Created {} as working directory'.format(working_dir))
 
     # Check for / create upload directory (root which will be used to upload files from)
     if os.path.exists(upload_dir) and os.path.isdir(upload_dir):
-        logging.info('Using {} as upload directory'.format(upload_dir))
+        logger.info('Using {} as upload directory'.format(upload_dir))
     else:
         os.makedirs(upload_dir)
-        logging.info('Created {} as upload directory'.format(upload_dir))
+        logger.info('Created {} as upload directory'.format(upload_dir))
 
     # Check for / create data directory (where final data files will be stored) - must be under upload_dir
     if os.path.exists(data_dir) and os.path.isdir(data_dir):
-        logging.info('Using {} as data directory'.format(data_dir))
+        logger.info('Using {} as data directory'.format(data_dir))
     else:
         os.makedirs(data_dir)
-        logging.info('Created {} as data directory'.format(data_dir))
+        logger.info('Created {} as data directory'.format(data_dir))
