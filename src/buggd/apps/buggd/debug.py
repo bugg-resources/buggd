@@ -3,7 +3,7 @@ import sys
 
 import logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 ENABLE_TRACEBACKS = True
 
