@@ -4,10 +4,11 @@ import logging
 import datetime
 from buggd.apps.buggd.utils import call_cmd_line
 from buggd.drivers.soundcard import Soundcard
+from buggd.apps.buggd.log import Log
 from .option import set_option
 from .sensorbase import SensorBase
 
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 class ExternalMic(SensorBase):
 
     def __init__(self, config=None):
