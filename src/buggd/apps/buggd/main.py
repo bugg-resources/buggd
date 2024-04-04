@@ -71,7 +71,7 @@ leds = LEDs() # Make the LEDs object global so it can be accessed by the cleanup
 debug = Debug() # Make the Debug object global so we can log tracebacks anywhere
 
 # Create a logger for this module and set its level
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 """
@@ -540,8 +540,6 @@ def main():
     global leds
     atexit.register(cleanup)
 
-    logging.getLogger().setLevel(logging.INFO)
-    logger.info('Starting buggd')
 
     test = FactoryTest(leds)
 
