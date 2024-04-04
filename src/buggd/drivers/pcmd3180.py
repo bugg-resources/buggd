@@ -4,8 +4,9 @@ import logging
 import time
 from smbus2 import SMBus
 import RPi.GPIO as GPIO
+from buggd.log import Log
 
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 
 SHDNZ = 0
 
