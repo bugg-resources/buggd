@@ -33,7 +33,7 @@ class Log:
     """
     def __init__(self, log_dir=LOG_DIR):
         self.log_dir = log_dir
-        self.current_logfile_name = None
+        self.current_logfile_name = ''
         self.cpu_serial = discover_serial()
 
         # Create log directory if it doesn't exist
@@ -55,7 +55,7 @@ class Log:
         self.logger.addHandler(self.stdout_handler)
 
         # Handler for file is created in rotate_log()
-        self.file_handler = ''
+        self.file_handler = None
         self.logger.info('Logging to stdout started')
 
     def get_current_logfile(self):
