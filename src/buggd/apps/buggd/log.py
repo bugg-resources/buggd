@@ -61,5 +61,6 @@ def setup_logging():
     logger.addHandler(stdout_handler)
     logger.addHandler(handler_file)
 
+    print("logger.name", logger.name)
     logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
     logger.info("Saving logs to %s", logfile)
