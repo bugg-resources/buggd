@@ -7,7 +7,7 @@ import logging
 # and set ENABLE_TRACEBACKS to True
 ENABLE_TRACEBACKS = False
 
-class DebugClass:
+class Debug:
     """ Class that demonstrates logging at different levels"""
     def __init__(self):
         self.logger = logging.getLogger(__name__)
