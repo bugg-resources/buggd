@@ -524,7 +524,7 @@ def main():
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
     # Parse command line arguments
-    handle_args()
+    args = handle_args()
 
     # Set up the logger
     log = Log()
