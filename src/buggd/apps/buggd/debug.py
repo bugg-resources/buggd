@@ -3,9 +3,11 @@ import sys
 
 import logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
-ENABLE_TRACEBACKS = True
+# NOTE: to enable tracebacks, set the logger level to logging.DEBUG
+# and set ENABLE_TRACEBACKS to True
+logger.setLevel(logging.INFO)
+ENABLE_TRACEBACKS = False
 
 def write_traceback_to_log(exception):
     """
