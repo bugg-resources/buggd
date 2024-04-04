@@ -1,25 +1,25 @@
 import traceback
 import sys
-
 import logging
+from .log import Log
 
 # NOTE: to enable tracebacks, set the logger level to logging.DEBUG
 # and set ENABLE_TRACEBACKS to True
 ENABLE_TRACEBACKS = False
 
+logger = Log.get_logger().getChild(__name__)
+logger.setLevel(logging.DEBUG)
+
 class Debug:
     """ Class that demonstrates logging at different levels"""
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
 
     def hello_logger(self):
         """ Method that demonstrates logging at different levels"""
-        self.logger.debug('logging.DEBUG from DebugClass')
-        self.logger.info('logging.INFO from DebugClass')
-        self.logger.warning('logging.WARNING from DebugClass')
-        self.logger.error('logging.ERROR from DebugClass')
-        self.logger.critical('logging.CRITICAL from DebugClass')
+        logger.debug('logging.DEBUG from DebugClass')
+        logger.info('logging.INFO from DebugClass')
+        logger.warning('logging.WARNING from DebugClass')
+        logger.error('logging.ERROR from DebugClass')
+        logger.critical('logging.CRITICAL from DebugClass')
 
 
     def write_traceback_to_log(self):
@@ -28,7 +28,7 @@ class Debug:
         along with a stack trace.
         """
         if not ENABLE_TRACEBACKS:
-            self.logger.debug('Tracebacks are disabled')
+            logger.debug('Tracebacks are disabled')
             return
 
         # Fetching the current exception information
@@ -36,8 +36,8 @@ class Debug:
 
         # Extracting the stack trace
         tb_lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-        self.logger.debug('Detailed Exception Traceback:')
-        self.logger.debug(''.join(tb_lines))
+        logger.debug('Detailed Exception Traceback:')
+        logger.debug(''.join(tb_lines))
 
         # Extract the last traceback object which points to where the exception was raised
         while exc_traceback.tb_next:
@@ -51,11 +51,11 @@ class Debug:
         # Attempting to extract the class name, if any
         class_name = frame.f_locals.get('self', None).__class__.__name__ if 'self' in frame.f_locals else None
 
-        # self.logger.debuging extracted details
-        self.logger.debug('Exception occurred in file: %s', file_name)
+        # logger.debuging extracted details
+        logger.debug('Exception occurred in file: %s', file_name)
         if class_name:
-            self.logger.debug('Exception occurred in class: %s', class_name)
-        self.logger.debug('Exception occurred at line: %s, ', line_number)
+            logger.debug('Exception occurred in class: %s', class_name)
+        logger.debug('Exception occurred at line: %s, ', line_number)
 
 
     def divide_by_zero(self):

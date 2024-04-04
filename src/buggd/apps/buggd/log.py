@@ -31,7 +31,26 @@ class Log:
 
     Called once at the start of the application to setup logging to both stdout and a file
     """
-    def __init__(self, log_dir=LOG_DIR):
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Log, cls).__new__(cls)
+            cls._instance.setup_logger(LOG_DIR)
+        return cls._instance
+
+    def __init__(self):
+        if not self.initialized:
+            self.setup_logger(LOG_DIR)
+            self.initialized = True
+
+    @staticmethod
+    def get_logger():
+        """ Get the logger. It's a singleton so everyone gets the same one."""
+        return Log()._instance.logger
+
+    def setup_logger(self, log_dir):
+        """ Setup the logger to log to both stdout and a file"""
         self.log_dir = log_dir
         self.current_logfile_name = ''
         self.cpu_serial = discover_serial()
