@@ -43,7 +43,7 @@ def setup_logging():
     logfile = os.path.join(LOG_DIR, logfile_name)
 
     # Create a logger
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG) # This is the lowest level of logging that will be output
 
     # Create a formatter
