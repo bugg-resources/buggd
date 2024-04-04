@@ -536,7 +536,6 @@ def main():
     global leds
     atexit.register(cleanup)
 
-
     logging.getLogger().setLevel(logging.INFO)
     logger.info('Starting buggd')
 
@@ -555,11 +554,13 @@ def main():
         sys.exit(0)
 
     # On boot, set the LEDs to show the status of the factory test
+    logging.info('Displaying factory test status on LEDs for a few seconds...')
     leds.top.set(Colour.MAGENTA)
     leds.bottom.set(Colour.RED)
     if test.passed_at_factory():
         leds.middle.set(Colour.GREEN)
     else:
+        logging.warning('Factory test has not run on this unit or it failed.')
         leds.middle.set(Colour.RED)
     time.sleep(4)
     # Turn off test status leds before beginning recording, just so it's a bit clearer what's happening
