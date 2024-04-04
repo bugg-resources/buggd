@@ -23,6 +23,7 @@ from .utils import check_internet_conn, update_time, set_led,  wait_for_internet
 from .factorytest import FactoryTest
 from .log import Log
 from .debug import write_traceback_to_log, divide_by_zero
+from .debug import DebugClass
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
@@ -529,6 +530,9 @@ def main():
     # Set up the logger
     log = Log()
     log.rotate_log()
+
+    dc = DebugClass()
+    dc.hello_logger()
 
     start_time = time.strftime('%Y%m%d_%H%M')
     logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))

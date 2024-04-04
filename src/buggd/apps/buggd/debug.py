@@ -6,8 +6,22 @@ logger = logging.getLogger(__name__)
 
 # NOTE: to enable tracebacks, set the logger level to logging.DEBUG
 # and set ENABLE_TRACEBACKS to True
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 ENABLE_TRACEBACKS = False
+
+class DebugClass:
+    """ Class that demonstrates logging at different levels"""
+    def __init__(self):
+        pass
+
+    def hello_logger(self):
+        """ Method that demonstrates logging at different levels"""
+        logger.debug('Hello from DebugClass')
+        logger.info('Hello from DebugClass')
+        logger.warning('Hello from DebugClass')
+        logger.error('Hello from DebugClass')
+        logger.critical('Hello from DebugClass')
+
 
 def write_traceback_to_log(exception):
     """
