@@ -13,8 +13,9 @@ from buggd.drivers.leds import Colour
 from buggd.drivers.userled import UserLED
 
 from .utils import discover_serial
+from .log import Log
 
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 class FactoryTest:
