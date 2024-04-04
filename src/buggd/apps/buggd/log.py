@@ -55,7 +55,7 @@ class Log:
         self.logger.addHandler(self.stdout_handler)
 
         # Handler for file is created in rotate_log()
-        self.file_handler = None
+        self.file_handler = ''
         self.logger.info('Logging to stdout started')
 
     def get_current_logfile(self):
