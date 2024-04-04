@@ -8,6 +8,7 @@ This means that each boot of the device will create a new log file.
 """
 
 import logging
+from logging.handlers import WatchedFileHandler
 import os
 import time
 import sys
@@ -23,39 +24,65 @@ LOG_DIR = '/home/buggd/logs/'
 STDOUT_DEFAULT_LOG_LEVEL = logging.DEBUG
 FILE_DEFAULT_LOG_LEVEL = logging.DEBUG
 
-
-def setup_logging():
+class Log:
     """
     Setup logging for the application
 
     Called once at the start of the application to setup logging to both stdout and a file
     """
-    # Get the unique CPU ID of the device
-    cpu_serial = discover_serial()
-    # Get the current time - this is the time buggd was started
-    start_time = time.strftime('%Y%m%d_%H%M')
+    def __init__(self, log_dir=LOG_DIR):
+        self.log_dir = log_dir
+        self.current_logfile_name = None
+        self.cpu_serial = discover_serial()
 
-    # Create log directory if it doesn't exist, and create a log file name
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR, exist_ok=True)
-    logfile_name = f'rpi_eco_{cpu_serial}_{start_time}.log'
-    logfile = os.path.join(LOG_DIR, logfile_name)
+        # Create log directory if it doesn't exist
+        os.makedirs(self.log_dir, exist_ok=True)
 
-    # Create a logger
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG) # This is the lowest level of logging that will be output
+        # Create a logger
+        self.logger = logging.getLogger(__name__)
 
-    # Create a formatter
-    formatter = logging.Formatter(f'{cpu_serial} - %(message)s')
+        # This is the lowest level of logging that will be output
+        self.logger.setLevel(logging.DEBUG)
 
-    # Handler for stdout
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setFormatter(formatter)
+        # Create a formatter
+        self.formatter = logging.Formatter(f'{self.cpu_serial} - %(message)s')
 
-    # Handler for file
-    handler_file = logging.FileHandler(filename=logfile)
-    handler_file.setFormatter(formatter)
+        # Handler for stdout
+        self.stdout_handler = logging.StreamHandler(sys.stdout)
+        self.stdout_handler.setLevel(STDOUT_DEFAULT_LOG_LEVEL)
+        self.stdout_handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.stdout_handler)
 
-    # Add the handlers to the logger
-    logger.addHandler(stdout_handler)
-    logger.addHandler(handler_file)
+        # Create a log file and handler with our rotation mechanism
+        self.file_handler = None
+        self.rotate_log()
+
+    def get_current_logfile(self):
+        """
+        Return the full path of the current log file that is being written to
+        We use this in in the uploading thread to avoid moving the open file
+        """
+        return self.current_logfile_name
+
+    def generate_new_logfile_name(self):
+        """ Generate a new log file name based on the current time and CPU serial number """
+        # Get the current time - this is the time buggd was started
+        start_time = time.strftime('%Y%m%d_%H%M')
+
+        fn = f'rpi_eco_{self.cpu_serial}_{start_time}.log'
+        return os.path.join(self.log_dir, fn)
+
+    def rotate_log(self):
+        """
+        Rotate the log file by closing the current one and creating a new one
+        """
+        if self.file_handler:
+            self.logger.removeHandler(self.file_handler)
+        
+        fn = self.generate_new_logfile_name()
+        new_handler = WatchedFileHandler(filename=fn)
+        new_handler.setLevel(FILE_DEFAULT_LOG_LEVEL)
+        new_handler.setFormatter(self.formatter)
+        self.logger.addHandler(new_handler)
+
+        self.logger.info('Rotated log file to %s', fn)
