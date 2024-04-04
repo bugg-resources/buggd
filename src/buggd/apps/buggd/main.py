@@ -8,6 +8,7 @@ import json
 import logging
 import argparse
 import atexit
+import traceback
 from importlib import metadata
 from google.cloud import storage
 from pcf8574 import PCF8574
@@ -21,6 +22,7 @@ from .utils import call_cmd_line, mount_ext_sd, copy_sd_card_config, discover_se
 from .utils import check_internet_conn, update_time, set_led,  wait_for_internet_conn, check_reboot_due
 from .factorytest import FactoryTest
 from .log import Log
+from .debug import write_traceback_to_log, divide_by_zero
 
 # Allow disabling of reboot feature for testing
 # TODO: make this a configurable parameter from the config.json file
@@ -304,6 +306,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
 
             except Exception as e:
                 logger.info('Exception caught in gcs_server_sync: {}'.format(str(e)))
+                write_traceback_to_log(e)
 
             # Done uploading so set LED back to connected mode
             set_led(led_driver, DATA_LED_CHS, DATA_LED_CONN)
@@ -341,7 +344,7 @@ def continuous_recording(sensor, working_dir, data_dir, led_driver, die):
             record_sensor(sensor, working_dir, data_dir, led_driver)
     except Exception as e:
         logging.error('Caught exception on continuous_recording() function: {}'.format(str(e)))
-
+        write_traceback_to_log(e)
         # Blink error code on LEDs
         blink_error_leds(led_driver, e, dur=ERROR_WAIT_REBOOT_S)
 
@@ -567,7 +570,9 @@ def main():
         led.on()
         record(led_driver, modem, log)
     except Exception as e:
-        logging.error('Caught exception on main record() function: {}'.format(str(e)))
+        type, val, tb = sys.exc_info()
+        logging.error('Caught exception on main record() function: %s', e)
+        write_traceback_to_log(e)
         led.off()
 
         # Blink error code on LEDs
