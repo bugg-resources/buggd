@@ -413,27 +413,27 @@ def record(led_driver, modem):
     # because we're not loading config until after logging has started.
     start_time = time.strftime('%Y%m%d_%H%M')
 
-    # Create the logs directory and file if needed
-    log_dir = LOG_DIR
-    logfile_name = 'rpi_eco_{}_{}.log'.format(cpu_serial,start_time)
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    logfile = os.path.join(log_dir,logfile_name)
-    if not os.path.exists(logfile):
-        open(logfile, 'w+')
+    # # Create the logs directory and file if needed
+    # log_dir = LOG_DIR
+    # logfile_name = 'rpi_eco_{}_{}.log'.format(cpu_serial,start_time)
+    # if not os.path.exists(log_dir):
+    #     os.makedirs(log_dir)
+    # logfile = os.path.join(log_dir,logfile_name)
+    # if not os.path.exists(logfile):
+    #     open(logfile, 'w+')
 
-    # Add handlers to logging so logs are sent to stdout and the file
-    logging.getLogger().setLevel(logging.INFO)
-    fmter = logging.Formatter('{} - %(message)s'.format(cpu_serial))
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setFormatter(fmter)
-    logging.getLogger().addHandler(ch)
-    hdlr = logging.FileHandler(filename=logfile)
-    logging.getLogger().addHandler(hdlr)
+    # # Add handlers to logging so logs are sent to stdout and the file
+    # logging.getLogger().setLevel(logging.INFO)
+    # fmter = logging.Formatter('{} - %(message)s'.format(cpu_serial))
+    # ch = logging.StreamHandler(sys.stdout)
+    # ch.setFormatter(fmter)
+    # logging.getLogger().addHandler(ch)
+    # hdlr = logging.FileHandler(filename=logfile)
+    # logging.getLogger().addHandler(hdlr)
 
-    logger.info("Saving logs to %s", logfile)
+    # logger.info("Saving logs to %s", logfile)
 
-    logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
+    # logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
 
     if not GLOB_offline_mode:
         # Enable the modem for a mobile network connection. If no modem set recorder to offline mode
@@ -557,8 +557,14 @@ def main():
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
     global leds
+
+    # Setup logging to both stdout and a file
+    setup_logging()
+
+    # Register the cleanup function to turn off the LEDs, etc on exit
     atexit.register(cleanup)
 
+    # Comman line argument parsing
     print("main logger.name", logger.name)
     parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
     parser.add_argument('--force-factory-test', action='store_true',
@@ -567,9 +573,6 @@ def main():
                         help='Run factory test in bare-board mode, even if trigger file is not present.')
     parser.add_argument('--version', action='version', version=metadata.version('buggd'))
     args = parser.parse_args()
-
-    logging.getLogger().setLevel(logging.INFO)
-    logger.info('Starting buggd')
 
     test = FactoryTest(leds)
 
@@ -639,7 +642,6 @@ def cleanup():
     leds.at_exit()
 
 if __name__ == "__main__":
-    setup_logging()
 
     # Get the unique CPU ID of the device
     cpu_serial = discover_serial()
