@@ -60,6 +60,4 @@ def setup_logging():
     logger.addHandler(stdout_handler)
     logger.addHandler(handler_file)
 
-    print("logger name: ", logger.name)
-    logger.info('HERE')
-    logger.info(f'Logging to {logfile}')
+    logger.info(f'Log initialised. Logging to {logfile}')
