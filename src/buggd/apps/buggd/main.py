@@ -71,7 +71,7 @@ GLOB_offline_mode = False
 
 leds = LEDs() # Make the LEDs object global so it can be accessed by the cleanup function
 
-logger = logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 """
