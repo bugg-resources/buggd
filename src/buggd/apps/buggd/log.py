@@ -54,9 +54,9 @@ class Log:
         self.stdout_handler.setFormatter(self.formatter)
         self.logger.addHandler(self.stdout_handler)
 
-        # Create a log file and handler with our rotation mechanism
+        # Handler for file is created in rotate_log()
         self.file_handler = None
-        self.rotate_log()
+        self.logger.info('Logging to stdout started')
 
     def get_current_logfile(self):
         """
@@ -65,6 +65,7 @@ class Log:
         """
         return self.current_logfile_name
 
+
     def generate_new_logfile_name(self):
         """ Generate a new log file name based on the current time and CPU serial number """
         # Get the current time - this is the time buggd was started
@@ -72,6 +73,7 @@ class Log:
 
         fn = f'rpi_eco_{self.cpu_serial}_{start_time}.log'
         return os.path.join(self.log_dir, fn)
+
 
     def rotate_log(self):
         """
@@ -86,7 +88,8 @@ class Log:
         new_handler.setFormatter(self.formatter)
         self.logger.addHandler(new_handler)
 
-        self.logger.info('Rotated log file to %s', fn)
+        self.logger.info('Logging to file %s', fn)
+
 
     def move_archived_to_dir(self, upload_dir):
         """ Move the archived log files to the upload directory """
