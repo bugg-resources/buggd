@@ -12,6 +12,7 @@ from logging.handlers import WatchedFileHandler
 import os
 import time
 import sys
+import shutil
 from .utils import discover_serial
 
 
@@ -78,7 +79,7 @@ class Log:
         """
         if self.file_handler:
             self.logger.removeHandler(self.file_handler)
-        
+
         fn = self.generate_new_logfile_name()
         new_handler = WatchedFileHandler(filename=fn)
         new_handler.setLevel(FILE_DEFAULT_LOG_LEVEL)
@@ -86,3 +87,24 @@ class Log:
         self.logger.addHandler(new_handler)
 
         self.logger.info('Rotated log file to %s', fn)
+
+    def move_archived_to_dir(self, upload_dir):
+        """ Move the archived log files to the upload directory """
+        try:
+            upload_dir_logs = os.path.join(upload_dir, 'logs')
+            if not os.path.exists(upload_dir_logs):
+                os.makedirs(upload_dir_logs)
+
+            log_dir = self.log_dir
+
+            existing_logs = [f for f in os.listdir(log_dir)
+                             if f.endswith('.log')
+                                and f != os.path.basename(self.get_current_logfile())]
+
+            for log in existing_logs:
+                shutil.move(os.path.join(log_dir, log),
+                        os.path.join(upload_dir_logs, log))
+                self.logger.info('Moved %s to upload', log)
+        except OSError:
+            # not critical - can leave logs in the log_dir
+            self.logger.error('Could not move existing logs to upload.')
