@@ -8,8 +8,9 @@ import json
 import subprocess
 from .lock import Lock
 from .pcmd3180 import PCMD3180
+from buggd.log import Log
 
-logger = logging.getLogger(__name__)
+logger = Log.get_logger(__name__)
 
 EXT_MIC_EN = 12
 
