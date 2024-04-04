@@ -58,6 +58,9 @@ class Log:
         self.file_handler = None
         self.logger.info('Logging to stdout started')
 
+    def get_logger(self):
+        return self.logger
+
     def get_current_logfile(self):
         """
         Return the full path of the current log file that is being written to
