@@ -499,6 +499,17 @@ def record(led_driver, modem, log):
 
         logger.info('Recording and sync shutdown, exiting at {}'.format(dt.datetime.utcnow()))
 
+def handle_args():
+    """ Parse command line arguments """
+    parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
+    parser.add_argument('--force-factory-test', action='store_true',
+                        help='Run factory test, even if trigger file is not present.')
+    parser.add_argument('--force-factory-test-bare', action='store_true',
+                        help='Run factory test in bare-board mode, even if trigger file is not present.')
+    parser.add_argument('--version', action='version', version=metadata.version('buggd'))
+    args = parser.parse_args()
+    return args
+
 
 def main():
     """
@@ -512,6 +523,9 @@ def main():
         --force-factory-test: Run factory test, even if trigger file is not present.
         --force-factory-test-bare: Run factory test in bare-board mode, even if trigger file is not present.
     """
+    # Parse command line arguments
+    handle_args()
+
     # Set up the logger
     log = Log()
     log.rotate_log()
@@ -522,13 +536,6 @@ def main():
     global leds
     atexit.register(cleanup)
 
-    parser = argparse.ArgumentParser(description='Bugg Recording Daemon')
-    parser.add_argument('--force-factory-test', action='store_true',
-                        help='Run factory test, even if trigger file is not present.')
-    parser.add_argument('--force-factory-test-bare', action='store_true',
-                        help='Run factory test in bare-board mode, even if trigger file is not present.')
-    parser.add_argument('--version', action='version', version=metadata.version('buggd'))
-    args = parser.parse_args()
 
     logging.getLogger().setLevel(logging.INFO)
     logger.info('Starting buggd')
