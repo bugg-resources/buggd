@@ -47,7 +47,7 @@ class Log:
     @staticmethod
     def get_logger():
         """ Get the logger. It's a singleton so everyone gets the same one."""
-        return Log()._instance.logger
+        return Log().logger
 
     def setup_logger(self, log_dir):
         """ Setup the logger to log to both stdout and a file"""
