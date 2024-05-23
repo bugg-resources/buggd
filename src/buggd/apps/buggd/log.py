@@ -31,28 +31,9 @@ class Log:
 
     Called once at the start of the application to setup logging to both stdout and a file
     """
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(Log, cls).__new__(cls)
-            cls._instance.setup_logger(LOG_DIR)
-        return cls._instance
-
     def __init__(self):
-        if not self.initialized:
-            self.setup_logger(LOG_DIR)
-            self.initialized = True
-
-    @staticmethod
-    def get_logger():
-        """ Get the logger. It's a singleton so everyone gets the same one."""
-        return Log().logger
-
-    def setup_logger(self, log_dir):
         """ Setup the logger to log to both stdout and a file"""
-        self.log_dir = log_dir
-        self.current_logfile_name = ''
+        self.log_dir = LOG_DIR
         self.cpu_serial = discover_serial()
 
         # Create log directory if it doesn't exist
@@ -65,8 +46,9 @@ class Log:
         self.logger.setLevel(logging.DEBUG)
 
         # Create a formatter
-        self.formatter = logging.Formatter(f'{self.cpu_serial} - %(message)s')
-
+        #self.formatter = logging.Formatter(f'{self.cpu_serial} - %(message)s')
+        self.formatter = logging.Formatter(f'{self.cpu_serial} - %(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        
         # Handler for stdout
         self.stdout_handler = logging.StreamHandler(sys.stdout)
         self.stdout_handler.setLevel(STDOUT_DEFAULT_LOG_LEVEL)
@@ -75,15 +57,18 @@ class Log:
 
         # Handler for file is created in rotate_log()
         self.file_handler = None
+        self.rotate_log()
+
         self.logger.info('Logging to stdout started')
 
-    def get_current_logfile(self):
+    def get_current_log_filename(self):
         """
         Return the full path of the current log file that is being written to
         We use this in in the uploading thread to avoid moving the open file
         """
-        return self.current_logfile_name
-
+        if self.file_handler:
+            return self.file_handler.baseFilename
+        return None
 
     def generate_new_logfile_name(self):
         """ Generate a new log file name based on the current time and CPU serial number """
@@ -93,19 +78,19 @@ class Log:
         fn = f'rpi_eco_{self.cpu_serial}_{start_time}.log'
         return os.path.join(self.log_dir, fn)
 
-
     def rotate_log(self):
         """
-        Rotate the log file by closing the current one and creating a new one
+        Rotate the log file by closing the current one and creating a new one.
         """
         if self.file_handler:
             self.logger.removeHandler(self.file_handler)
+            self.file_handler.close()
 
         fn = self.generate_new_logfile_name()
-        new_handler = WatchedFileHandler(filename=fn)
-        new_handler.setLevel(FILE_DEFAULT_LOG_LEVEL)
-        new_handler.setFormatter(self.formatter)
-        self.logger.addHandler(new_handler)
+        self.file_handler = WatchedFileHandler(filename=fn)
+        self.file_handler.setLevel(FILE_DEFAULT_LOG_LEVEL)
+        self.file_handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.file_handler)
 
         self.logger.info('Logging to file %s', fn)
 
@@ -114,19 +99,18 @@ class Log:
         """ Move the archived log files to the upload directory """
         try:
             upload_dir_logs = os.path.join(upload_dir, 'logs')
-            if not os.path.exists(upload_dir_logs):
-                os.makedirs(upload_dir_logs)
+            os.makedirs(upload_dir_logs, exist_ok=True)
 
             log_dir = self.log_dir
 
             existing_logs = [f for f in os.listdir(log_dir)
                              if f.endswith('.log')
-                                and f != os.path.basename(self.get_current_logfile())]
+                                and f != os.path.basename(self.get_current_log_filename())]
 
             for log in existing_logs:
                 shutil.move(os.path.join(log_dir, log),
                         os.path.join(upload_dir_logs, log))
                 self.logger.info('Moved %s to upload', log)
-        except OSError:
+        except OSError as e:
             # not critical - can leave logs in the log_dir
-            self.logger.error('Could not move existing logs to upload.')
+            self.logger.error('Could not move existing logs to upload. %s', e)
