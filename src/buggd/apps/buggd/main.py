@@ -67,7 +67,7 @@ GLOB_is_connected = False
 GLOB_offline_mode = False
 
 leds = LEDs() # Make the LEDs object global so it can be accessed by the cleanup function
-
+log = Log() # Make the Log object global
 debug = Debug() # Make the Debug object global so we can log tracebacks anywhere
 
 # Create a logger for this module and set its level
@@ -249,6 +249,7 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
     """
 
     global GLOB_is_connected
+    global log
 
     # Sleep the thread and keep updating the data LED until the first upload cycle
     start_t = time.time()
@@ -282,6 +283,8 @@ def gcs_server_sync(sync_interval, upload_dir, die, config_path, led_driver, mod
 
             # Set the LED to uploading colour
             set_led(led_driver, DATA_LED_CHS, DATA_LED_UPLOADING)
+
+            log.rotate_log()
 
             try:
                 # Get credentials from JSON file
@@ -390,7 +393,7 @@ def blink_error_leds(led_driver, error_e, dur=None):
         call_cmd_line('sudo reboot')
 
 
-def record(led_driver, modem, log):
+def record(led_driver, modem):
 
     """
     Function to setup, run and log continuous sampling from the sensor.
@@ -404,6 +407,7 @@ def record(led_driver, modem, log):
     global GLOB_no_sd_mode
     global GLOB_is_connected
     global GLOB_offline_mode
+    global log
 
     if not GLOB_offline_mode:
         # Enable the modem for a mobile network connection. If no modem set recorder to offline mode
@@ -528,9 +532,6 @@ def main():
     # Parse command line arguments
     args = handle_args()
 
-    # Set up the logger
-    log = Log()
-    log.rotate_log()
     debug.hello_logger()
 
 
@@ -580,7 +581,7 @@ def main():
     try:
         # run continuous recording function
         led.on()
-        record(led_driver, modem, log)
+        record(led_driver, modem)
     except Exception as e:
         type, val, tb = sys.exc_info()
         logging.error('Caught exception on main record() function: %s', e)
