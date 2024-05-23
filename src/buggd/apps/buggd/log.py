@@ -39,8 +39,8 @@ class Log:
         # Create log directory if it doesn't exist
         os.makedirs(self.log_dir, exist_ok=True)
 
-        # Create a logger
-        self.logger = logging.getLogger(__name__)
+        # Configure the root logger
+        self.logger = logging.getLogger()
 
         # This is the lowest level of logging that will be output
         self.logger.setLevel(logging.DEBUG)
