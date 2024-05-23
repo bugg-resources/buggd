@@ -7,7 +7,7 @@ from .log import Log
 # and set ENABLE_TRACEBACKS to True
 ENABLE_TRACEBACKS = False
 
-logger = Log.get_logger().getChild(__name__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 class Debug:
