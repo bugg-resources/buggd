@@ -71,7 +71,8 @@ log = Log() # Make the Log object global
 debug = Debug() # Make the Debug object global so we can log tracebacks anywhere
 
 # Create a logger for this module and set its level
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
+logger = log.logger
 logger.setLevel(logging.INFO)
 
 """
