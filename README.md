@@ -1,6 +1,6 @@
 ![cc-by-nc-sa-shield](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)
 
-# CAUTION: This document needs re-writing to reflect the bifurcation of bugg-cm4-firmware into bugg-recording and the new bugg-os project. 
+# CAUTION: This document needs re-writing to reflect the bifurcation of bugg-cm4-firmware into buggd and buggOS. 
 
 
 This document needs heavy editing - some of what follows below has been deprecated or is misleading as things currently stand, but as of March 2024 I haven't edited any of it yet, as there are some important details relevant for completing the firmware development. 
