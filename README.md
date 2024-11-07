@@ -104,7 +104,7 @@ The results of the factory test are stored to ``/home/bugg/factory_test_results.
 buggd is packaged using setuptools. The package definition is in ``pyproject.toml``. 
 
 ## Version numbering
-buggd is versioned according to the [SemVer standard](https://semver.org).
+buggd is versioned according to the [SemVer standard](https://semver.org). The version is set in ``pyproject.toml``
 
 # To-dos
 
