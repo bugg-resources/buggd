@@ -39,6 +39,7 @@ def handle_phantom_command(logger, soundcard, args):
         case 'P48':
             soundcard.set_phantom(soundcard.P48)
 
+
 def handle_variance_command(logger, soundcard, args):
     """ Measure variance """
     variances = soundcard.measure_variance()
@@ -46,6 +47,20 @@ def handle_variance_command(logger, soundcard, args):
         logger.error("Failed to measure variance.")
     else:
         print(f"Signal variances: Internal = {variances['internal']:.2f}, External = {variances['external']:.2f}")
+
+
+def handle_listen_command(logger, soundcard, args):
+    """ Listen for a 440Hz tone """
+    if args.channel == 'internal':
+        r = soundcard.listen_for_440Hz(soundcard.INTERNAL)
+    else:
+        r = soundcard.listen_for_440Hz(soundcard.EXTERNAL)
+
+    if r:
+        logger.info("440Hz tone detected.")
+    else:
+        logger.info("No 440Hz tone detected.")
+
 
 def main():
     """ 
@@ -95,6 +110,11 @@ def main():
     # Measure variance command
     measure_parser = subparsers.add_parser('variance', help='Measure variance (hiss check to detect signal presence)')
     measure_parser.set_defaults(func=handle_variance_command)
+
+    # Listen for 440Hz tone command
+    listen_parser = subparsers.add_parser('listen', help='Listen for a 440Hz tone')
+    listen_parser.add_argument('channel', choices=['internal', 'external'], help='Channel to listen on')
+    listen_parser.set_defaults(func=handle_listen_command)
 
     args = parser.parse_args()
 

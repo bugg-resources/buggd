@@ -6,6 +6,10 @@ import logging
 import os
 import json
 import subprocess
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.io import wavfile
+from scipy.signal import find_peaks
 from .lock import Lock
 from .pcmd3180 import PCMD3180
 
@@ -36,6 +40,10 @@ class Soundcard:
     PIP = "PIP"     # Plug In Power
     P3V3 = "P3V3"   # 3.3V on M12 pin 4
     P48 = "P48"     # 48V
+
+    # Channels
+    INTERNAL = "internal"
+    EXTERNAL = "external"
 
     def __init__(self, lock_file_path=LOCK_FILE):
         """ Attempt to acquire the lock and initialise the GPIO """
@@ -190,6 +198,49 @@ class Soundcard:
             logger.error("Failed to record audio: %s", e)
             return None
 
+    def listen_for_440Hz(self, channel):
+        """
+        Record a second of audio from one channel and check for a 440Hz tone. 
+        """
+        try:
+            fn = '/tmp/soundcard_test.wav'
+            subprocess.run(['arecord', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', fn], check=True)
+
+            # Read the PCM wave file
+            sample_rate, data = wavfile.read(fn)
+
+            # Determine the number of samples to exclude (0.1 seconds)
+            samples_to_exclude = int(0.1 * sample_rate)
+
+            # Exclude the first 0.1 seconds
+            if channel == self.EXTERNAL:
+                ch = 1
+            else:
+                ch = 0
+            data = data[samples_to_exclude:, ch]
+
+            # Compute the FFT
+            n = len(data)
+            fft_data = np.fft.fft(data)
+            fft_magnitude = np.abs(fft_data[:n // 2])  # Take the positive frequency half
+
+            # Compute the frequencies
+            frequencies = np.fft.fftfreq(n, d=1/sample_rate)
+            frequencies = frequencies[:n // 2]  # Take the positive frequency half
+
+            # Find peaks in the FFT magnitude
+            peaks, _ = find_peaks(fft_magnitude, height=0.5 * np.max(fft_magnitude))  # Adjust the height threshold as needed
+
+            # Check the frequencies of the peaks
+            found = False
+            for peak in peaks:
+                if frequencies[peak] > 430 and frequencies[peak] < 450:
+                    found = True
+            return found
+            
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            logger.error("Failed to record audio: %s", e)
+            return None
 
 def read_16bit_signed_pcm(file_path):
     """ Read a raw 16-bit signed PCM file and return the samples as a list. """
