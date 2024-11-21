@@ -57,9 +57,9 @@ def handle_listen_command(logger, soundcard, args):
         r = soundcard.listen_for_440Hz(soundcard.EXTERNAL)
 
     if r:
-        logger.info("440Hz tone detected.")
+        print("440Hz tone detected.")
     else:
-        logger.info("No 440Hz tone detected.")
+        print("No 440Hz tone detected.")
 
 
 def main():
