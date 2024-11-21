@@ -52,9 +52,13 @@ def handle_variance_command(logger, soundcard, args):
 def handle_listen_command(logger, soundcard, args):
     """ Listen for a 440Hz tone """
     if args.channel == 'internal':
+        soundcard.enable_internal_channel()
         r = soundcard.listen_for_440Hz(soundcard.INTERNAL)
+        soundcard.disable_internal_channel()
     else:
+        soundcard.enable_external_channel()
         r = soundcard.listen_for_440Hz(soundcard.EXTERNAL)
+        soundcard.disable_external_channel()
 
     if r:
         print("440Hz tone detected.")
