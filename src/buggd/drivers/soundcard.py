@@ -183,7 +183,7 @@ class Soundcard:
         fn_external = fn + '.1'
 
         try:
-            subprocess.run(['arecord', '--separate-channels', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', '--file-type=raw', fn], check=True, stdout=subprocess.DEVNULL)
+            subprocess.run(['arecord', '--separate-channels', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', '--file-type=raw', fn], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             samples_internal = read_16bit_signed_pcm(fn_internal)
             samples_external = read_16bit_signed_pcm(fn_external)
@@ -203,7 +203,7 @@ class Soundcard:
         """
         try:
             fn = '/tmp/soundcard_test.wav'
-            subprocess.run(['arecord', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', fn], check=True, stdout=subprocess.DEVNULL)
+            subprocess.run(['arecord', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', fn], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             # Read the PCM wave file
             sample_rate, data = wavfile.read(fn)
