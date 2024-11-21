@@ -199,7 +199,12 @@ class Soundcard:
         Record a second of audio from one channel and check for a 440Hz tone. 
         """
         try:
-            fn = '/tmp/soundcard_test.wav'
+            if channel == self.EXTERNAL:
+                ch = 1
+                fn = '/tmp/soundcard_test_external.wav'
+            else:
+                ch = 0
+                fn = '/tmp/soundcard_test_internal.wav'
             subprocess.run(['arecord', '--device', 'plughw:0,0', '--channels=2', '--format=S16_LE', '--rate=48000', '--duration=1', fn], check=True)
 
             # Read the PCM wave file
@@ -209,10 +214,6 @@ class Soundcard:
             samples_to_exclude = int(0.1 * sample_rate)
 
             # Exclude the first 0.1 seconds
-            if channel == self.EXTERNAL:
-                ch = 1
-            else:
-                ch = 0
             data = data[samples_to_exclude:, ch]
 
             # Compute the FFT
