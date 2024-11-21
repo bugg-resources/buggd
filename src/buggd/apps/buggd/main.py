@@ -533,9 +533,6 @@ def main():
     # Parse command line arguments
     args = handle_args()
 
-    debug.hello_logger()
-
-
     start_time = time.strftime('%Y%m%d_%H%M')
     logger.info('Start of buggd version %s at %s', metadata.version('buggd'), format(start_time))
 
