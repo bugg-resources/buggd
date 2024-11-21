@@ -52,8 +52,10 @@ class FactoryTest:
             "i2s_bridge_responding": False,
             "rtc_responding": False,
             "led_controller_responding": False,
-            "internal_microphone_recording": False,
-            "external_microphone_recording": False,
+            "internal_channel_variance": False,
+            "external_channel_variance": False,
+            "internal_microphone_listen_440Hz": False,
+            "PIP_microphone_listen_440Hz": False
         }
 
     def run(self):
@@ -228,16 +230,22 @@ class FactoryTest:
             soundcard.disable_external_channel()
             soundcard.enable_internal_channel()
             soundcard.enable_external_channel()
-
+            soundcard.set_gain(10)
+            soundcard.set_phantom(soundcard.PIP)
             variances = soundcard.measure_variance()
+            internal_440Hz = soundcard.listen_for_440Hz(soundcard.INTERNAL)
+            external_440Hz = soundcard.listen_for_440Hz(soundcard.EXTERNAL)
 
             if variances is None:
                 return False
             
             logger.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
+            logger.info("Internal 440Hz: %s, External 440Hz: %s", internal_440Hz, external_440Hz)
 
-            self.results["internal_microphone_recording"] = variances['internal'] > 100
-            self.results["external_microphone_recording"] = variances['external'] > 100
+            self.results["internal_channel_variance"] = variances['internal'] > 100
+            self.results["external_channel_variance"] = variances['external'] > 100
+            self.results["internal_microphone_listen_440Hz"] = internal_440Hz
+            self.results["PIP_microphone_listen_440Hz"] = external_440Hz
 
             soundcard.disable_internal_channel()
             soundcard.disable_external_channel()
@@ -358,10 +366,14 @@ class FactoryTest:
                 
                 else:
                     match recording_failures[0]:
-                        case "internal_microphone_recording":
+                        case "internal_channel_variance":
                             self.leds.middle.set(Colour.RED)
-                        case "external_microphone_recording":
+                        case "external_channel_variance":
                             self.leds.middle.set(Colour.YELLOW)
+                        case "internal_microphone_listen_440Hz":
+                            self.leds.middle.set(Colour.BLUE)
+                        case "PIP_microphone_listen_440Hz":
+                            self.leds.middle.set(Colour.MAGENTA   
 
 
 def i2c_device_present(addr, bus_num=1, force=True):
