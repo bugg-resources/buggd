@@ -7,7 +7,6 @@ import os
 import json
 import subprocess
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from scipy.signal import find_peaks
 from .lock import Lock
