@@ -234,18 +234,6 @@ class Soundcard:
                 logger.info("Peak at %f Hz", frequencies[peak])
                 if frequencies[peak] > 430 and frequencies[peak] < 450:
                     found = True
-            
-            # Plot the FFT and mark the peaks
-            import matplotlib.pyplot as plt
-            plt.figure(figsize=(12, 6))
-            plt.plot(frequencies, fft_magnitude, label='FFT Magnitude')
-            plt.plot(frequencies[peaks], fft_magnitude[peaks], 'rx', label='Peaks')
-            plt.title('FFT of the Wave File (Left Channel, Excluding First 0.1s) with Peaks')
-            plt.xlabel('Frequency (Hz)')
-            plt.ylabel('Amplitude')
-            plt.grid()
-            plt.legend()
-            plt.savefig('/home/bugg/fft_plot.png')  # Save as an image file
 
             return found
             
