@@ -232,6 +232,7 @@ class Soundcard:
             for peak in peaks:
                 if frequencies[peak] > 430 and frequencies[peak] < 450:
                     found = True
+                logger.info("Peak at %f Hz", frequencies[peak])
             return found
             
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
