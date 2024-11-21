@@ -52,10 +52,10 @@ class FactoryTest:
             "i2s_bridge_responding": False,
             "rtc_responding": False,
             "led_controller_responding": False,
-            "internal_channel_variance": False,
-            "external_channel_variance": False,
-            "internal_microphone_listen_440Hz": False,
-            "PIP_microphone_listen_440Hz": False
+            "recording_internal_channel_variance": False,
+            "recording_external_channel_variance": False,
+            "recording_internal_microphone_listen_440Hz": False,
+            "recording_PIP_microphone_listen_440Hz": False
         }
 
     def run(self):
