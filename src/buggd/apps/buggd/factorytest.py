@@ -373,7 +373,7 @@ class FactoryTest:
                         case "internal_microphone_listen_440Hz":
                             self.leds.middle.set(Colour.BLUE)
                         case "PIP_microphone_listen_440Hz":
-                            self.leds.middle.set(Colour.MAGENTA   
+                            self.leds.middle.set(Colour.MAGENTA)  
 
 
 def i2c_device_present(addr, bus_num=1, force=True):
