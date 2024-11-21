@@ -233,8 +233,7 @@ class FactoryTest:
             soundcard.set_gain(10)
             soundcard.set_phantom(soundcard.PIP)
             variances = soundcard.measure_variance()
-            #internal_440Hz = soundcard.listen_for_440Hz(soundcard.INTERNAL)
-            internal_440Hz = False
+            internal_440Hz = soundcard.listen_for_440Hz(soundcard.INTERNAL)
             external_440Hz = soundcard.listen_for_440Hz(soundcard.EXTERNAL)
 
             if variances is None:
