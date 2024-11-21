@@ -242,10 +242,10 @@ class FactoryTest:
             logger.info("Signal variances: Internal = %.2f, External = %.2f", variances["internal"], variances["external"])           
             logger.info("Internal 440Hz: %s, External 440Hz: %s", internal_440Hz, external_440Hz)
 
-            self.results["internal_channel_variance"] = variances['internal'] > 100
-            self.results["external_channel_variance"] = variances['external'] > 100
-            self.results["internal_microphone_listen_440Hz"] = internal_440Hz
-            self.results["PIP_microphone_listen_440Hz"] = external_440Hz
+            self.results["recording_internal_channel_variance"] = variances['internal'] > 100
+            self.results["recording_external_channel_variance"] = variances['external'] > 100
+            self.results["recording_internal_microphone_listen_440Hz"] = internal_440Hz
+            self.results["recording_PIP_microphone_listen_440Hz"] = external_440Hz
 
             soundcard.disable_internal_channel()
             soundcard.disable_external_channel()
@@ -366,13 +366,13 @@ class FactoryTest:
                 
                 else:
                     match recording_failures[0]:
-                        case "internal_channel_variance":
+                        case "recording_internal_channel_variance":
                             self.leds.middle.set(Colour.RED)
-                        case "external_channel_variance":
+                        case "recording_external_channel_variance":
                             self.leds.middle.set(Colour.YELLOW)
-                        case "internal_microphone_listen_440Hz":
+                        case "recording_internal_microphone_listen_440Hz":
                             self.leds.middle.set(Colour.BLUE)
-                        case "PIP_microphone_listen_440Hz":
+                        case "recording_PIP_microphone_listen_440Hz":
                             self.leds.middle.set(Colour.MAGENTA)  
 
 
