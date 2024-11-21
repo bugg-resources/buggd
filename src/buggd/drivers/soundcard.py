@@ -101,14 +101,11 @@ class Soundcard:
             self.store_state()
 
     def enable_external_channel(self):
-        """ Turn on the soundcard power rails, set gain to 0, and disable phantom power """
+        """ Turn on the soundcard power rails """
         logger.debug("Enabling external channel")
 
         GPIO.setup(EXT_MIC_EN, GPIO.OUT)
         GPIO.output(EXT_MIC_EN, 1)
-        self.set_gain(0)
-        self.set_phantom(self.NONE)
-        self.write_state()
 
     def disable_external_channel(self):
         """ Turn off the soundcard power rails"""
