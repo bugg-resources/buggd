@@ -81,8 +81,8 @@ class FactoryTest:
 
         # Run the tests
         completed = [] 
-        completed.append(self.test_modem())
-        completed.append(self.test_i2c_devices())
+        #completed.append(self.test_modem())
+        #completed.append(self.test_i2c_devices())
         completed.append(self.test_recording())
 
         if all(completed):

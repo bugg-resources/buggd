@@ -245,7 +245,7 @@ class Soundcard:
             plt.ylabel('Amplitude')
             plt.grid()
             plt.legend()
-            plt.savefig('fft_plot.png')  # Save as an image file
+            plt.savefig('/home/bugg/fft_plot.png')  # Save as an image file
 
             return found
             
