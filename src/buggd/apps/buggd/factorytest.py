@@ -239,6 +239,9 @@ class FactoryTest:
             self.results["internal_microphone_recording"] = variances['internal'] > 100
             self.results["external_microphone_recording"] = variances['external'] > 100
 
+            soundcard.disable_internal_channel()
+            soundcard.disable_external_channel()
+
             soundcard.close()
 
             return True
