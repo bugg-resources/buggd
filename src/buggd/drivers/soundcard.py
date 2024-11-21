@@ -226,7 +226,7 @@ class Soundcard:
             frequencies = frequencies[:n // 2]  # Take the positive frequency half
 
             # Find peaks in the FFT magnitude
-            peaks, _ = find_peaks(fft_magnitude, height=0.5 * np.max(fft_magnitude))  # Adjust the height threshold as needed
+            peaks, _ = find_peaks(fft_magnitude, height=0.3 * np.max(fft_magnitude))  # Adjust the height threshold as needed
 
             # Check the frequencies of the peaks
             found = False
