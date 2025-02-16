@@ -206,12 +206,11 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
     # Check it's not just the same as the one we're already using
     if os.path.exists(local_config_path) and filecmp.cmp(sd_config_path, local_config_path):
         logger.info('SD card config file ({}) matches existing config ({})'.format(sd_config_path, local_config_path))
-        return
-
-    # Copy the SD config file and reboot
-    # TODO: Indicate with LEDs / buzzer a new config has been found
-    logger.info('Copied config from SD to local')
-    shutil.copyfile(sd_config_path, local_config_path)
+    else:
+        # Copy the SD config file and reboot
+        # TODO: Indicate with LEDs / buzzer a new config has been found
+        logger.info('Copied config from SD to local')
+        shutil.copyfile(sd_config_path, local_config_path)
 
     # Try to configure modem, but it's not required so escape any errors
     try:
