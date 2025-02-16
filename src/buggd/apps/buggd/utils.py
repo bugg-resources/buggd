@@ -146,7 +146,7 @@ def wait_for_internet_conn(n_tries, led_driver, led_driver_chs, col_succ, col_fa
     return is_conn
 
 
-def add_network_profile(name, apn, username, password):
+def add_network_profile(name, apn, username = None, password = None):
     """ Add a new GSM connection profile to NetworkManager if there isn't already one with the same apn, username and password. """
    
     try:
@@ -218,13 +218,11 @@ def copy_sd_card_config(sd_mount_loc, config_fname):
         # Load the mobile network settings from the config file
         config = json.load(open(local_config_path))
         modem_config = config['mobile_network']
-        m_uname = modem_config['username']
-        m_pwd = modem_config['password']
+        m_uname = modem_config['username'].strip() if 'username' in modem_config else None
+        m_pwd = modem_config['password'].strip() if 'password' in modem_config else None
+
         m_host = modem_config['hostname']
         m_conname = m_host.replace('.','') + config['device']['config_id']
-
-        m_uname = m_uname.strip()
-        m_pwd = m_pwd.strip()
 
         # Add the profile to the network manager
         logger.info('Adding network connection profile from config file')
